@@ -1,0 +1,1261 @@
+/* ============================================================
+ * Prixm-AI-CREW_v2 — 공통 스타일시트 (common.css)
+ * PrixmAI_CREW_component.html 에서 분리됨
+ * 모든 컴포넌트 조각(components/*.html)과 통합 뷰(index.html)가 공유
+ * ============================================================ */
+  :root{
+    --black-900:#222;
+    --border-default:#e5e7eb;
+    --border-subtle:#f3f4f6;
+    --background-page:#fafafd;                 /* Background/Page — Mode 2: White/10 (Mode 1은 #fbfbfb White/50) */
+    --gray-100:#f3f4f6;
+    --gray-500:#808897;
+    --gray-600:#626b7a;
+    --gray-50:#f8fafc;
+    --red-500:#ef4444;
+  --status-active:#22c55e; /* 2026-09-15 추가 — 자동화 활성 상태점. 기존 팔레트에 초록 없음 */
+    --blue-100:#dbeafe;
+    --brand-primary:#2563eb;
+    --folder-blue:#5b9bd5;
+    --folder-blue-dark:#3f7fc1;
+
+    /* Mode 2 전용 GNB 토큰 (Mode 1과 값이 다름 — prixm_variables.yaml values_by_mode 기준) */
+    --gnb-background:#f4f6fc;                  /* Gnb/Background — Mode 2: Blue/10 (Mode 1은 Gray/100 #f3f4f6) */
+    --gnb-on:#e8eeff;                          /* Gnb/On — Mode 2: Blue/30 (Mode 1은 Gray/200 #e5e7eb) */
+    --gnb-active:#efefff;                      /* Gnb/Active — Mode 2: Purple/100 (Mode 1은 Black 5% rgba(0,0,0,0.05)) */
+    --color-primitive-purple-100:#efefff;      /* Color Primitive/Purple/100 */
+    --color-primitive-blue-30:#e8eeff;         /* Color Primitive/Blue/30 */
+    --color-primitive-white-10:#fafafd;        /* Color Primitive/White/10 */
+
+    /* Figma Variables (실제 바인딩 값 - get_variable_defs / getLocalVariableCollectionsAsync 조회 결과) */
+    --component-icon-basic:#475062;            /* Component/Icon/basic → Gray/700 */
+    --color-primitive-gray-100:#f3f4f6;        /* Color Primitive/Gray/100 */
+    --color-primitive-blue-100:#dbeafe;        /* Color Primitive/Blue/100 */
+    --typography-letter-spacing-basic:-0.5px;  /* Typography/letter-spacing-basic */
+    --component-icon-ico-radius-weak:3px;      /* Component/Icon/ico-radius-weak */
+    --color-primitive-blue-10:#f4f6fc;         /* Color Primitive/Blue/10 */
+    --color-primitive-purple-900:#840afe;      /* Color Primitive/Purple/900 */
+
+    /* Font-size 스케일 (토큰화 — Figma에 별도 텍스트 스타일/변수로 정의돼 있지 않아
+       common.css 전체에서 실사용 중인 값을 그대로 8단계로 추출해 등록함. 리터럴 픽셀값
+       네이밍으로 --gray-100/--component-icon-ico-radius-weak 등 기존 파일 관례와 통일) */
+    --font-size-9:9px;
+    --font-size-10:10px;
+    --font-size-11:11px;
+    --font-size-12:12px;
+    --font-size-13:13px;
+    --font-size-14:14px;
+    --font-size-15:15px;
+    --font-size-22:22px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  /* ===================== 전역 커스텀 스크롤바 (webkit) ===================== */
+  ::-webkit-scrollbar{
+    width:7px;
+    background:transparent !important;
+  }
+  ::-webkit-scrollbar-track{
+    background:transparent !important;
+    border:none;
+    box-shadow:none;
+  }
+  ::-webkit-scrollbar-track-piece{
+    background:transparent !important;
+  }
+  ::-webkit-scrollbar-thumb{
+    background:#c4c7cc;
+    border-radius:999px;
+  }
+  body{
+    font-family:"Pretendard Variable","Pretendard",-apple-system,sans-serif;
+    background:var(--background-page);
+    color:var(--black-900);
+    padding:40px 60px;
+  }
+  h1{
+    font-size:var(--font-size-22); font-weight:700; letter-spacing:-0.5px;
+    margin-bottom:4px;
+  }
+  .subtitle{
+    font-size:var(--font-size-13); color:var(--gray-600); margin-bottom:40px;
+  }
+  .component-section{
+    background:#fff;
+    border:1px solid var(--border-default);
+    border-radius:12px;
+    padding:28px 30px;
+    margin-bottom:28px;
+  }
+  .component-title{
+    font-size:var(--font-size-15); font-weight:600; letter-spacing:-0.5px;
+    margin-bottom:4px;
+  }
+  .component-desc{
+    font-size:var(--font-size-12); color:var(--gray-600); margin-bottom:20px;
+  }
+  .variant-grid{
+    display:flex; flex-wrap:wrap; gap:16px;
+  }
+  .variant-card{
+    border:1px dashed var(--border-default);
+    border-radius:8px;
+    padding:16px 20px;
+    display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+    background:var(--background-page);
+    min-width:140px;
+  }
+  .variant-label{
+    font-size:var(--font-size-11); font-weight:600; color:var(--gray-600);
+    letter-spacing:-0.3px;
+    background:var(--gray-100);
+    padding:2px 8px;
+    border-radius:4px;
+  }
+
+  /* ============ tree-folder component ============ */
+  .tree-folder{
+    display:inline-flex; flex-direction:column; align-items:flex-start;
+    border-radius:var(--component-icon-ico-radius-weak);
+  }
+  .tree-folder-basic{
+    display:flex; align-items:center; gap:2px; padding:3px;
+    border-radius:var(--component-icon-ico-radius-weak);
+    cursor:pointer;
+  }
+  .tree-folder:not(.active) .tree-folder-basic:hover{background:var(--color-primitive-gray-100);}
+  .tree-folder.active .tree-folder-basic{background:var(--color-primitive-blue-100);}
+  .arrow-bottom{
+    width:8px; height:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .arrow-bottom svg path{stroke:var(--component-icon-basic);}
+  .arrow-bottom.closed svg{transform:rotate(-90deg);}
+  .folder-inner{display:flex; align-items:center; gap:1px;}
+  .ico-folder{width:18px; height:16px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .ico-folder img{display:block; width:auto; height:14px;}
+  .folder-label{
+    font-size:var(--font-size-13); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#000; white-space:nowrap;
+  }
+  .depth-inner{
+    padding-left:16px; margin-top:2px;
+    border-left:1px solid var(--border-default);
+    min-height:24px;
+    display:flex; align-items:center;
+  }
+  .depth-inner span{font-size:var(--font-size-11); color:var(--gray-500);}
+
+  /* ============ tree (조립형 문서함 트리 구조) ============ */
+  .tree-demo{font-size:var(--font-size-13);}
+  .tree-node{display:flex; flex-direction:column;}
+  .tree-row{
+    display:flex; align-items:center; gap:2px; padding:3px;
+    border-radius:var(--component-icon-ico-radius-weak);
+    cursor:pointer; width:fit-content; min-width:100px;
+  }
+  .tree-row:hover{background:var(--color-primitive-gray-100);}
+  .tree-node.active > .tree-row{background:var(--color-primitive-blue-100);}
+  .tree-row .arrow-bottom svg{transform:rotate(0deg); transition:transform .1s ease;}
+  .tree-node[data-state="close"] > .tree-row .arrow-bottom svg{transform:rotate(-90deg);}
+  .tree-row .ico-folder img{height:14px; width:auto; display:block;}
+  .tree-row .folder-label{font-size:var(--font-size-13); letter-spacing:var(--typography-letter-spacing-basic); color:#000; white-space:nowrap;}
+  .tree-children{
+    display:flex; flex-direction:column; gap:4px;
+    padding-left:10px; margin-top:2px;
+  }
+  .tree-node[data-state="close"] > .tree-children{display:none;}
+
+  /* ============ lnb-menu ============ */
+  .lnb-menu-item{
+    display:flex; align-items:center; padding:0 5px; border-radius:5px; gap:0;
+    cursor:pointer; width:fit-content;
+  }
+  .lnb-menu-item .menu-ico{width:16px; height:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .lnb-menu-item .menu-ico svg path{stroke:var(--component-icon-basic);}
+  .lnb-menu-item .menu-ico img{display:block;}
+  .lnb-menu-item span.menu-label{padding:6px 5px; font-size:var(--font-size-14); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+  .lnb-menu-item.state-active{background:var(--gnb-active,rgba(0,0,0,0.05));}
+  /* hover는 channel-text의 active와 동일하게 Purple/100(--gnb-active) 배경 사용 */
+  .lnb-menu-item.state-hover{background:var(--gnb-active,rgba(0,0,0,0.05));}
+  .lnb-menu-item:not(.state-active):hover{background:var(--gnb-active,rgba(0,0,0,0.05));}
+  /* 사이드바(lnb-panel) 안에서 실제로 쓰일 때는 리스트 폭에 맞춰 꽉 채운다
+     (컴포넌트 라이브러리 데모 카드에서는 기존 width:fit-content 유지) */
+  .lnb-panel .lnb-menu-item{width:100%; box-sizing:border-box;}
+
+  /* ============ channel-text (standalone) ============ */
+  .channel-text-demo{display:flex; align-items:center; padding:0 5px; border-radius:5px; width:100%; box-sizing:border-box; gap:8px;}
+  .channel-text-demo.active{background:var(--gnb-active,rgba(0,0,0,0.05)); justify-content:space-between;}
+  .channel-text-demo .ch-inner{display:flex; align-items:center;}
+  .channel-text-demo .ch-ico{width:20px; height:30px; display:flex; align-items:center; justify-content:center; font-size:var(--font-size-15); font-weight:500; letter-spacing:-0.5px;}
+  .channel-text-demo .ch-ico img{max-width:20px; width:auto; height:auto; object-fit:contain;}
+  .channel-text-demo .ch-label{padding:6px 2px; font-size:var(--font-size-14); font-weight:400; letter-spacing:-0.5px;}
+
+  /* ============ btn-more-dot / btn-add / btn-del / ico-close-sm ============ */
+  .btn-more-dot{width:16px; height:16px; border-radius:4px; display:flex; align-items:center; justify-content:center; gap:2px; cursor:pointer;}
+  .btn-more-dot span{width:2px; height:2px; border-radius:50%; background:var(--black-900); display:inline-block;}
+  .btn-more-dot.hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+  .btn-square{width:16px; height:16px; border-radius:4px; background:#fff; border:1px solid var(--border-default); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .btn-square svg{width:8px; height:8px;}
+  .ico-close-sm{width:16px; height:16px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .ico-close-sm img{max-width:16px; max-height:16px; width:auto; height:auto; object-fit:contain;}
+  .ico-close-sm svg{width:9.5px; height:9.5px; transform:rotate(-45deg);}
+  .ico-close-sm.hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+
+  /* ============ noti-num / label-basic / label-toggle (standalone) ============ */
+  .noti-num-demo{width:16px; height:16px; border-radius:50px; background:var(--black-900); color:#fff; font-size:var(--font-size-9); font-weight:600; display:flex; align-items:center; justify-content:center;}
+  .label-basic-demo{
+    display:inline-flex; align-items:center; justify-content:center;
+    background:var(--black-900); color:#fff; border-radius:var(--component-icon-ico-radius-weak);
+    padding:2px 4px 3px; font-size:var(--font-size-10); font-weight:500; letter-spacing:-0.5px;
+  }
+  .label-toggle-demo{display:flex; align-items:center; justify-content:space-between; width:120px;}
+  .label-toggle-demo .lt-inner{display:flex; align-items:center; gap:2px;}
+  .label-toggle-demo .lt-arrow{width:16px; height:16px; background:var(--color-primitive-gray-200,#e5e7eb); border-radius:4px; display:flex; align-items:center; justify-content:center;}
+  .label-toggle-demo .lt-arrow svg{width:8px; height:5px;}
+  .label-toggle-demo span.lt-text{font-size:var(--font-size-12); font-weight:500; letter-spacing:-0.5px; color:var(--black-900);}
+
+  /* ============ Lnb 패널 공통 (사이드바) ============ */
+  .lnb-panel{
+    width:240px; flex-shrink:0;
+    background:var(--background-page);
+    border:1px solid var(--border-default);
+    border-radius:8px;
+    padding:40px 10px 25px;
+    position:relative;
+    overflow:hidden;
+  }
+  .lnb-panel .lnb-wrap{display:flex; flex-direction:column; gap:20px; min-width:220px;}
+  .lnb-panel .lnb-group{display:flex; flex-direction:column; gap:10px;}
+  .lnb-panel .lnb-list{display:flex; flex-direction:column; gap:3px;}
+  .lnb-panel .user-list{display:flex; flex-direction:column; gap:10px;}
+  .lnb-panel .label-toggle{display:flex; align-items:flex-start; justify-content:space-between;}
+  .lnb-panel .label-toggle span{font-size:var(--font-size-12); font-weight:500; letter-spacing:-0.5px;}
+  /* 2026-09-15 추가 — LNB 묶음 머리의 접기 화살표. 06-badge-label은 .label-toggle-demo를
+     쓰는데 LNB 조각들은 .label-toggle을 써서 화살표 스타일이 걸리지 않고 있었음(제품 화면에는 보임). */
+  .lnb-panel .label-toggle .lt-arrow{width:12px; height:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .lnb-panel .label-toggle .lt-arrow svg{width:8px; height:5px;}
+  .lnb-panel .label-toggle .lt-arrow svg path{stroke:var(--color-primitive-gray-500,#6b7280);}
+  /* 그룹 하위 항목 앞 트리 표시 */
+  .lnb-panel .ch-tree{width:12px; flex-shrink:0; font-size:11px; line-height:1; color:var(--color-primitive-gray-400,#9ca3af);}
+  /* 2026-09-15 추가 — 자동화 LNB 전용 */
+  /* 상태점: 색만이 아니라 모양(채움/테두리)으로도 구분 — 색각 이상 고려 (기능명세 1.8) */
+  .lnb-panel .wf-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0; box-sizing:border-box; margin:0 7px 0 4px;}
+  .lnb-panel .wf-dot.is-active{background:var(--status-active,#22c55e);}
+  .lnb-panel .wf-dot.is-inactive{background:var(--gray-500,#808897);}
+  /* 설정 중도 "안 켜진 상태"이므로 비활성과 같은 회색 점을 쓰고, 왜 못 켜는지는 우측 배지로 (2026-09-15) */
+  .lnb-panel .wf-badge{font-size:var(--font-size-10); font-weight:500; letter-spacing:-0.5px; color:var(--gray-600); background:var(--color-primitive-gray-100,#f3f4f6); border-radius:3px; padding:2px 4px 3px; flex-shrink:0; margin-left:auto;}
+  .lnb-panel .lnb-count{font-size:var(--font-size-11); font-weight:400; color:var(--gray-500);}
+  .lnb-panel .lnb-empty{font-size:var(--font-size-12); color:var(--gray-500); padding:5px 2px 5px 14px;}
+  .lnb-panel .panel-close{position:absolute; top:6px; right:9px; width:16px; height:16px; display:flex; align-items:center; justify-content:center;}
+  .lnb-panel .panel-close svg{width:10px; height:10px;}
+
+  /* Lnb 상단 유틸(검색 + 접기) — Figma node 958:26343 등 top-util 실측
+     기존에 만든 ico-search 에셋 + arrow-double-demo(이미 있는 컴포넌트)를 그대로 재사용 */
+  .lnb-panel .lnb-top-util{
+    position:absolute; top:6px; right:9px;
+    display:flex; align-items:center; gap:7px;
+  }
+  .lnb-panel .lnb-top-search{
+    width:16px; height:16px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .lnb-panel .lnb-top-search img{width:16px; height:16px; display:block;}
+
+  /* ============ segment-control (정식) ============ */
+  .segment-control-demo{
+    display:inline-flex; gap:4px; align-items:center; padding:2px;
+    background:var(--color-primitive-gray-100); border:1px solid var(--border-default); border-radius:5px;
+  }
+  .segment-item-demo{
+    display:flex; gap:3px; align-items:center; justify-content:center;
+    padding:4px 6px; border-radius:3px; cursor:pointer;
+    font-size:var(--font-size-12); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#626b7a;
+  }
+  .segment-item-demo svg path, .segment-item-demo svg rect{stroke:#626b7a;}
+  .segment-item-demo.active{
+    background:#fff; border:1px solid var(--border-subtle);
+    font-weight:500; color:#2a3445;
+  }
+  .segment-item-demo.active svg path, .segment-item-demo.active svg rect{stroke:#2a3445;}
+
+  /* ============ user-info / user-thumbnail ============ */
+  .user-info-demo{display:flex; gap:8px; align-items:flex-start; position:relative; width:fit-content; min-width:125px;}
+  .user-thumbnail{position:relative; width:32px; height:32px; border-radius:100px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .user-thumbnail.text-avatar{background:#009c5d;}
+  .user-thumbnail.text-avatar span.initial{color:#fff; font-size:var(--font-size-12); font-weight:500; letter-spacing:-0.5px;}
+  .user-thumbnail img{width:32px; height:32px; border-radius:100px; object-fit:cover; display:block;}
+  .ai-stroke{position:absolute; inset:0; border:1.5px solid var(--purple-500,#6366f1); border-radius:100px;}
+  .label-ai{
+    position:absolute; left:22px; top:21px; width:13px;
+    display:flex; align-items:center; justify-content:center; padding:0 2px; border-radius:2px;
+    background:linear-gradient(133.6deg, #6366f1 0%, #840afe 100%);
+  }
+  .label-ai span{color:#fff; font-size:var(--font-size-9); font-weight:600; line-height:1.3;}
+  .user-chat-content{display:flex; flex-direction:column; justify-content:center;}
+  .user-chat-content .u-name{font-size:var(--font-size-15); font-weight:500; letter-spacing:-0.5px; color:var(--black-900); height:20px; display:flex; align-items:center;}
+  .user-chat-content .u-role{font-size:var(--font-size-12); font-weight:400; letter-spacing:-0.5px; color:var(--text-weak,#626b7a);}
+  .user-info-demo .u-noti{position:absolute; top:10px; right:-3px;}
+
+  /* ============ btn-gnb ============ */
+  .btn-gnb-demo{
+    width:60px; height:55px; border-radius:5px; padding:7px 5px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    cursor:pointer; position:relative;
+  }
+  .btn-gnb-demo svg{width:20px; height:20px;}
+  .btn-gnb-demo svg path, .btn-gnb-demo svg rect{stroke:var(--component-icon-basic);}
+  .btn-gnb-demo img{max-width:20px; max-height:20px; width:auto; height:auto; object-fit:contain;}
+  .btn-gnb-demo span{font-size:var(--font-size-12); font-weight:500; letter-spacing:-0.5px; color:var(--black-900);}
+  .btn-gnb-demo.hover{background:#fff;}
+  .btn-gnb-demo.hover span{font-weight:600;}
+  .btn-gnb-demo.active{background:var(--gnb-on,#e8eeff); box-shadow:inset 1px 1px 1px 0 #ccd4e2;}
+  .btn-gnb-demo.active span{color:var(--brand-primary); font-weight:600;}
+
+  /* ============ gnb-section (조립형 좌측 아이콘 바) ============ */
+  .gnb-section-demo{
+    width:68px; flex-shrink:0;
+    background:var(--gnb-background,#f3f4f6);
+    border-right:1px solid var(--border-default);
+    padding:15px 4px; display:flex; flex-direction:column; gap:4px;
+  }
+  .gnb-section-demo .btn-gnb-demo{width:60px;}
+
+  /* ============ header ============ */
+  .header-demo{
+    width:100%; height:45px; box-sizing:border-box;
+    background:var(--background-surface,#fff); border-bottom:1px solid var(--border-default);
+    display:flex; align-items:center; justify-content:space-between; padding:0 20px;
+  }
+  .header-demo .logo-img{width:159px; display:block;}
+  .header-demo .header-right{display:flex; align-items:center; gap:20px;}
+  .header-demo .ico-bell-wrap{position:relative; width:24px; height:24px;}
+  .header-demo .ico-bell-wrap img{position:absolute; width:auto; height:auto;}
+  .header-demo .ico-bell-wrap .noti-num-demo{position:absolute; top:-3px; right:-6px;}
+  .header-demo .header-user{display:flex; align-items:center; gap:5px;}
+  .header-demo .header-user .avatar-init{
+    width:32px; height:32px; border-radius:100px; background:#009c5d; color:#fff;
+    font-size:var(--font-size-12); font-weight:500; letter-spacing:-0.5px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .header-demo .header-user span{font-size:var(--font-size-15); font-weight:500; letter-spacing:-0.5px; color:var(--black-900);}
+  .btn-gnb-demo.active svg path, .btn-gnb-demo.active svg rect{stroke:var(--brand-primary);}
+
+  /* ============ ico-arrow-double / btn-frame-close ============ */
+  .arrow-double-demo{
+    width:16px; height:16px; border-radius:5px; display:flex; align-items:center; justify-content:center; gap:1px; cursor:pointer;
+  }
+  .arrow-double-demo img{max-width:16px; max-height:16px; width:auto; height:auto; object-fit:contain;}
+  .arrow-double-demo.hover{background:var(--button-hover,rgba(0,0,0,0.05)); border-radius:3px;}
+  .frame-close-demo{
+    width:16px; height:16px; border-radius:3px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .frame-close-demo img{max-width:16px; max-height:16px; width:auto; height:auto; object-fit:contain;}
+
+  /* ============ file-item / file-type ============ */
+  .file-item-demo{
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:10px 5px; border-radius:5px; min-width:120px; cursor:pointer;
+  }
+  .file-item-demo:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+  .file-item-demo .fi-title{
+    font-size:var(--font-size-13); font-weight:400; letter-spacing:-0.5px; color:var(--black-900);
+    text-align:center; padding:2px 5px; width:100px; line-height:1.2;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden; text-overflow:ellipsis;
+  }
+  .file-item-demo .fi-meta{display:flex; align-items:center; gap:2px; justify-content:center;}
+  .file-item-demo .fi-count{font-size:var(--font-size-10); color:var(--text-weak,#626b7a); letter-spacing:-0.5px;}
+  .comment-badge{
+    display:flex; align-items:center; gap:2px; background:var(--blue-50,#eff6ff);
+    border-radius:3px; padding:0 2px;
+  }
+  .comment-badge svg{width:13px; height:13px;}
+  .comment-badge span{font-size:var(--font-size-9); font-weight:600; color:var(--brand-primary); letter-spacing:-0.5px;}
+
+  /* ============ modal (기본 틀) ============ */
+  .modal-demo{
+    display:flex; flex-direction:column; gap:10px;
+    width:535px; padding:10px 15px; box-sizing:border-box;
+    background:#fff; border-radius:15px;
+    box-shadow:0 0 5px rgba(0,0,0,0.15);
+  }
+  .modal-demo .modal-header{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:5px 0;
+  }
+  .modal-demo .modal-title{
+    font-size:var(--font-size-14); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic); color:#000;
+  }
+  .modal-demo .modal-inner{
+    display:flex; align-items:center; justify-content:center;
+    padding:30px 0; min-height:100px;
+    border:1px dashed var(--border-default); border-radius:8px;
+  }
+  .modal-demo .modal-inner-placeholder{
+    font-size:var(--font-size-12); color:var(--gray-500);
+  }
+
+  /* ============ modal — 전체검색 ============ */
+  .modal-search-body{display:flex; flex-direction:column; gap:15px; padding:5px 0;}
+  .modal-search-body .search-section{display:flex; flex-direction:column; gap:8px;}
+  .modal-search-body .search-section .label-toggle{display:flex; align-items:center; padding:0 5px;}
+  .modal-search-body .search-section .label-toggle span{font-size:var(--font-size-12); font-weight:500; letter-spacing:-0.5px; color:var(--black-900);}
+  .modal-search-body .lnb-list{display:flex; flex-direction:column; gap:3px;}
+  .search-item-component{display:flex; flex-direction:column; padding:15px 0; border-radius:7px; background:#fff; cursor:pointer;}
+  .search-item-component:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+  .search-item-component .ch-label{font-weight:600; color:var(--black-900);}
+  .search-item-component .si-desc{
+    padding:0 5px; margin-top:5px;
+    font-size:var(--font-size-13); font-weight:400; letter-spacing:-0.5px; color:#000; line-height:1.5;
+  }
+  .search-item-component .si-desc mark{background:rgba(232,235,37,0.41); color:inherit; border-radius:1px; padding:0;}
+
+  /* ============ floating_pop (협업 중 AI 호출 창) ============ */
+  .fp-demo{
+    width:665px; display:flex; flex-direction:column;
+    background:#fff; border-radius:10px;
+    box-shadow:0 0 5px rgba(0,0,0,0.2);
+    box-sizing:border-box; position:relative;
+  }
+  .fp-demo .fp-top{
+    display:flex; flex-direction:column; gap:5px;
+    padding:10px 15px; border-bottom:1px solid var(--border-subtle);
+  }
+  .fp-demo .fp-title-row{ display:flex; align-items:center; justify-content:space-between; }
+  .fp-demo .fp-title{ font-size:var(--font-size-14); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic); color:#000; }
+  .fp-demo .fp-top-actions{ display:flex; align-items:center; gap:7px; }
+  .fp-demo .ico-maximize{ width:16px; height:16px; display:flex; align-items:center; justify-content:center; border-radius:4px; cursor:pointer; }
+  .fp-demo .ico-maximize img{ width:16px; height:16px; }
+  .fp-demo .ico-maximize.hover{ background:var(--button-hover,rgba(0,0,0,0.05)); }
+  .fp-demo .fp-file-info{ display:flex; align-items:flex-end; gap:11px; }
+  .fp-demo .fp-file-name{ display:flex; align-items:center; gap:4px; }
+  .fp-demo .fp-file-name img{ width:16px; height:16px; }
+  .fp-demo .fp-file-name span{ font-size:var(--font-size-12); color:#222; letter-spacing:-0.5px; }
+  .fp-demo .fp-file-size{ font-size:var(--font-size-11); color:var(--gray-500); letter-spacing:-0.5px; }
+
+  .fp-demo .fp-body{ display:flex; flex-direction:column; gap:10px; padding:15px 30px; }
+
+  .fp-demo .fp-speech-line{ display:flex; justify-content:flex-end; }
+  .fp-demo .fp-my-bubble{ background:var(--color-primitive-gray-100); border-radius:15px; padding:7px 10px; }
+  .fp-demo .fp-my-bubble span{ font-size:var(--font-size-15); color:#222; letter-spacing:-0.5px; }
+
+  .fp-chat-item{ display:flex; align-items:flex-start; gap:8px; }
+  .fp-chat-avatar{ position:relative; width:32px; height:32px; border-radius:100px; flex-shrink:0; }
+  .fp-chat-avatar img.avatar-img{ width:32px; height:32px; border-radius:100px; object-fit:cover; display:block; }
+  .fp-chat-content{ display:flex; flex-direction:column; }
+  .fp-chat-info-top{ display:flex; align-items:center; gap:10px; height:20px; }
+  .fp-chat-name{ font-size:var(--font-size-15); font-weight:500; color:#222; letter-spacing:-0.5px; }
+  .fp-chat-time{ font-size:var(--font-size-10); color:var(--gray-600); letter-spacing:-0.3px; }
+  .fp-chat-text{ display:flex; flex-direction:column; gap:10px; padding:8px 0 3px; }
+  .fp-chat-text .sub{ font-size:var(--font-size-12); line-height:15px; color:var(--gray-600); letter-spacing:-0.5px; }
+  .fp-chat-text .main{ font-size:var(--font-size-14); color:#222; letter-spacing:-0.5px; line-height:1.75; white-space:pre-line; margin:0; }
+
+  .fp-answer-bottom{
+    display:flex; align-items:center; justify-content:space-between; gap:7px;
+    padding:5px 0; margin-top:5px; border-top:1px solid var(--border-default);
+  }
+  .fp-answer-actions{ display:flex; align-items:center; gap:7px; }
+  .fp-btn-content-use{ width:20px; height:20px; border-radius:3px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .fp-btn-content-use img{ width:18px; height:18px; }
+  .fp-btn-content-use:hover, .fp-btn-content-use.hover{ background:var(--button-hover,rgba(0,0,0,0.05)); }
+
+  .fp-tooltip-demo{ position:relative; display:inline-flex; align-items:center; justify-content:center; padding:5px 7px; background:rgba(0,0,0,0.7); border-radius:4px; }
+  .fp-tooltip-demo span{ font-size:var(--font-size-12); font-weight:500; color:#fff; letter-spacing:-0.5px; }
+  .fp-tooltip-demo::after{
+    content:""; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
+    border-width:4px 4px 0 4px; border-style:solid; border-color:rgba(0,0,0,0.7) transparent transparent transparent;
+  }
+
+  /* ============ Aside (우측 사이드 패널) — side type ============ */
+  .aside-panel{
+    width:425px; height:1034px; flex-shrink:0; box-sizing:border-box;
+    display:flex; flex-direction:column; align-items:stretch;
+    padding-top:20px;
+    background:var(--background-surface,#fff);
+    border:1px solid var(--border-default);
+    border-radius:15px;
+    position:relative; overflow:hidden; z-index:1;
+  }
+  /* 접힘 상태 (Figma node 964:27528) — 폭만 45px로 줄고 내부 콘텐츠는 전부 숨김.
+     .aside-collapse는 right:15px 기준이라 폭이 바뀌어도 위치 계산이 그대로 맞음 */
+  .aside-panel.is-collapsed{width:45px;}
+  /* 접힘 상태 — Figma 원본에서 top-section/body 모두 visible:false.
+     카탈로그 데모는 별도 마크업으로 예시를 보여주지만, 실제 화면에서 JS로
+     같은 aside-panel을 토글할 때는 이 규칙이 있어야 내부 콘텐츠가 잘리지 않고 숨겨진다. */
+  .aside-panel.is-collapsed .aside-top-section,
+  .aside-panel.is-collapsed .aside-body{display:none;}
+
+  /* Figma: layoutPositioning ABSOLUTE (x:394, y:12 / 부모 425 기준 right:15px) */
+  .aside-collapse{
+    position:absolute; top:12px; right:15px; z-index:1;
+    width:16px; height:16px; border-radius:var(--component-button-radius,5px);
+    display:flex; align-items:center; justify-content:center; gap:1px;
+    cursor:pointer;
+  }
+  .aside-collapse img{display:block;}
+  .aside-collapse:hover{background:var(--color-primitive-gray-100);}
+
+  /* --- top-section --- */
+  .aside-top-section{width:100%; flex-shrink:0;}
+  .aside-top-inner{
+    display:flex; flex-direction:column; align-items:flex-start;
+    padding:20px 15px 10px;
+  }
+  .aside-top-inner.type-channel{gap:25px;}   /* Figma: 채널 지식 */
+  .aside-top-inner.type-ai{gap:5px;}         /* Figma: AI 도우미 */
+  .aside-top-row{
+    display:flex; align-items:flex-start; gap:5px; width:100%;
+  }
+  .aside-top-row .aside-title-slot{flex:1; min-width:0;}
+  .aside-title{
+    font-size:var(--font-size-14); font-weight:600; line-height:1.3;
+    letter-spacing:var(--typography-letter-spacing-basic); color:#000;
+  }
+  /* 상단 참조 파일명 (AI 도우미) */
+  .aside-top-file{display:flex; align-items:center; gap:4px;}
+  .aside-top-file img{width:16px; height:16px; display:block; flex-shrink:0;}
+  .aside-top-file span{
+    font-size:var(--font-size-12); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+    color:var(--typography-text-basic,#222);
+  }
+
+  /* --- top-util (AI 도우미) --- */
+  .aside-top-util{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    padding:0 15px; width:100%;
+  }
+  .aside-util-group{display:flex; align-items:center; gap:10px;}
+  .btn-text{
+    display:inline-flex; align-items:center; gap:2px; padding:3px;
+    border-radius:var(--component-button-radius,5px); cursor:pointer;
+  }
+  .btn-text:hover{background:var(--component-button-hover,rgba(0,0,0,0.05));}
+  .btn-text img{width:16px; height:16px; display:block; flex-shrink:0;}
+  .btn-text span{
+    font-size:var(--font-size-11); font-weight:400; line-height:1.3;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-basic,#222);
+  }
+  .aside-timer{
+    display:inline-flex; align-items:center; justify-content:center; padding:3px 5px;
+    border:1px solid var(--border-default); border-radius:var(--component-button-radius,5px);
+  }
+  .aside-timer span{
+    font-size:var(--font-size-11); font-weight:600; line-height:1.3;
+    letter-spacing:var(--typography-letter-spacing-basic); color:#000;
+  }
+
+  /* --- body (채널 지식) --- */
+  .aside-body{flex:1; min-height:0; display:flex; flex-direction:column; overflow-y:auto; min-width:423px;}
+  .aside-file-group{
+    display:flex; flex-direction:column; align-items:stretch; gap:10px;
+    padding:15px 15px 30px;
+  }
+  .afg-title{display:flex; align-items:center; gap:5px;}
+  .afg-title > span:first-child{
+    font-size:var(--font-size-12); font-weight:500; line-height:1.3;
+    letter-spacing:var(--typography-letter-spacing-basic); color:#000;
+  }
+  .afg-title .afg-count{
+    font-size:var(--font-size-11); font-weight:700; line-height:1.3;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-weak,#626b7a);
+  }
+  .aside-file-list{display:flex; flex-direction:column; align-items:stretch; gap:5px;}
+  .aside-file-item{
+    display:flex; flex-direction:column; align-items:stretch;
+    padding:5px; border-radius:var(--component-button-radius,5px);
+    background:var(--color-primitive-white-50,#fbfbfb);
+  }
+  .aside-file-item.link-type{padding:5px 10px;}
+  .afi-basic{display:flex; align-items:flex-end; justify-content:space-between; gap:11px;}
+  .afi-info{display:flex; align-items:flex-end; gap:11px; min-width:0;}
+  .afi-name{display:flex; align-items:center; gap:4px; min-width:0;}
+  .afi-name img{width:16px; height:16px; display:block; flex-shrink:0;}
+  .afi-name span{
+    font-size:var(--font-size-13); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+    color:var(--typography-text-basic,#222);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .afi-size{
+    font-size:var(--font-size-11); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+    color:var(--color-primitive-gray-500,#808897); flex-shrink:0;
+  }
+  .afi-util{width:16px; height:16px; flex-shrink:0;}
+  .afi-meta{
+    display:flex; align-items:center; gap:7px; padding-left:20px;
+    font-size:var(--font-size-10); font-weight:500; letter-spacing:var(--typography-letter-spacing-basic);
+    color:var(--typography-text-weak,#626b7a);
+  }
+  .aside-file-item.link-type .afi-meta{padding-left:0;}
+
+  /* --- chat-wrap (AI 도우미) --- */
+  .aside-chat-wrap{
+    flex:1; min-height:0; overflow-y:auto;
+    display:flex; flex-direction:column; align-items:stretch; gap:10px;
+    padding:30px 15px;
+  }
+  .aside-speech-line{display:flex;}
+  .aside-speech-line.mine{justify-content:flex-end;}
+  .aside-speech-line.ai{justify-content:flex-start;}
+  .aside-bubble-mine{
+    padding:7px 10px; border-radius:var(--component-ai-chatbot-radius,15px);
+    background:var(--component-ai-chatbot-bubble,#f3f4f6);
+    font-size:var(--font-size-13); font-weight:400; line-height:1.5;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-basic,#222);
+  }
+  .aside-bubble-ai{
+    flex:1; padding:7px 10px;
+    font-size:var(--font-size-13); font-weight:400; line-height:1.5;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-basic,#222);
+  }
+
+  /* --- speech-line (대화 말풍선, 공용 독립 컴포넌트 — Figma node 1015:19527) --- */
+  .speech-line{display:flex; width:100%;}
+  .speech-line.mine{justify-content:flex-end;}
+  .speech-line.ai{justify-content:flex-start;}
+  .speech-my_bubble{
+    padding:10px 12px; border-radius:var(--component-ai-chatbot-radius,15px);
+    background:var(--component-ai-chatbot-bubble,#f3f4f6);
+    font-size:var(--font-size-13); font-weight:400; line-height:1.5;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-basic,#222);
+  }
+  .speech-ai{
+    padding:7px 10px;
+    font-size:var(--font-size-13); font-weight:400; line-height:1.5;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-basic,#222);
+  }
+
+  /* --- chat-item (아바타+이름+시간+본문, 공용 독립 컴포넌트 — Figma node 1079:27804) --- */
+  .chat-item{display:flex; gap:8px; align-items:flex-start;}
+  .chat-item .chat-content{display:flex; flex-direction:column; gap:0; align-items:flex-start;}
+  .chat-item .chat-info-top{display:flex; align-items:center; gap:10px; height:20px;}
+  .chat-item .chat-name{font-size:var(--font-size-15); font-weight:500; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+  .chat-item .chat-time{font-size:var(--font-size-10); font-weight:400; letter-spacing:-0.3px; color:var(--gray-600);}
+  .chat-item .chat-text{margin:0; font-size:var(--font-size-14); font-weight:400; line-height:1.7; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+  .chat-item .chat-text p{margin:0;}
+
+  /* --- chat input (AI 도우미) --- */
+  .aside-chat-bottom{
+    flex-shrink:0; display:flex; flex-direction:column; align-items:stretch; gap:7px;
+    padding:30px 15px;
+  }
+  .aside-chat-input{
+    display:flex; align-items:center; gap:10px; padding:5px 10px; box-sizing:border-box;
+    background:var(--background-surface,#fff);
+    border:1px solid var(--border-default); border-radius:100px;
+    box-shadow:0 0 5px rgba(0,0,0,0.08);
+  }
+  .aside-chat-input .aci-align{display:flex; align-items:center; gap:10px; flex:1; min-width:0; padding:0 15px;}
+  .aside-chat-input .aci-text{
+    flex:1; min-width:0; height:32px; display:flex; align-items:center;
+    font-size:var(--font-size-13); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#000;
+  }
+  .aside-chat-input .aci-send{
+    width:30px; height:30px; flex-shrink:0; border-radius:100px;
+    background:var(--black-900); display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .aside-chat-input .aci-send img{width:24px; height:24px; display:block;}
+
+  /* --- no-data (채널 파일 — 등록된 파일 없음) --- */
+  .no-data-wrap{
+    flex:1; min-height:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; box-sizing:border-box;
+  }
+  .no-data{
+    display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px;
+  }
+  .no-data-icon{width:24px; height:24px; display:flex; align-items:center; justify-content:center;}
+  .no-data-icon img{width:24px; height:24px; display:block;}
+  .no-data-title{
+    font-size:var(--font-size-14); font-weight:600; text-align:center;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-weak,#626b7a);
+  }
+  .no-data-sub{
+    font-size:var(--font-size-12); font-weight:500; text-align:center; line-height:1.35;
+    letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-text-weak,#626b7a);
+  }
+
+  /* Aside 섹션 내부 — variant(패널 종류)별 서브 그룹 */
+  .aside-variant-block{margin-top:28px; padding-top:28px; border-top:1px dashed var(--border-default);}
+  .aside-variant-block:first-of-type{margin-top:0; padding-top:0; border-top:none;}
+  .aside-variant-label{
+    font-size:var(--font-size-13); font-weight:600; letter-spacing:-0.3px;
+    color:var(--black-900); margin-bottom:6px;
+  }
+  .aside-variant-block .component-desc{margin-bottom:16px;}
+
+/* ============================================================
+ * 아래부터는 Figma 페이지 "test" (node 777:16343)에서 복원한 컴포넌트
+ * overflow-menu · btn-enter · ipt-chatting · toggle-item/toggle-group ·
+ * ico-AI-reference — Dev Mode MCP 미연결로 use_figma(plugin API)로 실측
+ * ============================================================ */
+
+/* ---------- overflow-menu ---------- */
+/* 2026-09-15 — 제품 화면의 .px-row-menu 를 실측해 그대로 옮김.
+   기존 Figma 기준값과 달랐던 것: radius 10→12px · 컨테이너 여백 없음→8px ·
+   너비 138→150px(min-width) · 항목 여백 13/15px→0 8px(높이 32px, radius 5px) ·
+   글자 12→13px · 아이콘 16→15px · 항목 사이 구분선 있음→없음
+   ★ 제품은 아이콘을 인라인 <svg stroke="currentColor">로 넣어 글자색을 따라간다.
+     이 라이브러리는 <img src="assets/*.svg">라 색이 안 바뀌므로 두 방식을 모두 지원한다. */
+.overflow-menu-demo{
+  display:inline-flex; flex-direction:column; align-items:stretch;
+  background:var(--color-primitive-white-900,#fff);
+  border-radius:12px; padding:8px;
+  box-shadow:0 0 5px rgba(0,0,0,0.15);
+  min-width:150px; box-sizing:border-box;
+}
+.overflow-menu-item{
+  display:flex; align-items:center; gap:5px;
+  width:100%; height:32px; padding:0 8px; border-radius:5px;
+  font-size:var(--font-size-13); line-height:normal; color:var(--black-900);
+  text-align:left; white-space:nowrap; cursor:pointer;
+}
+.overflow-menu-item:hover{background:rgba(0,0,0,0.05);}
+.overflow-menu-item img,
+.overflow-menu-item svg{flex:0 0 auto; width:15px; height:15px; display:block;}
+.overflow-menu-item svg{stroke:currentColor;}
+/* 변형 — 제품에 있는 것 (2026-09-15 실측) */
+.overflow-menu-item.is-danger,
+.overflow-menu-item.is-danger span{color:var(--red-500,#ef4444);}
+.overflow-menu-item.is-danger img{filter:brightness(0) saturate(100%) invert(45%) sepia(64%) saturate(3234%) hue-rotate(336deg) brightness(99%) contrast(94%);}
+.overflow-menu-item.is-disabled{opacity:0.4; cursor:default;}
+.overflow-menu-item.is-disabled:hover{background:none;}
+.overflow-menu-item.is-picked{background:var(--color-primitive-gray-100,#f3f4f6); font-weight:600;}
+.overflow-menu-item.is-picked:hover{background:var(--border-default,#e5e7eb);}
+/* 위로 열리는 변형 — 제품의 .px-row-menu.up */
+.overflow-menu-demo.is-up{margin-bottom:28px;}
+.overflow-menu-item span{font-size:var(--font-size-12); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+/* ---------- btn-enter (단독 발송 버튼) ---------- */
+.btn-enter-demo{
+  width:35px; height:35px; border-radius:100px; flex-shrink:0;
+  background:var(--black-900);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+.btn-enter-demo.size-sm{width:30px; height:30px;}
+.btn-enter-demo img{width:24px; height:24px; display:block;}
+
+/* ---------- ipt-chatting (채팅 입력창 정식 컴포넌트) ---------- */
+.ipt-chatting-demo{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:#fff; border:1px solid var(--border-default);
+  border-radius:100px; box-shadow:0 0 5px rgba(0,0,0,0.08);
+  box-sizing:border-box; width:100%;
+}
+.ipt-chatting-demo.size-big{padding:5px 10px;}
+.ipt-chatting-demo.size-small{padding:5px 15px;}
+.ipt-chatting-demo .ipt-align{display:flex; align-items:center; gap:10px; flex:1; min-width:0;}
+.ipt-chatting-demo .btn-ipt-option{width:35px; height:35px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.ipt-chatting-demo .btn-ipt-option img{width:15px; height:15px;}
+.ipt-chatting-demo .ipt-inner{flex:1; min-width:0; height:40px; display:flex; align-items:center; gap:10px;}
+.ipt-chatting-demo.size-small .ipt-inner{height:32px;}
+.ipt-chatting-demo .ipt-inner span:not(.ipt-mention-tag){font-size:var(--font-size-15); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:var(--typography-placeholder,#a8afbc); white-space:nowrap;}
+.ipt-chatting-demo.size-small .ipt-inner span:not(.ipt-mention-tag){font-size:var(--font-size-13); color:#000;}
+
+/* ---------- ipt-chatting 응용형 (참고파일 칩 + AI참고 버튼 + @ 멘션) ---------- */
+/* Figma: page "test" (777:16343) · node 869:9700 · Dev Mode MCP 미연결 → use_figma(plugin API) 실측 */
+.ipt-chatting-demo.with-reference{
+  flex-direction:column; align-items:stretch;
+  padding:7px 10px 5px 10px; border-radius:15px;
+}
+.ipt-chatting-demo.with-reference .ipt-align{
+  flex-direction:column; align-items:stretch; gap:2px; width:100%;
+}
+.ipt-ref-row{display:flex; flex-wrap:wrap; align-items:center; gap:3px;}
+.ipt-ref-chip{
+  display:inline-flex; align-items:center; padding:2px 5px; border-radius:7px;
+  background:var(--color-primitive-blue-10); font-size:var(--font-size-11); font-weight:400;
+  letter-spacing:var(--typography-letter-spacing-basic); color:#000; white-space:nowrap;
+}
+.ipt-main-row{display:flex; align-items:center; gap:10px; width:100%;}
+.ipt-mention-tag{
+  display:inline-flex; align-items:center; padding:0 3px; border-radius:5px;
+  background:rgba(132,10,254,0.05); color:var(--color-primitive-purple-900);
+  font-size:var(--font-size-15); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+  flex-shrink:0; white-space:nowrap;
+}
+
+/* ---------- toggle-item / toggle-group ---------- */
+.toggle-item-demo{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:4px 5px; border-radius:5px; cursor:pointer;
+  font-size:var(--font-size-12); letter-spacing:var(--typography-letter-spacing-basic);
+}
+.toggle-item-demo.state-default{background:var(--color-primitive-gray-100); color:var(--gray-600); font-weight:500;}
+.toggle-item-demo.state-active{background:var(--black-900); color:#fff; font-weight:600;}
+.toggle-group-demo{display:inline-flex; flex-direction:column; gap:3px; align-items:stretch; width:fit-content;}
+.toggle-group-demo .toggle-item-demo{width:100%; box-sizing:border-box;}
+
+/* ---------- ico-AI-reference ---------- */
+/* 실동작: 마우스오버 시 width 전환으로 라벨 노출(Hover), 클릭 시 .is-active 토글로 참고파일 개수 표시(Active) */
+/* display:none↔flex 토글은 transition 불가 → width/opacity 전환 패턴 사용 (common.js: toggleAiRefBtn) */
+.ico-ai-reference-demo{
+  display:inline-flex; align-items:center; gap:4px;
+  border-radius:100px; border:1px solid var(--border-default);
+  background:var(--color-primitive-white-50,#fbfbfb);
+  height:35px; width:35px; padding:3px 9px; box-sizing:border-box;
+  justify-content:flex-start; overflow:hidden; cursor:pointer;
+  transition:width .28s cubic-bezier(.4,0,.2,1), padding .28s cubic-bezier(.4,0,.2,1), border-color .2s ease;
+}
+.ico-ai-reference-demo img{width:17px; height:20px; display:block; flex-shrink:0;}
+.ico-ai-reference-demo span{
+  font-size:var(--font-size-11); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+  color:#222; white-space:nowrap; opacity:0; transition:opacity .16s ease;
+}
+.ico-ai-reference-demo span strong{font-weight:700;}
+
+.ico-ai-reference-demo:hover,
+.ico-ai-reference-demo.state-hover{
+  width:auto; padding:3px 10px; justify-content:flex-start;
+}
+.ico-ai-reference-demo:hover span,
+.ico-ai-reference-demo.state-hover span{opacity:1; transition:opacity .2s ease .1s;}
+
+.ico-ai-reference-demo.is-active,
+.ico-ai-reference-demo.state-active{
+  width:auto; padding:3px 10px; justify-content:flex-start; border-color:var(--brand-primary);
+}
+.ico-ai-reference-demo.is-active span,
+.ico-ai-reference-demo.state-active span{opacity:1; color:var(--brand-primary); font-weight:600; transition:opacity .2s ease .1s;}
+
+/* ---------- ipt-utilList (문서 등록/선택 드롭다운) ---------- */
+/* Figma: page "test" (777:16343) · node 869:9637(전체) · 869:9660(바로 등록 액션 3종) · 227:5908(파일 아이템, page "화면") */
+.util-list-section{display:flex; flex-direction:column; align-items:stretch; gap:10px;}
+.util-list-section.bordered{border-top:1px solid var(--color-primitive-gray-100);}
+.util-list-title{
+  padding:15px 15px 0; font-size:var(--font-size-11); font-weight:500;
+  letter-spacing:var(--typography-letter-spacing-basic); color:var(--gray-600);
+}
+.util-list-body{display:flex; flex-direction:column; align-items:stretch; padding:0 10px 15px 10px;}
+.util-list-item{
+  display:flex; align-items:center; gap:5px; padding:0 5px; height:32px;
+  border-radius:5px; cursor:pointer; box-sizing:border-box;
+}
+.util-list-item.action-type{gap:3px;}   /* Figma: ico-slot itemSpacing 3px (파일/체크박스 아이템의 5px와 다름) */
+.util-list-item:hover, .util-list-item.hover{background:var(--component-button-hover,rgba(0,0,0,0.05));}
+.util-list-desc{
+  font-size:var(--font-size-13); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#222;
+}
+.util-action-icon{width:16px; height:16px; flex-shrink:0; display:block;}
+.util-checkbox{width:20px; height:20px; flex-shrink:0; display:block;}
+.util-list-filename{
+  font-size:var(--font-size-13); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#222;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.util-list-item.file-type.checked .util-list-filename{font-weight:600;}
+
+/* ============================================================
+ * 아래부터는 "협업AI답변" 화면(node 880:11468) 제작 과정에서
+ * 새로 필요해진 재사용 컴포넌트 — Dev Mode MCP 미연결로 use_figma(plugin API) 실측
+ * ============================================================ */
+
+/* ---------- tbl (조건 비교표) — semantic <table> ---------- */
+.tbl-table{width:100%; border-collapse:collapse;}
+.tbl-table th{
+  background:var(--color-primitive-gray-100); text-align:left;
+  font-size:var(--font-size-11); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic);
+  color:#222; padding:5px 10px;
+  border-top:1px solid var(--border-default); border-bottom:1px solid var(--border-default);
+}
+.tbl-table td{
+  background:#fff; vertical-align:top; padding:14px 9px;
+  border-top:1px solid var(--border-default);
+  font-size:var(--font-size-13); font-weight:500; letter-spacing:var(--typography-letter-spacing-basic); color:#222;
+}
+.tbl-table td.tbl-td-desc{font-weight:400; line-height:1.5;}
+
+/* ============================================================
+ * AI 답변 콘텐츠 모음 (ai-answer-temp01~06, ai-contents-wrap)
+ * Figma: page "test"(777:16343), file dtZ0L6B9nDeN50L9ynWxCK
+ * ============================================================ */
+
+/* ---------- ai-contents-wrap (AI 답변 콘텐츠 공통 래퍼) ---------- */
+.ai-contents-wrap{display:flex; flex-direction:column; gap:10px; padding:15px 0;}
+
+/* ---------- ai-answer-summary (요약 카드, temp01) ---------- */
+.ai-answer-summary{
+  position:relative;
+  display:flex; flex-direction:column; gap:30px;
+  padding:15px; border-radius:15px;
+  background:var(--gray-50); border:1px solid var(--color-primitive-gray-100);
+}
+.ai-answer-summary .ai-con-body{display:flex; flex-direction:column; gap:20px;}
+.ai-answer-summary .ai-con-title{display:flex; align-items:center; gap:3px;}
+.ai-answer-summary .ai-con-title img{width:16px; height:16px; display:block;}
+.ai-answer-summary .ai-con-title span{font-size:var(--font-size-14); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic); color:#000;}
+.ai-answer-summary .ai-con-text{font-size:var(--font-size-14); font-weight:400; line-height:1.75; letter-spacing:var(--typography-letter-spacing-basic); color:#000;}
+.ai-answer-summary .btnGroup-ico-util{position:absolute; top:15px; right:15px; display:flex; align-items:center; gap:1px;}
+.ai-answer-summary .btn-ico-util{width:18px; height:18px; padding:2px; border-radius:3px; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+.ai-answer-summary .btn-ico-util:hover{background:var(--component-button-hover,rgba(0,0,0,.05));}
+.ai-answer-summary .btn-ico-util img{display:block;}
+
+/* ---------- ai-answer-note (인용/참고 안내, temp02) ---------- */
+.ai-answer-note{
+  background:var(--color-primitive-gray-100); border-left:2px solid var(--component-icon-basic);
+  padding:15px; font-size:var(--font-size-14); font-weight:400; line-height:1.55;
+  letter-spacing:var(--typography-letter-spacing-basic); color:#000;
+}
+
+/* ---------- ai-answer-warning (주의/경고, temp03) ---------- */
+.ai-answer-warning{
+  background:#fff; border-left:2px solid var(--red-500);
+  padding:15px; display:flex; flex-direction:column; gap:10px;
+}
+.ai-answer-warning .aw-title{display:flex; align-items:center; gap:3px;}
+.ai-answer-warning .aw-title img{width:14px; height:14px; display:block;}
+.ai-answer-warning .aw-title span{font-size:var(--font-size-14); font-weight:600; line-height:1.5; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+.ai-answer-warning .aw-text{font-size:var(--font-size-14); font-weight:400; line-height:1.55; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+/* ---------- ai-answer-list (핵심 내용 · 번호형, temp04-1) ---------- */
+.ai-answer-list{display:flex; flex-direction:column; gap:15px;}
+.ai-answer-list .al-title{font-size:var(--font-size-14); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic); color:#000;}
+.ai-answer-list .al-items{display:flex; flex-direction:column; gap:5px;}
+.ai-answer-list .al-item{display:flex; align-items:center; gap:7px;}
+.ai-answer-list .al-item .al-num{font-size:var(--font-size-14); font-weight:700; line-height:1.5; color:#222;}
+.ai-answer-list .al-item .al-text{font-size:var(--font-size-14); font-weight:400; line-height:1.5; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+/* ---------- ai-answer-list-term (핵심 내용 · 용어형, temp04-2) ---------- */
+.ai-answer-list-term{display:flex; flex-direction:column; gap:15px;}
+.ai-answer-list-term .al-title{font-size:var(--font-size-14); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic); color:#000;}
+.ai-answer-list-term .al-items{display:flex; flex-direction:column; gap:18px;}
+.ai-answer-list-term .al-item{display:flex; flex-direction:column; gap:5px;}
+.ai-answer-list-term .al-item .al-term{font-size:var(--font-size-14); font-weight:700; line-height:1.5; color:#222;}
+.ai-answer-list-term .al-item .al-desc{font-size:var(--font-size-14); font-weight:400; line-height:1.5; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+/* ---------- ai-answer-list-bullet (핵심 내용 · 불릿형, temp05) ---------- */
+.ai-answer-list-bullet{display:flex; flex-direction:column; gap:15px;}
+.ai-answer-list-bullet .al-title{font-size:var(--font-size-14); font-weight:600; letter-spacing:var(--typography-letter-spacing-basic); color:#000;}
+.ai-answer-list-bullet .al-items{display:flex; flex-direction:column; gap:5px;}
+.ai-answer-list-bullet .al-item{display:flex; align-items:center; gap:7px;}
+.ai-answer-list-bullet .al-item .al-dot{width:4px; height:4px; border-radius:50%; background:var(--component-icon-basic); flex-shrink:0;}
+.ai-answer-list-bullet .al-item .al-text{font-size:var(--font-size-14); font-weight:500; line-height:1.5; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+/* ---------- ai-answer-card (기본 카드, temp06) ---------- */
+.ai-answer-card{
+  display:flex; flex-direction:column; gap:20px;
+  padding:30px; border-radius:15px; background:#fff; border:1px solid var(--border-default);
+}
+.ai-answer-card .ac-title{font-size:var(--font-size-14); font-weight:600; color:#222;}
+.ai-answer-card .ac-text{font-size:var(--font-size-14); font-weight:400; line-height:1.7; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+
+/* ---------- tag-node (인라인 코드 스타일 태그) ---------- */
+.tag-node{
+  display:inline-flex; align-items:center; padding:2px 3px; border-radius:5px;
+  background:var(--color-primitive-gray-100);
+  font-family:"Google Sans Code", "Pretendard Variable", monospace;
+  font-size:var(--font-size-12); font-weight:300; color:#222; white-space:nowrap;
+}
+
+/* ---------- ai-answer-morequestion (후속 질문 제안) ---------- */
+.ai-answer-morequestion{display:flex; flex-direction:column; gap:7px; padding:30px 0;}
+.ai-answer-morequestion .mq-title{
+  font-size:var(--font-size-11); font-weight:500; letter-spacing:var(--typography-letter-spacing-basic); color:#222;
+}
+.ai-answer-morequestion .mq-list{display:flex; flex-direction:column;}
+.ai-answer-morequestion .mq-item{
+  display:flex; align-items:center; gap:3px; padding:7px 5px;
+  border-top:1px solid var(--border-subtle); cursor:pointer;
+}
+.ai-answer-morequestion .mq-item img{width:16px; height:16px; flex-shrink:0; display:block;}
+.ai-answer-morequestion .mq-item span{
+  font-size:var(--font-size-12); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:#222;
+}
+
+/* ---------- ai-start-question (AI 채팅 첫 진입 시 추천 질문 칩) ---------- */
+.ai-start-question .question-line{display:flex; flex-wrap:wrap; gap:10px;}
+.main-question{
+  display:inline-flex; align-items:center; gap:5px; box-sizing:border-box;
+  padding:15px; border-radius:15px; background:#fff; border:1px solid rgba(0,0,0,.05);
+  box-shadow:0 2px 3px rgba(91,118,238,.08), 0 0 17px rgba(77,122,237,.15);
+  cursor:pointer; white-space:nowrap;
+}
+.main-question:hover{background:var(--color-primitive-gray-100);}
+.main-question .mq-emoji{font-size:var(--font-size-13); line-height:1.3; letter-spacing:var(--typography-letter-spacing-basic); flex-shrink:0;}
+.main-question .mq-text{font-size:var(--font-size-13); font-weight:400; line-height:1.3; letter-spacing:var(--typography-letter-spacing-basic); color:#222;}
+
+/* ---------- img-list (이미지 썸네일 목록, 첨부 이미지 미리보기) ---------- */
+.img-list{display:flex; gap:7px; flex-wrap:wrap;}
+.img-thumb{width:90px; height:74px; border-radius:6px; background:var(--color-primitive-gray-100); flex-shrink:0; object-fit:cover; display:block;}
+
+/* ---------- btn-top-util (메인 콘텐츠 상단바 유틸 아이콘 버튼) ---------- */
+.btn-top-util{
+  width:20px; height:20px; display:flex; align-items:center; justify-content:center;
+  border-radius:4px; cursor:pointer; flex-shrink:0;
+}
+.btn-top-util img{display:block;}
+.btn-top-util:hover{background:var(--component-button-hover,rgba(0,0,0,0.05));}
+
+/* ---------- 범용 16x16 아이콘 유틸(개별 컴포넌트화 불필요한 1회성 아이콘용) ---------- */
+.icon-16{width:16px; height:16px; display:block; flex-shrink:0;}
+
+/* ---------- chat-ai-reference (채팅 입력창 내 참고파일 인라인 태그) ---------- */
+/* Figma node 955:26043 (page "test" 777:16343, file dtZ0L6B9nDeN50L9ynWxCK)
+   Hover: node 958:26322 — 우측에 그라데이션 페이드 + 삭제(X) 버튼 노출 */
+.chat-ai-reference{
+  display:inline-flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  padding:3px 5px; border-radius:5px;
+  background:var(--color-primitive-gray-100); font-size:var(--font-size-11); font-weight:400;
+  letter-spacing:var(--typography-letter-spacing-basic); color:#000; white-space:nowrap;
+}
+.chat-ai-reference .ref-remove{
+  display:none; align-items:center; position:absolute; top:50%; right:5px;
+  transform:translateY(-50%); padding-left:15px;
+  background:linear-gradient(to right, rgba(243,244,246,0) 2%, var(--color-primitive-gray-100) 52%);
+}
+.chat-ai-reference:hover .ref-remove,
+.chat-ai-reference.hover .ref-remove{display:flex;}
+.chat-ai-reference .ico-close{
+  width:10px; height:10px; border-radius:2px; background:var(--black-900);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+}
+.chat-ai-reference .ico-close img{width:6px; height:6px; display:block;}
+
+/* ---------- input-ai (AI 대화 입력창 · 지식문서 기반 응답 카드형) ---------- */
+/* Figma: page "test" (777:16343, file dtZ0L6B9nDeN50L9ynWxCK) · node 955:26207
+   상태: 입력 전(node 955:26096, 안내문구) / 텍스트 입력 후(node 955:26043, AI 참고 배지+참고파일 칩) */
+.input-ai-demo{
+  display:flex; flex-direction:column; align-items:stretch; gap:3px;
+  padding-top:5px; background:#fff; border:1px solid var(--border-default);
+  border-radius:var(--component-ai-chatbot-radius,15px); width:100%;
+}
+.input-ai-top{padding:0 10px; overflow:hidden;}
+.input-ai-top-inner{display:flex; align-items:center; gap:5px; flex-wrap:wrap;}
+
+.ipt-ai-helper{
+  font-size:var(--font-size-12); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+  color:var(--gray-600);
+}
+.ipt-ai-ref-chips{display:flex; align-items:center; gap:5px; flex-wrap:wrap;}
+
+/* ---------- ipt-ai-ref-btn (ico-AI-reference 30px 변형 · Default/Hover/Active) ---------- */
+/* Figma node 958:26260 (page "test" 777:16343, file dtZ0L6B9nDeN50L9ynWxCK) */
+/* 실동작: :hover 전환 + 클릭 시 .is-active 토글(common.js: toggleAiRefBtn)로 "AI 참고 +N" 노출 */
+.ipt-ai-ref-btn{
+  display:inline-flex; align-items:center; gap:5px; height:30px; border-radius:100px;
+  background:var(--color-primitive-white-50,#fbfbfb); border:1px solid var(--border-default);
+  box-sizing:border-box; width:30px; padding:3px 9px; justify-content:flex-start; overflow:hidden;
+  flex-shrink:0; cursor:pointer;
+  transition:width .26s cubic-bezier(.4,0,.2,1), padding .26s cubic-bezier(.4,0,.2,1), border-color .2s ease;
+}
+.ipt-ai-ref-btn img{width:15px; height:18px; display:block; flex-shrink:0;}
+.ipt-ai-ref-btn span{
+  font-size:var(--font-size-11); letter-spacing:var(--typography-letter-spacing-basic); white-space:nowrap;
+  color:var(--black-900); font-weight:400; opacity:0; transition:opacity .14s ease;
+}
+.ipt-ai-ref-btn span strong{font-weight:700; display:none;} /* 참고파일 개수 배지 — 파일 참조 선택 기능 붙기 전까지 우선 숨김 */
+
+.ipt-ai-ref-btn:hover,
+.ipt-ai-ref-btn.state-hover{
+  width:auto; padding:3px 9px; justify-content:flex-start;
+}
+.ipt-ai-ref-btn:hover span,
+.ipt-ai-ref-btn.state-hover span{opacity:1; transition:opacity .18s ease .08s;}
+
+.ipt-ai-ref-btn.is-active,
+.ipt-ai-ref-btn.state-active{
+  width:auto; padding:3px 9px; justify-content:flex-start; border-color:var(--brand-primary);
+}
+.ipt-ai-ref-btn.is-active span,
+.ipt-ai-ref-btn.state-active span{opacity:1; color:var(--brand-primary); font-weight:600; transition:opacity .18s ease .08s;}
+
+/* 텍스트 입력 영역 카드 (항상 Purple/900 보더) */
+.ipt-ai-box{
+  display:flex; flex-direction:column; align-items:stretch; gap:15px; width:100%;
+  padding:10px; background:#fff; border:1px solid var(--color-primitive-purple-900);
+  border-radius:var(--component-ai-chatbot-radius,15px);
+  box-shadow:0 0 2.5px rgba(0,0,0,0.1);
+}
+.ipt-ai-area{
+  display:flex; flex-wrap:wrap; align-items:center; align-content:flex-start; gap:4px;
+  min-height:60px; padding:5px; outline:none; cursor:text;
+  font-size:var(--font-size-15); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);
+  color:var(--black-900);
+}
+.ipt-ai-area:empty:before{
+  content:attr(data-placeholder); color:var(--typography-placeholder,#a8afbc);
+  pointer-events:none;
+}
+.ipt-ai-area .chat-ai-reference{flex-shrink:0;}
+.ipt-ai-util{display:flex; align-items:center; justify-content:space-between;}
+.ipt-ai-add-btn{
+  width:25px; height:25px; display:flex; align-items:center; justify-content:center;
+  border-radius:var(--component-button-radius,5px); flex-shrink:0; cursor:pointer;
+}
+.ipt-ai-add-btn img{width:20px; height:20px; display:block;}
+.ipt-ai-enter-btn{
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  border-radius:7px; flex-shrink:0; cursor:pointer;
+}
+.ipt-ai-enter-btn img{width:21px; height:21px; display:block;}
+.ipt-ai-enter-btn.state-default img{width:auto; height:auto;}
+.ipt-ai-enter-btn.state-default{background:transparent;}
+.ipt-ai-enter-btn.state-filled{background:var(--black-900);}
+
+/* ---------- input-wrap (사람 대화 전용 채팅 입력창) ---------- */
+/* Figma: page "test" (777:16343, file dtZ0L6B9nDeN50L9ynWxCK)
+   node 955:26137(입력 전) · node 955:26042(텍스트 입력 후, 참고파일 칩 포함)
+   input-ai(AI 전용, 보더 항상 Purple/900)와 달리 사람 간 대화용 — 보더 Border/Default 고정, btn-aiChat 토글 포함 */
+.iw-box{
+  display:flex; flex-direction:column; align-items:stretch; gap:5px; width:100%;
+  padding:10px; background:#fff; border:1px solid var(--border-default);
+  border-radius:var(--component-ai-chatbot-radius,15px);
+  box-shadow:0 0 2.5px rgba(0,0,0,0.1);
+}
+.iw-area{display:flex; align-items:flex-start; gap:10px; min-height:60px; padding:5px;}
+.iw-ref-group{display:flex; align-items:center; gap:3px; flex-shrink:0; flex-wrap:wrap;}
+.iw-area span.iw-text{flex:1; font-size:var(--font-size-15); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic);}
+.iw-area.state-default span.iw-text{color:var(--typography-placeholder,#a8afbc);}
+.iw-area.state-filled span.iw-text{color:var(--black-900);}
+.iw-util{display:flex; align-items:center; justify-content:space-between;}
+.iw-util-left{display:flex; align-items:center; gap:5px;}
+.btn-aiChat-demo{
+  display:inline-flex; align-items:center; justify-content:center; gap:2px;
+  width:68px; height:26px; border-radius:50px; flex-shrink:0; cursor:pointer;
+  background:#fff; border:1px solid var(--border-default);
+  font-size:var(--font-size-12); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);
+}
+.btn-aiChat-demo img{width:16px; height:16px; display:block; flex-shrink:0;}
+.iw-enter-btn{
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  border-radius:7px; flex-shrink:0; cursor:pointer;
+}
+.iw-enter-btn img{width:21px; height:21px; display:block;}
+.iw-enter-btn.state-default{background:transparent;}
+.iw-enter-btn.state-default img{width:auto; height:auto;}
+.iw-enter-btn.state-filled{background:var(--black-900);}
+
+/* ============================================================
+ * 신규 추가 컴포넌트 — components.zip 일괄 등록분
+ * gnb-menu-item / btn-basic·btn-primary / checkbox-label /
+ * btn-text·btn-text-group / source-chip
+ * ============================================================ */
+
+/* ---------- gnb-menu-item/main-top (콘텐츠 영역 상단바 — 공통 패밀리) ----------
+   콘텐츠 영역 최상단 바의 단일 컴포넌트 패밀리. 아래 2개 variant로 구성:
+   · type=channel → .gnb-menu-item-demo (Figma 실측, node 884:9630, 협업/채널·DM 화면)
+   · type=chat    → .chat-top-bar (아래 블록 참고, AI채팅형 화면, Figma 실측 아님)
+   두 variant 모두 "좌측 제목/식별 영역 + 우측 btn-top-util 유틸 아이콘, border-bottom"
+   구조를 공유하나 좌측 콘텐츠와 우측 아이콘 개수가 달라 별도 클래스로 유지함
+   (기존 4개 화면 파일에서 .chat-top-bar 클래스를 이미 참조 중이라 클래스명은 유지). */
+
+/* -- type=channel -- */
+.gnb-menu-item-demo{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:5px 15px; border-bottom:1px solid var(--border-default);
+}
+.gnb-menu-item-demo .btn-group{display:flex; align-items:center; gap:5px;}
+
+/* -- type=chat (원래 chat-top-bar로 별도 등록되었던 variant, 여기로 통합) --
+   PrixmAI_CREW_template_기본.html app-main 공통 shell 영역, AI 채팅형 화면 전체에서
+   공용으로 재사용되는 상단바(화면 조립 시 확정, Figma 실측 아님) */
+.chat-top-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  height:41px; padding:10px 15px; border-bottom:1px solid var(--border-default);
+  flex-shrink:0; box-sizing:border-box;
+}
+.chat-top-title{font-size:var(--font-size-14); font-weight:500; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+.chat-top-actions{display:flex; align-items:center; gap:5px;}
+
+/* ---------- btn-basic / btn-primary (범용 버튼 2종) ---------- */
+.btn-basic-demo, .btn-primary-demo{
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:var(--component-button-radius,5px); cursor:pointer;
+  font-weight:500; letter-spacing:var(--typography-letter-spacing-basic);
+  box-sizing:border-box;
+}
+.btn-basic-demo{background:#fff; border:1px solid var(--border-default); color:var(--black-900);}
+.btn-basic-demo.state-hover{border-color:#dadbdf; background:var(--component-button-hover,rgba(0,0,0,0.05));}
+.btn-basic-demo.state-disabled{opacity:0.4; cursor:default;}
+.btn-primary-demo{background:var(--brand-primary); border:1px solid var(--brand-primary); color:#fff;}
+.btn-primary-demo.state-hover{border-color:#235edf; background:linear-gradient(rgba(0,0,0,0.05),rgba(0,0,0,0.05)), var(--brand-primary);}
+.btn-primary-demo.state-disabled{opacity:0.4; cursor:default;}
+.btn-basic-demo.size-large, .btn-primary-demo.size-large{height:38px; padding:0 13px; font-size:var(--font-size-13);}
+.btn-basic-demo.size-medium, .btn-primary-demo.size-medium{height:32px; padding:0 10px; font-size:var(--font-size-13);}
+.btn-basic-demo.size-small{height:28px; padding:0 8px; font-size:var(--font-size-12);}
+.btn-primary-demo.size-small{height:28px; padding:0 6px; font-size:var(--font-size-12);}
+
+/* ---------- checkbox-label (체크박스 + 라벨 텍스트) ---------- */
+.checkbox-label-demo{display:inline-flex; align-items:center; gap:5px; cursor:pointer;}
+.checkbox-label-demo .input-checkbox{width:16px; height:16px; display:block; flex-shrink:0;}
+.checkbox-label-demo span{font-size:var(--font-size-13); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+
+/* ---------- btn-text / btn-text-group (아이콘+텍스트 소형 버튼) ---------- */
+.btn-text-demo{
+  display:inline-flex; align-items:center; gap:3px; padding:3px;
+  border-radius:var(--component-button-radius,5px); cursor:pointer;
+}
+.btn-text-demo img{width:16px; height:16px; display:block; flex-shrink:0;}
+.btn-text-demo span{font-size:var(--font-size-11); font-weight:400; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+.btn-text-demo.state-hover{background:var(--component-button-hover,rgba(0,0,0,0.05));}
+.btn-text-demo.state-disabled{opacity:0.4; cursor:default;}
+.btn-text-group-demo{display:flex; align-items:center; gap:15px;}
+.btn-text-divider{width:1px; height:8.5px; background:var(--border-default); flex-shrink:0;}
+
+/* ---------- source-chip (출처 표기 칩, ai-answer-bottom 내 사용) ---------- */
+.source-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px 4px 7px; border-radius:20px; background:var(--color-primitive-gray-100);
+}
+.source-chip .source-chip-label{display:flex; align-items:center; gap:5px;}
+.source-chip .source-chip-label img{width:16px; height:16px; display:block;}
+.source-chip .source-chip-label span{font-size:var(--font-size-11); font-weight:500; letter-spacing:var(--typography-letter-spacing-basic); color:var(--black-900);}
+.source-chip .source-chip-count{font-size:var(--font-size-11); font-weight:700; color:var(--black-900);}
+
+/* ============ card — 범용 카드 틀 (2026-09-15 신규) ============ */
+/* 라이브러리에 카드 틀이 없어 새로 만듦. 16-file-item 은 아이콘 중심 그리드라 결이 다름.
+   모서리 8px — 라이브러리 관례(작은 요소 5px / 모달 15px)의 중간값. */
+.card-demo{
+  display:flex; flex-direction:column; gap:8px;
+  background:#fff; border:1px solid var(--border-default,#e5e7eb);
+  border-radius:8px; padding:12px; box-sizing:border-box;
+  width:290px; cursor:pointer;
+}
+.card-demo:hover{border-color:var(--gray-500,#808897);}
+.card-demo.is-selected{border-color:var(--brand-primary,#2563eb);}
+.card-demo .card-head{display:flex; align-items:center; gap:4px;}
+.card-demo .card-head .card-spacer{margin-left:auto;}
+.card-demo .card-title{font-size:var(--font-size-14); font-weight:600; letter-spacing:-0.5px; color:var(--black-900);}
+.card-demo .card-desc{font-size:var(--font-size-12); color:var(--gray-600); letter-spacing:-0.5px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.card-demo .card-meta{font-size:var(--font-size-11); color:var(--gray-500); letter-spacing:-0.5px;}
+.card-demo .card-foot{display:flex; align-items:center; gap:5px; padding-top:8px;
+  border-top:1px solid var(--border-subtle,#f3f4f6);}
+.card-demo .card-foot .card-spacer{margin-left:auto;}
+
+/* ============ switch — 켜고 끄는 스위치 (2026-09-15 신규) ============ */
+/* 24-toggle-item 은 입력 모드 전환 칩이라 스위치가 아님. 자동화 활성/비활성에 필요해 새로 만듦. */
+.switch-demo{width:32px; height:18px; border-radius:100px; background:var(--gray-500,#808897);
+  position:relative; flex-shrink:0; cursor:pointer; transition:background .15s;}
+.switch-demo::after{content:""; position:absolute; top:2px; left:2px; width:14px; height:14px;
+  border-radius:100px; background:#fff; transition:left .15s;}
+.switch-demo.is-on{background:var(--status-active,#22c55e);}
+.switch-demo.is-on::after{left:16px;}
+.switch-demo.is-disabled{opacity:.4; cursor:default;}
+
+/* ============ 자동화 상태 배지 (2026-09-15 신규) ============ */
+/* 활성=초록 채움 · 비활성=회색 채움 · 설정 중=회색 테두리(채움 없음)
+   — 색만이 아니라 채움/테두리로도 갈려 색각 이상에서도 구분된다 (기능명세 1.8 / 2.20) */
+.state-badge{font-size:var(--font-size-11); font-weight:500; letter-spacing:-0.5px;
+  padding:3px 8px; border-radius:5px; flex-shrink:0; border:1px solid transparent;}
+.state-badge.is-active{background:#dcfce7; color:#15803d;}
+.state-badge.is-inactive{background:var(--color-primitive-gray-100,#f3f4f6); color:var(--gray-600,#626b7a);}
+.state-badge.is-draft{background:transparent; color:var(--gray-600,#626b7a); border-color:var(--border-default,#e5e7eb);}
+.meta-text{font-size:var(--font-size-12); color:var(--gray-500,#808897); letter-spacing:-0.5px;}
+
+/* ============ 자동화 목록형 행 (2026-09-15 신규) ============ */
+/* 표 형태. 34-tbl 과 별개로 목록 전용 — 카드형과 같은 정보를 한 줄로 */
+.wf-table{width:100%; border-collapse:collapse; font-size:var(--font-size-12); letter-spacing:-0.5px;}
+.wf-table th{text-align:left; font-weight:500; color:var(--gray-500,#808897);
+  padding:8px 10px; border-bottom:1px solid var(--border-default,#e5e7eb); white-space:nowrap;}
+.wf-table td{padding:10px; border-bottom:1px solid var(--border-subtle,#f3f4f6); color:var(--black-900); vertical-align:middle;}
+.wf-table tbody tr:hover{background:var(--gray-50,#f8fafc);}
+.wf-table .wf-name{font-size:var(--font-size-12); font-weight:500;}
+.wf-table .wf-cell-actions{display:flex; align-items:center; gap:5px; justify-content:flex-end;}
+
+/* 더보기는 평소 숨기고 호버·선택 시에만 (2026-09-15) — LNB 항목과 같은 방식 */
+.card-demo .btn-more-dot,
+.wf-table tbody tr .btn-more-dot{opacity:0; transition:opacity .12s;}
+.card-demo:hover .btn-more-dot,
+.card-demo.is-selected .btn-more-dot,
+.wf-table tbody tr:hover .btn-more-dot{opacity:1;}
+

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>화면 설명서</title>
+<!--
+  화면 설명서 — 시안 HTML 을 왼쪽 목록에서 고르면 화면과 **그 화면의 설명**을 같이 보여 줍니다.
+  기획 문서 대신 쓰는 도구입니다. 개발자·디자이너가 화면 하나하나를 이해할 수 있게
+  "언제 이 화면인가 · 무엇이 보이나 · 눌렀을 때 무슨 일이 나나 · 어떤 문구가 뜨나 · 규칙"을 옆에 답니다.
+
+  내용은 전부 `목록.js` 에 있습니다. 이 파일은 프로젝트와 무관하게 그대로 씁니다.
+-->
+<style>
+*{box-sizing:border-box;}
+body{margin:0; height:100vh; display:flex; font-family:"Pretendard Variable","Pretendard",-apple-system,sans-serif;
+  letter-spacing:-0.5px; color:#2a3445; font-size:13px; background:#f4f6fc;}
+/* 왼쪽 목록 */
+.side{width:250px; flex:0 0 250px; background:#fff; border-right:1px solid #e5e7eb; display:flex; flex-direction:column;}
+.s-hd{padding:16px 16px 12px;}
+.s-hd h1{margin:0 0 3px; font-size:15px; font-weight:700;}
+.s-hd .sub{font-size:11px; color:#808897; line-height:1.6;}
+/* 조작은 전부 왼쪽에 모은다 — 가운데 위 바는 없앴다(2026-09-20) */
+.s-bar{display:flex; flex-direction:column; gap:6px; padding:0 14px 12px; border-bottom:1px solid #eef0f3;}
+.s-bar button,.s-bar a{width:100%; height:28px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; cursor:pointer;
+  font-size:11px; font-family:inherit; color:#2a3445; display:inline-flex; align-items:center; justify-content:center;
+  gap:4px; text-decoration:none;}
+.s-bar button:hover,.s-bar a:hover{background:#f8fafc;}
+.s-bar button.on{background:#eef2ff; border-color:#c7d2fe; color:#235edf; font-weight:600;}
+.s-bar a.off{opacity:.4; pointer-events:none;} .s-bar button:disabled{opacity:.6; cursor:default;}
+[hidden]{display:none !important;}   /* 위 display 규칙이 hidden 을 덮지 않게 */
+.list{flex:1; min-height:0; overflow-y:auto; padding:0 0 20px;}
+/* 묶음 머리 — 눌러서 접었다 편다. 화면 하나가 한 묶음이고 그 아래가 상태들이다 */
+.grp{display:flex; align-items:center; gap:7px; padding:11px 14px; cursor:pointer; user-select:none;
+  border-top:1px solid #eef0f3; background:#fbfbfc;}
+.grp:first-child{border-top:0;}
+.grp:hover{background:#f3f5f9;}
+.grp .cv{width:9px; flex:0 0 9px; color:#a8afbc; font-size:9px; transition:transform .12s;}
+.grp.open .cv{transform:rotate(90deg);}
+.grp .gt{flex:1; font-size:12px; font-weight:700; color:#2a3445;}
+.grp .gc{font-size:11px; color:#a8afbc; font-weight:500;}
+.grp.has-on .gt{color:#235edf;}
+/* 묶음 안 — 왼쪽에 안내선을 둬 상하가 갈리게 */
+.kids{padding:4px 8px 8px 22px; position:relative;}
+.kids:before{content:""; position:absolute; left:14px; top:2px; bottom:8px; width:1px; background:#eef0f3;}
+.kids.fold{display:none;}
+.it{padding:7px 8px; border-radius:6px; cursor:pointer; position:relative;}
+.it:hover{background:rgba(0,0,0,.04);} .it.on{background:#eef2ff;}
+.it.on:before{content:""; position:absolute; left:-8px; top:8px; bottom:8px; width:2px; border-radius:1px; background:#235edf;}
+.it .nm{font-size:12px; font-weight:600; line-height:1.4;}
+.it.on .nm{color:#235edf;}
+.it .ds{font-size:11px; color:#808897; margin-top:2px; line-height:1.5;}
+/* 가운데 — 화면 */
+.main{flex:1; min-width:0; display:flex; flex-direction:column;}
+.frame{flex:1; min-height:0; background:#fff;} .frame iframe{width:100%; height:100%; border:0; display:block;}
+.mid{flex:1; display:flex; align-items:center; justify-content:center; color:#808897; text-align:center; line-height:1.9;
+  padding:0 40px;}
+.mid code{background:#eef0f3; padding:2px 6px; border-radius:4px; font-size:12px;}
+/* 오른쪽 — 설명 */
+.doc{width:400px; flex:0 0 400px; background:#fff; border-left:1px solid #e5e7eb; overflow-y:auto; padding:18px 20px 40px;}
+.doc.hide{display:none;}
+.doc h2{margin:0 0 2px; font-size:15px; font-weight:700;}
+.doc .lead{font-size:12px; color:#626b7a; line-height:1.8; margin-bottom:4px;}
+.doc .sec{margin-top:20px;}
+.doc .sec > h3{margin:0 0 7px; font-size:11px; font-weight:700; color:#808897; letter-spacing:0;}
+.doc ul{margin:0; padding-left:16px;} .doc li{font-size:12px; line-height:1.85; margin-bottom:2px;}
+.doc table{width:100%; border-collapse:collapse; font-size:12px;}
+.doc td{padding:7px 8px; border-top:1px solid #eef0f3; vertical-align:top; line-height:1.7;}
+.doc tr:first-child td{border-top:0;}
+.doc td.k{width:36%; font-weight:600; white-space:nowrap;}
+.doc .say{background:#fbfbfb; border:1px solid #eef0f3; border-radius:6px; padding:8px 10px; font-size:12px;
+  line-height:1.7; margin-bottom:6px;}
+.doc .say b{display:block; font-size:11px; color:#808897; font-weight:600; margin-bottom:3px;}
+.doc .why{font-size:11px; color:#808897; line-height:1.8; border-top:1px solid #eef0f3; margin-top:20px; padding-top:12px;}
+.doc code{background:#f3f4f6; padding:1px 5px; border-radius:4px; font-size:11px;}
+.doc .warn{color:#b45309;}
+/* 출처 띠 — 이 설명이 어디서 왔는지. 사람이 확인하기 전에는 그대로 공유되면 안 된다 */
+.doc .from{border-radius:6px; padding:8px 10px; font-size:11px; line-height:1.7; margin-bottom:14px;}
+.doc .from.draft{background:#fffbeb; border:1px solid #fde68a; color:#7c5e1a;}
+.doc .from.ok{background:#f0fdf4; border:1px solid #bbf7d0; color:#166534;}
+.doc .from b{font-weight:700;}
+</style></head>
+<body>
+
+<div class="side">
+  <div class="s-hd"><h1 class="js-title">화면 설명서</h1>
+    <div class="sub">화면을 고르면 오른쪽에 그 화면이 뜹니다.</div></div>
+  <div class="s-bar">
+    <!-- 설명 패널은 **당분간 감춰 둡니다**(2026-09-20 사용자). 되살리려면 아래 hidden 만 지우면 됩니다 -->
+    <button class="js-toggle" hidden>설명 보기</button>
+    <a class="js-open off" href="#" target="_blank">새 탭 ↗</a>
+    <button class="js-dl">소스 전체 내려받기</button>
+  </div>
+  <div class="list js-list"></div>
+</div>
+
+<div class="main">
+  <div class="mid js-mid">왼쪽 목록에서 화면을 고르십시오</div>
+  <div class="frame js-frame" style="display:none"><iframe class="js-if"></iframe></div>
+</div>
+
+<!-- 설명은 **기본으로 꺼 둔다** — 확인 전 초안이라 화면을 보는 것과 같은 무게로 놓지 않는다 -->
+<div class="doc js-doc hide"></div>
+
+<!-- 목록은 **늘 새로 읽습니다.** 판 번호(?v=)를 손으로 올리다 보면 "반영된 게 맞나"를 계속 의심하게 되어,
+     열 때마다 시각을 붙여 옛것이 걸리지 않게 했습니다(2026-09-21). -->
+<script>document.write('<scr' + 'ipt src="목록.js?t=' + Date.now() + '"><\/scr' + 'ipt>');</script>
+<script>
+const $ = s => document.querySelector(s);
+const CFG = window.화면설명 || window.리뷰목록;
+
+if (!CFG || !Array.isArray(CFG.항목) || !CFG.항목.length) {
+  $('.js-mid').innerHTML = '<div><b>목록이 비어 있습니다.</b><br>같은 폴더의 <code>목록.js</code> 를 채워 주십시오.<br>쓰는 법은 <code>README.md</code>.</div>';
+  $('.js-doc').classList.add('hide');
+} else {
+  const BASE = CFG.기준주소 || '';
+  const full = u => /^https?:|^\/\//.test(u) ? u : BASE + u;
+  let cur = null;
+
+  document.title = (CFG.제목 || '화면') + ' — 화면 설명서';
+  $('.js-title').textContent = CFG.제목 || '화면 설명서';
+
+  const esc = t => String(t == null ? '' : t);
+
+  function 설명HTML(it) {
+    const g = it.설명 || {};
+    let h = '<h2>' + esc(it.이름) + '</h2>';
+    if (it.한줄) h += '<div class="lead">' + it.한줄 + '</div>';
+
+    // 출처 — 이 설명을 누가 썼고 사람이 확인했는가. 확인 전이면 그대로 공유하지 말 것
+    const v = it.확인;
+    h += v
+      ? '<div class="from ok"><b>확인함</b> — ' + esc(v) + '</div>'
+      : '<div class="from draft"><b>확인 전 초안입니다.</b> ' + (CFG.초안출처 || 'AI 가 시안과 결정 로그를 읽어 정리한 것') +
+        '이라, 사람이 대조하기 전에는 <b>그대로 공유하지 마십시오.</b> 아래 「근거」의 결정 번호로 대조할 수 있습니다.</div>';
+
+    if (g.언제) h += '<div class="sec"><h3>언제 이 화면인가</h3><div class="lead">' + g.언제 + '</div></div>';
+
+    if (g.보임 && g.보임.length)
+      h += '<div class="sec"><h3>무엇이 보이나</h3><ul>' + g.보임.map(x => '<li>' + x + '</li>').join('') + '</ul></div>';
+
+    if (g.조작 && g.조작.length)
+      h += '<div class="sec"><h3>눌렀을 때</h3><table>' +
+        g.조작.map(([a, b]) => '<tr><td class="k">' + a + '</td><td>' + b + '</td></tr>').join('') + '</table></div>';
+
+    if (g.문구 && g.문구.length)
+      h += '<div class="sec"><h3>화면에 나오는 문구</h3>' +
+        g.문구.map(([a, b]) => '<div class="say"><b>' + a + '</b>' + b + '</div>').join('') + '</div>';
+
+    if (g.규칙 && g.규칙.length)
+      h += '<div class="sec"><h3>규칙 · 개발이 알아야 할 것</h3><ul>' +
+        g.규칙.map(x => '<li>' + x + '</li>').join('') + '</ul></div>';
+
+    if (g.근거) h += '<div class="why">' + g.근거 + '</div>';
+    return h;
+  }
+
+  // 묶음은 **한 번에 하나만** 열린다(2026-09-20 사용자). 다른 묶음의 화면으로 가면 그쪽이 열리고 나머지는 닫힌다
+  const 묶음 = [...new Set(CFG.항목.map(it => it.구분))];
+  let 열린것 = null;
+
+  function paint() {
+    const list = $('.js-list'); list.innerHTML = '';
+    묶음.forEach(g => {
+      const 속한 = CFG.항목.map((it, i) => [it, i]).filter(([it]) => it.구분 === g);
+      const 여기있나 = 속한.some(([, i]) => i === cur);
+      const 폄 = 열린것 === g;
+
+      const hd = document.createElement('div');
+      hd.className = 'grp' + (폄 ? ' open' : '') + (여기있나 ? ' has-on' : '');
+      hd.innerHTML = '<span class="cv">▶</span><span class="gt"></span><span class="gc">' + 속한.length + '</span>';
+      hd.querySelector('.gt').textContent = g;
+      // 닫혀 있던 묶음을 누르면 **그 묶음의 첫 화면**까지 연다(2026-09-21 사용자).
+      //   머리만 펴고 가만히 있으면 한 번 더 눌러야 해서, 누른 뜻과 어긋난다
+      hd.addEventListener('click', () => {
+        if (폄) { 열린것 = null; paint(); }          // 열려 있던 것은 접기만
+        else open(속한[0][1]);                       // 닫혀 있던 것은 펴면서 첫 화면으로
+      });
+      list.appendChild(hd);
+
+      const kids = document.createElement('div');
+      kids.className = 'kids' + (폄 ? '' : ' fold');
+      속한.forEach(([it, i]) => {
+        const el = document.createElement('div');
+        el.className = 'it' + (cur === i ? ' on' : '');
+        el.innerHTML = '<div class="nm"></div><div class="ds"></div>';
+        el.querySelector('.nm').textContent = it.이름;
+        el.querySelector('.ds').textContent = it.한줄 ? it.한줄.replace(/<[^>]+>/g, '') : '';
+        el.addEventListener('click', () => open(i));
+        kids.appendChild(el);
+      });
+      list.appendChild(kids);
+    });
+  }
+
+  function open(i) {
+    cur = i; const it = CFG.항목[i];
+    열린것 = it.구분;   // 고른 것이 든 묶음만 열어 둔다 — 나머지는 닫힌다
+    $('.js-mid').style.display = 'none';
+    $('.js-frame').style.display = 'block';
+    $('.js-if').src = full(it.주소);
+    const a = $('.js-open'); a.href = full(it.주소); a.classList.remove('off');
+    $('.js-doc').innerHTML = 설명HTML(it);
+    $('.js-doc').scrollTop = 0;
+    paint();
+  }
+
+  // 시안 안에서 스스로 이동했을 때(예: 화면① 카드 → 화면③) **왼쪽 목록도 따라간다.**
+  // 다만 iframe 의 주소를 읽으려면 **같은 서버(같은 origin)** 여야 한다 —
+  // 도구와 시안을 다른 포트로 띄우면 브라우저가 막으므로 그냥 넘어간다(그때는 목록이 안 따라간다).
+  const 쪼갬 = u => { try { const x = new URL(u, location.href); return [decodeURIComponent(x.pathname), decodeURIComponent(x.search)]; } catch (e) { return [u, '']; } };
+  function 맞추기() {
+    let here;
+    try { here = 쪼갬($('.js-if').contentWindow.location.href); } catch (e) { return; }   // 다른 origin — 못 읽는다
+    const 후보 = CFG.항목.map((it, i) => [i, 쪼갬(full(it.주소))]);
+    // ① 주소가 통째로 같은 것 ② 없으면 **파일이 같은 것 중 첫 줄**
+    //    (시안 안에서 스스로 이동하면 `?state=` 없이 가는 일이 많다 — 그래도 그 화면 묶음으로는 옮겨 준다)
+    let i = (후보.find(([, [p, s]]) => p === here[0] && s === here[1]) || [])[0];
+    if (i === undefined) i = (후보.find(([, [p]]) => p === here[0]) || [])[0];
+    if (i === undefined || i === cur) return;
+    cur = i;
+    const it = CFG.항목[i];
+    열린것 = it.구분;   // 다른 화면으로 넘어갔으면 **그 묶음을 열고 먼저 것은 닫는다**(2026-09-20 사용자)
+    $('.js-open').href = full(it.주소);
+    $('.js-doc').innerHTML = 설명HTML(it);
+    $('.js-doc').scrollTop = 0;
+    paint();
+    const el = $('.list').querySelector('.it.on');   // 접힘 때문에 번호로 못 찾는다 — 켜진 줄을 찾는다
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+  // 페이지를 새로 불러올 때, 그리고 **주소만 바뀔 때**도 따라간다.
+  // 시안이 `history.replaceState` 로 상태를 주소에 남기면 load 가 안 뜨므로 짧게 지켜본다(같은 서버일 때만 읽힌다)
+  $('.js-if').addEventListener('load', 맞추기);
+  setInterval(맞추기, 500);
+
+  // ── 모든 소스 내려받기 ────────────────────────────────────────────────
+  // 목록에 있는 시안과 **그 시안이 부르는 파일들**(css · js · svg)을 모아 zip 한 장으로 내려줍니다.
+  // 라이브러리 없이 굽습니다 — 압축은 하지 않고(stored) 담기만 하므로 코드가 짧고 어디서나 열립니다.
+  const CRC = (() => { const t = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+    return b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = t[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  })();
+
+  function zip(files) {   // files = [{이름, 바이트}]
+    const enc = new TextEncoder(), 조각 = [], 목록 = [];
+    let 위치 = 0;
+    const u16 = v => [v & 255, (v >> 8) & 255];
+    const u32 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >>> 24) & 255];
+    files.forEach(f => {
+      const nm = enc.encode(f.이름), crc = CRC(f.바이트), len = f.바이트.length;
+      const h = new Uint8Array([...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0),
+        ...u32(crc), ...u32(len), ...u32(len), ...u16(nm.length), ...u16(0)]);
+      조각.push(h, nm, f.바이트);
+      목록.push({ nm, crc, len, off: 위치 });
+      위치 += h.length + nm.length + len;
+    });
+    const 시작 = 위치;
+    목록.forEach(e => {
+      const c = new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0),
+        ...u32(e.crc), ...u32(e.len), ...u32(e.len), ...u16(e.nm.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
+        ...u32(0), ...u32(e.off)]);
+      조각.push(c, e.nm); 위치 += c.length + e.nm.length;
+    });
+    조각.push(new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(목록.length), ...u16(목록.length),
+      ...u32(위치 - 시작), ...u32(시작), ...u16(0)]));
+    return new Blob(조각, { type: 'application/zip' });
+  }
+
+  $('.js-dl').addEventListener('click', async () => {
+    const b = $('.js-dl'), 본래 = b.textContent;
+    b.disabled = true; b.textContent = '모으는 중…';
+    try {
+      const 볼것 = [...new Set(CFG.항목.map(it => new URL(full(it.주소), location.href).pathname))];
+      const 받을것 = new Set(볼것);
+      // 시안이 부르는 파일까지 따라간다 — <base href> 를 쓰므로 그 기준으로 푼다
+      for (const u of 볼것) {
+        const t = await (await fetch(u)).text();
+        const base = (t.match(/<base\s+href="([^"]+)"/i) || [])[1] || './';
+        const 기준 = new URL(base, new URL(u, location.href));
+        for (const m of t.matchAll(/(?:src|href)="([^"?#]+)(?:\?[^"]*)?"/g)) {
+          const v = m[1];
+          if (/^(https?:|data:|#|mailto:)/.test(v)) continue;
+          const path = new URL(v, 기준).pathname;
+          // 폴더는 담지 않는다 — `<base href="../컴포넌트/">` 같은 것이 그대로 걸려
+          //   zip 에 이름이 `/` 로 끝나는 가짜 항목이 생겼었다(2026-09-21 확인)
+          if (path.endsWith('/')) continue;
+          받을것.add(path);
+        }
+      }
+      const files = [];
+      for (const path of 받을것) {
+        try {
+          const res = await fetch(path); if (!res.ok) continue;
+          files.push({ 이름: decodeURIComponent(path).replace(/^\/+/, ''), 바이트: new Uint8Array(await res.arrayBuffer()) });
+        } catch (e) { /* 없는 파일은 건너뛴다 */ }
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(zip(files));
+      a.download = (CFG.제목 || '시안') + '_소스.zip';
+      a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      b.textContent = files.length + '개 받음';
+      setTimeout(() => { b.textContent = 본래; b.disabled = false; }, 2500);
+    } catch (e) {
+      b.textContent = '실패'; setTimeout(() => { b.textContent = 본래; b.disabled = false; }, 2500);
+    }
+  });
+
+  $('.js-toggle').addEventListener('click', () => {
+    const d = $('.js-doc'); d.classList.toggle('hide');
+    const 폄 = !d.classList.contains('hide');
+    $('.js-toggle').textContent = 폄 ? '설명 접기' : '설명 보기';
+    $('.js-toggle').classList.toggle('on', 폄);
+  });
+
+  paint();
+  open(0);
+}
+</script>
+
+<script>
+if (location.protocol === 'file:') {
+  var dl = document.querySelector('.js-dl'); if (dl) dl.hidden = true;
+  var n = document.createElement('div');
+  n.style.cssText = 'padding:9px 14px;margin:0 14px 12px;background:#fffbeb;border:1px solid #fde68a;' +
+    'border-radius:6px;font-size:11px;line-height:1.7;color:#7c5e1a;';
+  n.innerHTML = '<b>파일로 열었습니다.</b> 화면은 그대로 보이지만, 시안 안에서 화면을 옮기면 ' +
+    '<b>왼쪽 목록이 따라가지 않습니다.</b> 브라우저가 막는 것이라 어쩔 수 없습니다. ' +
+    '모두 제대로 보려면 이 폴더에서 <code>python -m http.server 8765</code> 를 띄우고 ' +
+    '<code>localhost:8765</code> 로 여십시오.';
+  var bar = document.querySelector('.s-bar'); if (bar) bar.parentNode.insertBefore(n, bar.nextSibling);
+}
+</script>
+</body></html>

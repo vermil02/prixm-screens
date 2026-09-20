@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<title>화면② 자동화 생성 — as-is 시안</title>
+
+<base href="../컴포넌트/">
+<link rel="stylesheet" href="common/common.css">
+<link rel="stylesheet" href="../화면/_공용.css">
+<script src="../화면/_뼈대.js" defer></script>
+<script src="../화면/부품/상단바/_상단바.js"></script><!-- 상단 바 한 벌 — defer 를 쓰면 화면 인라인 스크립트가 먼저 돌아 못 찾는다 --><!-- 자동화 영역 공용 부품 — 컴포넌트 목록 50~58. 고치면 이 ?v= 를 올릴 것 -->
+<style>
+/* @조각 _공통.css */
+/* 공용 부품(_공용.css)과 값이 같은 규칙 50개는 그쪽으로 옮겼습니다 — 여기 남은 것은 이 화면 전용입니다 */
+/* 뼈대(GNB · LNB · 헤더 · 상태 점)는 화면①과 같은 규칙 — 화면01_전체목록.html 에서 가져옴 */
+.body{flex:1; display:flex; min-height:0; padding:0;}
+.content{flex:1; min-width:0; overflow:auto; padding:20px 0;
+  display:grid; grid-template-columns:24px minmax(0,1fr) 24px; align-content:start;}
+.content > *{grid-column:2; min-width:0;}
+
+/* 설정 중 = 속 빈 회색 원(화면① 결정 100) */
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(34,197,94,.32)}70%{box-shadow:0 0 0 3.5px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+/* LNB 점은 _공용.css 의 한 벌을 그대로 씁니다 — 결정 176(0.85초 점멸 · 실패 빨간 점) */
+@keyframes sp-rot{0%{transform:rotate(0)} 100%{transform:rotate(270deg)}}
+@keyframes sp-dash{
+  0%{stroke-dashoffset:50.27}
+  50%{stroke-dashoffset:12.57; transform:rotate(135deg)}
+  100%{stroke-dashoffset:50.27; transform:rotate(450deg)}
+}
+.sel.is-open .ch-arrow{transform:rotate(180deg);}
+.lnb-dot{width:20px; height:20px; flex:0 0 auto; margin:0;
+  display:flex; align-items:center; justify-content:center; background:none; border-radius:0;}
+
+/* ===== 화면② — 왼쪽 레일(220) + 오른쪽 내용. 레일은 "무엇으로 시작할지 고르는 곳" ===== */
+body{padding:0;}
+/* common.css 의 body padding(40 60)을 지운다 — 앱 틀은 화면 전체를 쓴다 */
+/* 레일은 늘 보인다 — 무엇으로 시작할지 고르는 곳. 고급 생성(캔버스)에서만 사라진다 */
+.view[hidden]{display:none !important;}
+.guide{font-size:13px; color:var(--gray-600); margin:-6px 0 18px; line-height:1.6;}
+.guide b{color:var(--black-900); font-weight:600;}
+/* 본문 최대 폭 1440px 은 화면①·③과 같다(결정 41 · 2.5b). 위 3열(여백·1440·여백)을 그대로 두고
+   아랫줄(auto)만 더해 하단 레이어 자리를 만든다 — 레이어는 바닥에 붙는 띠라 가로를 다 쓰고, 안쪽 내용만 1440 으로 맞춘다 */
+.content{grid-template-rows:minmax(0,1fr) auto; padding:0; align-content:stretch; overflow:hidden;}
+.content > *{grid-column:2; min-width:0;}
+.sheet{grid-column:1 / -1;}
+.sheet > *{max-width:none; margin-left:0; margin-right:0; width:100%;}   /* 본문이 전체 폭이 되면서(결정 150) 레이어도 가운데 정렬을 풂 — 왼쪽이 카드와 맞는다(결정 161) */
+/* 구성 복사에서만 레일이 붙는다 — 그때는 레일 한 칸 + 본문 한 칸 */
+body.has-rail .content{grid-template-columns:220px minmax(0,1fr);}
+body.has-rail .rail{grid-column:1;}
+body.has-rail .stage-area{grid-column:2;}
+.rail[hidden]{display:none !important;}
+.stage-area{padding:16px 0 20px; min-width:0; overflow:auto;}   /* 머리 영역 아래 16 — 화면①과 같은 간격 */
+/* 좌우 여백은 .content 의 3열 그리드가 맡는다 — 여기서 또 주면 1440 안쪽으로 밀린다 */
+/* 설정·안내 화면은 남는 폭 가운데에 — 폼 640 + 간격 28 + 패널 300 = 968 */
+/* 읽고 채우는 한 단 = 768px — 제품 AI 채팅(.thread · .composer-wrap)과 같은 값(결정 125) */
+#v-srcpick{width:100%; max-width:768px; margin:0;}   /* 결정 174 — 가운데 정렬을 풀고 왼쪽 위에 붙인다(채팅처럼 가운데일 이유가 없다) */
+/* 작성 화면은 삼단(결정 175) — 좌우 여백 칸까지 차지해 왼쪽 단이 화면 가장자리에 붙는다 */
+#v-setup{width:100%; max-width:none; margin:0; grid-column:1 / -1;}
+#v-pick{width:100%;}
+.one{display:block;}
+/* 1 소개 — 크고 쉽게 */
+#v-intro{padding-top:8px;}
+.intro-hd{display:flex; flex-direction:column; gap:8px; margin-bottom:22px;}
+.intro-desc{margin:0; font-size:14px; color:var(--black-900); line-height:1.7;}
+.intro-sec{margin-bottom:22px;}
+.intro-lb{font-size:12px; font-weight:600; color:var(--gray-500); margin-bottom:10px;}
+.intro-steps{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:0;}
+.intro-steps li{display:flex; align-items:center; gap:10px; font-size:14px; padding:9px 0; position:relative;}
+.intro-steps li::before{content:attr(data-n); width:24px; height:24px; border-radius:100px; background:var(--gray-100); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:var(--gray-600); flex:0 0 auto;}
+.intro-steps li + li::after{content:''; position:absolute; left:11.5px; top:-7px; height:14px; width:1px; background:var(--border-default);}
+.intro-prep{margin:0; padding-left:18px; font-size:13px; line-height:2; color:var(--black-900);}
+.intro-hint{margin:8px 0 0; font-size:11px; color:var(--gray-500); line-height:1.6;}
+.intro-hint b{color:var(--black-900);}
+/* 템플릿 요약 — 무엇을 하는 템플릿인지. 제품의 상세 모달(3.11~3.13) 내용을 설정 화면 위로 */
+.tsum{border:1px solid var(--border-subtle); background:var(--gray-50,#f8fafc); border-radius:8px; padding:12px 14px; margin-bottom:18px; display:flex; flex-direction:column; gap:10px;}
+.tsum-desc{margin:0; font-size:12px; color:var(--gray-600); line-height:1.6;}
+.tsum-flow .flow{gap:4px 6px;}
+.tsum-prep{display:flex; align-items:baseline; gap:8px; font-size:11px; color:var(--gray-600); flex-wrap:wrap;}
+.tsum-lb{font-weight:600; color:var(--black-900); flex:0 0 auto;}
+/* 고급 생성 — 레일이 사라지고 워크플로우가 폭을 다 쓴다 */
+body.is-canvas .content{grid-template-columns:minmax(0,1fr); overflow:hidden;}
+body.is-canvas .rail{display:none;}
+body.is-canvas .content > *{grid-column:1;}
+/* 첫 진입 — 갈래 둘만 보이고 레일은 없다(결정 120) */
+body.is-entry .rail{display:none;}
+/* 첫 화면도 1440 안에서 가운데 — 폭 규칙을 따로 두지 않는다 */
+body.is-canvas .stage-area{padding:0; min-height:0; display:flex; flex-direction:column;}
+body.is-canvas #v-canvas{flex:1; min-height:0; display:flex;}
+.rail{border-right:1px solid var(--border-subtle); display:flex; flex-direction:column; min-width:0; background:#fff;}
+.rail-mode{display:flex; flex-direction:column; flex:1; min-height:0;}
+.rail-mode[hidden]{display:none !important;}
+.rail-hd{padding:12px; border-bottom:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:8px; align-items:stretch;}
+.rail-ipt{width:100%;}
+.rail-hd .drop{width:100%;}
+.rail-hd .sel{width:100%; justify-content:space-between;}
+.rail-empty{font-size:11px; color:var(--gray-500); padding:14px 10px; line-height:1.6;}
+.rail-empty[hidden]{display:none;}
+.rail-copy{display:flex; align-items:center; gap:6px; width:100%; padding:7px 9px; border:1px dashed var(--border-default); border-radius:6px; background:var(--gray-50,#f8fafc); cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; letter-spacing:-0.5px; color:var(--black-900); text-align:left;}
+.rail-copy[hidden]{display:none !important;}
+.rail-copy:hover{border-style:solid; border-color:var(--black-900);}
+.rail-copy svg{width:15px; height:15px; flex:0 0 auto; color:var(--gray-600);}
+.rail-mode-ttl{font-size:12px; font-weight:600; color:var(--black-900);}
+.rail-body{padding:8px; display:flex; flex-direction:column; gap:2px; overflow-y:auto; flex:1;}
+.rail-grp{font-size:10px; font-weight:600; color:var(--gray-500); padding:10px 10px 4px; display:flex; align-items:center; gap:5px;}
+.rail-cnt{color:var(--gray-500); font-weight:400;}
+.rail-item{display:flex; flex-direction:column; gap:2px; text-align:left; padding:8px 10px; border:0; border-radius:6px; background:none; cursor:pointer; font-family:inherit; letter-spacing:-0.5px; width:100%;}
+.rail-item:hover{background:var(--gray-50,#f8fafc);}
+.rail-item.is-on{background:var(--gnb-active,#f5f6fa);}
+.rail-item.is-on .rail-name{font-weight:600;}
+/* 분류 필터가 hidden 을 걸므로 display 를 눌러 준다 — 없으면 flex 가 이겨서 안 숨는다 */
+.rail-item[hidden],.tpl-card[hidden]{display:none !important;}
+.rail-cat{font-size:10px; color:var(--gray-500);}
+.rail-name{font-size:13px; color:var(--black-900);}
+.rail-adv-item{border:1px dashed var(--border-default); background:var(--gray-50,#f8fafc); margin-bottom:6px;}
+.rail-adv-item:hover{border-style:solid; border-color:var(--black-900);}
+.adv-btn{border:0; background:none; padding:2px 4px; border-radius:5px; cursor:pointer; font-family:inherit; font-size:12px; font-weight:600; letter-spacing:-0.5px; color:var(--black-900); text-decoration:underline; text-underline-offset:3px;}
+.adv-btn:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+/* 원본 고르기 안내 */
+/* 첫 화면 — AI 채팅 진입과 같은 자리: 본문 가운데(가로·세로), 인사 + 고를 것 */
+#v-entry{display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 132px);}
+/* 갈래 버튼 둘 — 컴포넌트 33 ai-start-question 의 추천 칩 규격(radius 15 · 옅은 파란 그림자) */
+.way-row{display:flex; align-items:stretch; gap:10px; width:100%;}
+@media (max-width:768px){ .way-row{flex-direction:column;} }
+.way{flex:1; display:flex; flex-direction:column; align-items:flex-start; gap:5px; padding:15px; border:1px solid rgba(0,0,0,.05); border-radius:15px; background:#fff; box-shadow:0 2px 3px rgba(91,118,238,.08); cursor:pointer; font-family:inherit; letter-spacing:-0.5px; text-align:left;}
+.way:hover{box-shadow:0 3px 8px rgba(91,118,238,.14);}
+.way svg{width:20px; height:20px; color:var(--gray-600); margin-bottom:3px;}
+.way-name{font-size:14px; font-weight:600; color:var(--black-900);}
+.way-sub{font-size:12px; color:var(--gray-600); line-height:1.5;}
+/* 템플릿 리스트 화면 머리 */
+/* 도구 줄은 화면①과 같은 것을 쓴다 — .ttl-row / .tools / .ipt / .sel 는 이미 위에 있고 초기화만 더한다(결정 40) */
+#v-pick .ttl-row{margin-bottom:5px;}
+#v-pick .pg-desc{margin-bottom:16px;}
+#v-pick .back{margin-bottom:8px;}
+.entry{display:flex; flex-direction:column; align-items:center; gap:25px; width:100%; max-width:768px; padding:24px 0;}
+/* 첫 화면도 768 — 제목과 갈래 사이가 나중에 대화 입력창이 될 자리라 폼과 같은 폭이어야 한다 */
+.entry-hd{display:flex; flex-direction:column; align-items:center; gap:7px; text-align:center;}
+.entry-ttl{font-size:20px; font-weight:700;}
+.entry-sub{margin:0; font-size:13px; color:var(--gray-600);}
+.entry-tools{display:flex; align-items:center; gap:8px; justify-content:center; width:100%;}
+.entry-ipt{width:420px;}
+.gal-empty{font-size:13px; color:var(--gray-500); padding:30px 0; text-align:center;}
+.gal-empty[hidden]{display:none;}
+.sel.is-open .ch-arrow{transform:rotate(180deg);}
+.overflow-menu-item.is-picked{font-weight:600;}
+.gal{display:grid; grid-template-columns:repeat(auto-fill, minmax(360px,1fr)); gap:10px; width:100%;}
+/* auto-fill — 분류로 걸러 한 장만 남아도 칸 폭이 그대로다(auto-fit 이면 혼자 가로를 다 먹는다) */
+.tpl-card{border:1px solid var(--border-default); border-radius:8px; padding:12px; background:#fff; display:flex; flex-direction:column; align-items:stretch; gap:8px; text-align:left; cursor:pointer; font-family:inherit; letter-spacing:-0.5px; color:var(--black-900);}
+.tpl-card:hover{border-color:var(--gray-500); background:var(--gray-50,#f8fafc);}   /* 호버 테두리도 화면① 카드와 같은 gray-500 (2026-09-19) */
+.tpl-card:hover .tpl-go{color:var(--black-900);}
+/* 2026-09-19 — 둥글기·테두리·그림자를 **화면① 자동화 목록 카드에 맞춥니다**(8px · --border-default · 그림자 없음).
+   그래서 여기서 덮지 않고 위 .tpl-card 기본값을 그대로 쓰고, 안 여백 15 만 남깁니다.
+   원래는 컴포넌트 33 ai-start-question 추천 칩 규격이라 radius 15 · border rgba(0,0,0,.05) · 옅은 파란 그림자였습니다 */
+.gal .tpl-card{padding:15px;}
+.tpl-name{font-size:13px; font-weight:600; color:var(--color-n-800); letter-spacing:-0.5px;}   /* 제품 템플릿 카드 실측(결정 166) */
+.tpl-desc{font-size:12px; color:var(--gray-500); line-height:1.6; letter-spacing:-0.5px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  min-height:38px;}   /* 2줄로 고정하고 넘치면 말줄임 — 카드 높이·버튼 자리가 흔들리지 않게(결정 166) */   /* 제품 실측 — 설명은 gray-500 */
+.tpl-foot{display:flex; align-items:center; gap:6px; padding-top:8px; border-top:1px solid var(--border-subtle);}
+.tpl-go{font-size:12px; font-weight:600; color:var(--gray-600);}
+.gal-adv{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--gray-500); flex-wrap:wrap; justify-content:center;}
+.start-adv-sub{color:var(--gray-500);}
+.pick-note{margin:0; padding-left:18px; font-size:12px; color:var(--gray-600); line-height:1.9;}
+/* 화면 머리 */
+.pg-hd{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
+.back{display:inline-flex; align-items:center; gap:2px; border:0; background:none; padding:0; cursor:pointer; font-family:inherit; font-size:12px; color:var(--gray-500); letter-spacing:-0.5px; align-self:flex-start;}
+
+.pg-ttl-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.pg-ttl{font-size:18px; font-weight:700;}
+.pg-desc{margin:0; font-size:13px; color:var(--gray-600); line-height:1.6;}
+.tpl-tags{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}   /* 칩 사이 6 — 화면① 카드와 같은 값 */
+.tpl-demo{font-size:10px; color:var(--gray-500);}
+.tpl-demo[hidden]{display:none;}
+.src-note{font-size:11px; color:var(--gray-500);}
+.src-note[hidden]{display:none;}
+.steps{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--gray-500);}
+.step{display:inline-flex; align-items:center; gap:5px;}
+.step b{width:18px; height:18px; border-radius:100px; border:1px solid var(--border-default); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:var(--gray-500);}
+.step.is-on{color:var(--black-900); font-weight:600;}
+.step.is-on b{background:var(--black-900); border-color:var(--black-900); color:#fff;}
+.step.is-done b{background:var(--gray-100); color:var(--black-900);}
+.step-line{width:28px; height:1px; background:var(--border-default);}
+.warn-bar{font-size:12px; color:#92400e; background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:8px 12px; margin:-6px 0 14px; line-height:1.6;}
+.warn-bar[hidden]{display:none;}
+.flow{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; font-size:11px;}
+.flow-step{padding:3px 8px; border-radius:100px; background:var(--gray-100); color:var(--black-900); white-space:nowrap;}
+.flow-arrow{color:var(--gray-500); font-size:11px;}
+/* 두 단 */
+.two{display:grid; grid-template-columns:minmax(0, 640px) 300px; gap:28px; align-items:start;}
+@media (max-width:1180px){ .two{grid-template-columns:minmax(0,1fr);} .side{border-left:0; padding-left:0; border-top:1px solid var(--border-subtle); padding-top:14px;} }
+.frm-col{min-width:0;}
+.side{border-left:1px solid var(--border-subtle); padding-left:20px; display:flex; flex-direction:column; gap:8px; font-size:12px;}
+.side-ttl{font-size:12px; font-weight:600; color:var(--black-900); margin-top:4px;}
+.side-flow{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:0;}
+.side-flow li{display:flex; align-items:center; gap:8px; font-size:12px; padding:5px 0; position:relative;}
+.side-flow li::before{content:attr(data-n); width:18px; height:18px; border-radius:100px; background:var(--gray-100); display:inline-flex; align-items:center; justify-content:center; font-size:10px; color:var(--gray-600); flex:0 0 auto;}
+.side-flow li + li::after{content:""; position:absolute; left:8.5px; top:-6px; height:10px; width:1px; background:var(--border-default);}
+.stage[hidden]{display:none;}
+.bar{display:flex; align-items:center; gap:8px; padding:14px 0 0; margin-top:18px; border-top:1px solid var(--border-subtle);}
+.bar-hint{font-size:11px; color:var(--gray-500);}
+.bar-hint[hidden]{display:none;}
+/* 폼 */
+.frm{display:flex; flex-direction:column; gap:16px;}   /* 칸 사이 16 — 제품 실측 */
+.fld-row{display:flex; flex-direction:column; gap:6px;}
+.fld-row[hidden]{display:none;}
+.fld-lb{font-size:12px; font-weight:400; color:var(--gray-600);}
+.fld-lb.req::after{content:"*"; color:#dc2626; font-weight:600; margin-left:3px;}   /* 필수 — 화면③의 별표와 같은 표시(I-15 통일) · 점 하나는 너무 약했다(사용자 2026-09-18) */
+.fld{height:38px; border:1px solid var(--border-default); border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit; letter-spacing:-0.5px; color:var(--black-900); background:#fff; width:100%; box-sizing:border-box;}
+.fld.ro{display:flex; align-items:center; background:var(--gray-50,#f8fafc); color:var(--gray-600);}
+textarea.fld{height:57px; padding:8px 10px; resize:vertical; line-height:1.5;}
+.fld:focus{outline:0; border-color:var(--black-900);}
+.fld::placeholder{color:var(--gray-500);}
+.fld.is-bad{border-color:#f59e0b; background:#fffbeb;}
+.sel-wrap{position:relative;}
+.sel-wrap select{appearance:none; padding-right:26px; cursor:pointer;}
+.sel-wrap select.is-empty{color:var(--gray-500);}
+.sel-wrap .ch-arrow{position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none;}
+/* ↑ 결정 183(54px 아이콘 칩 부품)은 되돌렸다 — 사용자가 말한 것은 닫힌 칸이 아니라 **펼쳐지는 목록**이었다(2026-09-18 오후).
+   닫힌 칸은 결정 168 의 글자 칸과 같은 38px. 펼쳐지는 목록은 아래 .fld-menu */
+
+/* ↑ 결정 183(54px 아이콘 칩 부품)은 되돌렸다 — 사용자가 말한 것은 닫힌 칸이 아니라 **펼쳐지는 목록**이었다(2026-09-18 오후).
+   닫힌 칸은 결정 168 의 글자 칸과 같은 38px. 펼쳐지는 목록은 아래 .fld-menu */
+.sel-wrap.is-open select{border-color:var(--color-n-400,#a8afbc);}
+.sel-wrap.is-open .ch-arrow{transform:translateY(-50%) scaleY(-1);}   /* 열리면 화살표가 위를 본다 */
+.sel-wrap .ch-arrow{transition:transform .12s;}
+.fld-menu{position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:40; padding:4px; background:#fff;
+  border:1px solid var(--border-default); border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.10);
+  display:flex; flex-direction:column; max-height:264px; overflow:auto;}
+.fld-menu[hidden]{display:none;}
+.fld-menu button{height:34px; padding:0 10px; border:0; background:transparent; border-radius:5px; text-align:left;
+  font-family:inherit; font-size:13px; color:var(--color-n-800); letter-spacing:-0.5px; cursor:pointer; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:8px;}
+.fld-menu button:hover{background:var(--color-n-50);}
+.fld-menu button.on{font-weight:600;}
+.fld-menu button.on::after{content:""; width:12px; height:12px; margin-left:auto; flex:0 0 auto;
+  background:no-repeat center/12px url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%232a3445' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 6.5l2.5 2.5 4.5-5'/></svg>");}
+.fld-menu .fm-empty{color:var(--gray-500); font-weight:400;}
+.fld-help{font-size:12px; color:var(--gray-500); line-height:1.6;}
+.fld-help.bad{color:#b45309;}
+.lnk{color:var(--brand-primary); text-decoration:underline; text-underline-offset:2px; cursor:pointer;}
+.fld-sep{font-size:11px; font-weight:600; color:var(--gray-500); padding-top:8px; border-top:1px solid var(--border-subtle); margin-top:4px;}
+.prep{margin:0; padding-left:16px; font-size:12px; line-height:1.8; color:var(--black-900);}
+.mdl-hint{margin:2px 0 0; font-size:11px; color:var(--gray-500); line-height:1.6;}
+.mdl-hint b{color:var(--black-900);}
+/* 확인 표 */
+.cf-grid{display:grid; grid-template-columns:120px 1fr; gap:8px 12px; font-size:13px;}
+.cf-k{color:var(--gray-500);}
+.cf-v{color:var(--black-900); min-width:0; word-break:break-all;}
+.radio-row{display:flex; flex-direction:column; gap:6px;}
+.radio{display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:8px 10px; border-radius:6px; position:relative;}
+.radio:hover{background:var(--gray-50,#f8fafc);}
+.radio input{position:absolute; opacity:0; width:0; height:0;}
+.radio-dot{width:16px; height:16px; border-radius:100px; border:1px solid var(--border-default); background:#fff; flex:0 0 auto; position:relative;}
+input:checked + .radio-dot{border-color:var(--black-900); background:var(--black-900);}
+input:checked + .radio-dot::after{content:""; position:absolute; inset:4px; border-radius:100px; background:#fff;}
+.radio small{color:var(--gray-500); font-size:11px; margin-left:4px;}
+/* ===== 워크플로우 화면 — 제품 에디터 구성(as-is) ===== */
+.wf{display:flex; flex-direction:column; flex:1; min-height:0; width:100%;}
+.wf-top{padding:10px 16px 0; border-bottom:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:6px;}
+.wf-bar{display:flex; align-items:center; gap:8px; padding-bottom:8px;}
+.wf-name{font-size:14px; font-weight:700;}
+.wf-state{font-size:12px; color:var(--gray-500);}
+.switch-off{width:32px; height:18px; border-radius:100px; background:var(--gray-500,#808897); position:relative; flex:0 0 auto;}
+.switch-off::after{content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:100px; background:#fff;}
+.wf-tools{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--gray-600);}
+.wf-ti{width:24px; height:24px; border-radius:5px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--gray-600);}
+.wf-ti:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+.wf-sep{width:1px; height:14px; background:var(--border-default);}
+.wf-tb{padding:4px 8px; border-radius:5px; cursor:pointer; white-space:nowrap;}
+.wf-tb:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+.wf-canvas{position:relative; flex:1; min-height:0; overflow:auto; background:var(--gray-50,#f8fafc); background-image:radial-gradient(var(--border-default) 1px, transparent 1px); background-size:18px 18px; padding:24px 0 40px;}
+.nd-col{display:flex; flex-direction:column; align-items:center; gap:22px;}
+.nd{width:220px; background:#fff; border:1px solid var(--border-default); border-radius:10px; padding:10px; position:relative; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.nd.is-on{border-color:var(--brand-primary);}
+.nd::before{content:""; position:absolute; left:50%; top:-22px; width:1px; height:22px; background:var(--border-default);}
+.nd:first-child::before{display:none;}
+.nd-hd{display:flex; align-items:center; gap:8px;}
+.nd-ico{width:26px; height:26px; border-radius:7px; background:var(--color-primitive-blue-10,#eef2ff); flex:0 0 auto;}
+.nd-t{display:flex; flex-direction:column; min-width:0;}
+.nd-cat{font-size:10px; color:var(--gray-500);}
+.nd-name{font-size:13px; font-weight:600;}
+.nd-nav{margin-left:auto; font-size:11px; color:var(--gray-500); letter-spacing:2px;}
+.nd-desc{font-size:11px; color:var(--gray-600); line-height:1.5; margin:8px 0 6px;}
+.nd-fld{font-size:11px; color:var(--gray-500); border:1px solid var(--border-subtle); border-radius:5px; padding:6px 8px; background:var(--gray-50,#f8fafc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.nd-handle{width:22px; height:3px; border-radius:100px; background:var(--border-default); margin:8px auto 0;}
+.wf-zoom{position:absolute; left:16px; bottom:16px; display:flex; flex-direction:column; border:1px solid var(--border-default); border-radius:6px; overflow:hidden; background:#fff;}
+.wf-zoom span{width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--gray-600); cursor:pointer;}
+.wf-zoom span + span{border-top:1px solid var(--border-subtle);}
+.wf-mini{position:absolute; right:16px; bottom:16px; width:180px; height:120px; border:1px solid var(--border-default); border-radius:6px; background:#fff; display:flex; align-items:center; justify-content:center;}
+.wf-mini span{width:14px; height:70px; border-radius:3px; background:var(--color-primitive-purple-100,#ede9fe);}
+.canvas-note{position:absolute; left:16px; top:16px; max-width:420px; font-size:11px; color:var(--gray-500); background:#fff; border:1px solid var(--border-subtle); border-radius:6px; padding:8px 10px; line-height:1.6;}
+.canvas-note b{color:var(--black-900);}
+.wf-pal{border-top:1px solid var(--border-subtle); background:#fff; padding:10px 16px 14px; flex:0 0 auto;}
+.wf-pal-hd{display:flex; align-items:center; gap:8px; font-size:11px; color:var(--gray-500); margin-bottom:10px;}
+.wf-pal-hd b{font-size:12px; color:var(--black-900);}
+.ch-arrow-d{color:var(--gray-500);}
+.wf-pal-r{display:flex; align-items:center; gap:8px;}
+.pal-ipt{width:200px; height:26px; font-size:11px;}
+.pal-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+.pal-card{width:86px; height:62px; border:1px solid var(--border-default); border-radius:8px; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; position:relative; cursor:pointer;}
+.pal-card:hover{border-color:var(--black-900);}
+.pal-card.is-soon{opacity:.5; cursor:default;}
+.pal-card.is-soon:hover{border-color:var(--border-default);}
+.pal-cnt{position:absolute; top:5px; right:7px; font-size:9px; color:var(--gray-500);}
+.pal-ico{width:20px; height:20px; border-radius:6px; background:var(--gray-100);}
+.pal-name{font-size:11px; font-weight:600;}
+/* 저장 안 됨 경고 */
+.mdl-back{position:fixed; inset:0; background:rgba(0,0,0,.25); z-index:80;}
+.mdl{position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:420px; display:flex; flex-direction:column; gap:10px; padding:10px 15px 15px; box-sizing:border-box; background:#fff; border-radius:15px; box-shadow:0 0 5px rgba(0,0,0,.15); z-index:90; letter-spacing:-0.5px;}
+.mdl[hidden],.mdl-back[hidden],.toast[hidden]{display:none !important;}
+/* ── B안: 하단 레이어 — 제품 워크플로우의 노드 팔레트와 같은 자리(본문 아래 붙박이) ── */
+.sheet{border-top:1px solid var(--border-subtle); background:#fff; box-shadow:0 -4px 16px rgba(0,0,0,.05); padding:14px 24px 18px;}
+.sheet[hidden]{display:none !important;}
+.sheet.is-fold{padding:13px 24px;}
+.sheet-hd{display:flex; align-items:center; gap:7px; margin-bottom:4px;}
+.sheet-ttl{font-size:15px; font-weight:700;}
+/* 설명 줄 — margin:0 이 위 `.sheet > *`의 가운데 정렬(auto)을 지워 이 줄만 왼쪽(레이어 안쪽 여백 24px)으로 튀어나와 있었음(2026-09-17 수정).
+   상자는 다른 줄과 같은 1440 가운데 정렬로 두고, 글줄 길이 968은 오른쪽 안쪽 여백으로 막는다 */
+.sheet-desc{margin:0 0 14px; font-size:13px; color:var(--gray-600); line-height:1.6; max-width:968px;}   /* 글줄 길이만 968로 묶고 왼쪽은 안 민다 */
+/* 두 덩이 다 가로로 늘어놓는다 — 방향이 갈리면 같은 층으로 안 읽히고, 세로로 두면 레이어가 높아져 목록을 가린다 */
+.sheet-body{display:flex; flex-direction:column; gap:14px;}
+.tpl-card.is-on{border-color:var(--black-900); box-shadow:0 3px 8px rgba(91,118,238,.18);}
+/* 미리보기(호버로 보고 있는 것)는 고정된 것보다 옅게 — 둘을 구분해야 지금 무엇이 남는지 안다 */
+.tpl-card.is-peek:not(.is-on){border-color:var(--gray-400,#9ca3af);}
+.sheet .intro-lb{margin-bottom:8px;}
+.sheet .flow-step{font-size:11px;}
+/* 준비물 — 작성 화면 옆단(.side-flow)과 같은 줄 규격. 아이콘은 라이브러리 것을 그대로 쓴다 */
+/* 준비물도 단계와 같은 pill — 배경색으로 갈린다. 단계는 회색(순서 있음), 준비물은 옅은 파랑(갖출 것) */
+.sheet .intro-prep{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:4px 6px;}
+.sheet .intro-prep li{padding:3px 8px; border-radius:100px; font-size:11px; line-height:1.2; white-space:nowrap;
+  background:rgba(91,118,238,.08); color:var(--black-900);}
+/* 카드 안 시작 버튼 — 라이브러리 버튼을 크기만 줄여 씀. 디자인 단계에서 정식 size 로 갈아 끼울 것 */
+.card-start{height:28px; padding:0 11px; font-size:12px;}
+/* 하단 레이어 접기 — 노드 팔레트와 같은 ▾ */
+.sheet.is-fold .sheet-desc, .sheet.is-fold .sheet-body{display:none;}
+.sheet.is-fold .sheet-hd{margin-bottom:0;}
+/* 최소화하면 안내 문구만 남는다 — 이름·꼬리표·버튼은 접힌다 */
+.sheet-hint{font-size:12px; color:var(--gray-600);}
+.sheet:not(.is-fold) .sheet-hint{display:none;}
+.sheet.is-fold .sheet-hd .tpl-badge{display:none;}
+/* 접힌 줄의 이름 — 호버를 따라 바뀐다. 비어 있으면 자리도 차지하지 않는다 */
+.sheet.is-fold .sheet-ttl{font-size:13px;}
+.sheet-ttl:empty{display:none;}
+.sheet.is-fold .js-fold{display:none;}
+/* 접힘 = 고른 카드 없음 — 펼쳐도 빈 패널이라 버튼을 두지 않는다 */
+.mdl-hd{display:flex; align-items:center; padding:5px 0;}
+.mdl-ttl{font-size:14px; font-weight:600; color:#000;}
+.mdl-p{margin:0; font-size:13px; color:var(--gray-600); line-height:1.6;}
+.mdl-ft{display:flex; align-items:center; gap:6px; padding-top:6px; border-top:1px solid var(--border-subtle);}
+.toast{position:fixed; left:50%; bottom:28px; transform:translateX(-50%); background:var(--black-900); color:#fff; font-size:12px; padding:9px 14px; border-radius:8px; z-index:95; box-shadow:0 4px 16px rgba(0,0,0,.18); max-width:560px; line-height:1.5;}
+/* 실행 방식 묶음(자동 실행 / 수동 실행) — 화면①과 같은 LNB(2026-09-17). 머리를 누르면 그 묶음만 접힘 */
+
+/* ── 2026-09-17 저녁 — 화면①에서 넘어온 것(결정 146·147·148) */
+/* 본문 헤더 줄 41px — 화면①과 같은 부품(컴포넌트 68 · 2.5c). 스크롤 밖이라 목록을 내려도 남는다 */
+/* 덩이 버튼 — 화면①과 같은 규격(컴포넌트 65). 다만 키워드는 여러 개가 켜진다(결정 122) */
+
+.subbtn{height:28px; border:1px solid var(--border-default); border-radius:5px; background:#fff; padding:0 8px; font-size:12px; color:var(--color-n-700); cursor:pointer; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; flex:0 0 auto; font-family:inherit; letter-spacing:-0.5px;}
+
+#v-pick .tools .ipt{width:240px;}
+/* 고급 설정 자리 — 2차에 열린다(결정 133 · 148). 지금은 자리와 안내만 */
+.adv-lock{border:1px dashed var(--border-default); border-radius:5px; background:var(--color-n-50);
+  padding:14px; display:flex; flex-direction:column; gap:6px; align-items:flex-start;}
+.adv-lock .adv-t{font-size:13px; font-weight:600; color:var(--color-n-800);}
+.adv-lock .adv-d{font-size:12px; color:var(--gray-600); line-height:1.6;}
+.fld-sep .adv-tag{margin-left:6px; height:17px; padding:0 6px; border-radius:5px; background:var(--gray-100);
+  color:var(--gray-500); font-size:10px; font-weight:500; display:inline-flex; align-items:center;}
+
+/* 상단 바(결정 151) — 41px · 아래 선 · 스크롤 밖. 안쪽 여백은 본문과 같은 24px(결정 150).
+   이 화면이 무슨 일을 하는 화면인지를 적는다. 허브(갈래 고르기)에는 두지 않는다 */
+.main{flex:1; min-width:0; display:flex; flex-direction:column;}
+
+.content{flex:1 1 auto; min-height:0;}
+
+/* 상단 바 + 타이틀 줄(결정 152) — 제품 지식/문서 실측(2068 덤프):
+   상단 바 41px · 아래 선 · 경로 13px(마지막 조각 500) / 타이틀 줄 pt22 pb7 · 18px/600 / 그 아래 도구 줄.
+   좌우 여백은 본문과 같은 24px 로 통일했다(제품은 바 15 · 타이틀 30 으로 다름) */
+
+.crumb .cur{color:var(--color-n-800); font-weight:500;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;}
+/* 경로는 어디까지 왔는지 보여 주기만 한다 — 돌아가는 일은 본문 「‹ 돌아가기」가 맡는다(결정 180) */
+.crumb .js-crumb-mid{flex:0 0 auto;}
+
+/* ── 머리 영역(결정 158 · 160) — 화면①과 같은 규칙. 타이틀 + 도구 줄을 묶고 아래에만 선.
+   경로 줄(.page-hd)의 선은 그대로 둔다. 색을 입히려면 background 주석을 풀 것 */
+.head-zone{flex:0 0 auto; background:#fff;  /* background:var(--color-n-50); → 색 있는 판 */
+  border-bottom:1px solid var(--border-default); padding-bottom:12px;}
+
+.head-zone .tools{margin:10px 0 0; height:34px; padding:0; grid-column:1 / -1; display:grid;
+  grid-template-columns:24px minmax(0,1fr) 24px; gap:0;}
+
+   /* 세그먼트는 내용만큼만 — 칸(col2) 전체로 늘어나지 않게 */
+
+.crumb .btn-ico svg{color:#475062;}
+
+/* 키워드 세그먼트(결정 162) — 보기 전환과 같은 제품 규격(.view-toggle 28px · gray-100 + 테두리 · 칸 24px · 12px · radius 3) */
+
+.view-toggle .vt{height:24px; padding:3px 8px; border:0; border-radius:3px; background:transparent; cursor:pointer;
+  font-family:inherit; font-size:12px; font-weight:400; color:#626b7a; letter-spacing:-0.5px;
+  display:inline-flex; align-items:center; gap:4px; white-space:nowrap;}
+
+.view-toggle .vt .cnt{font-size:11px; color:var(--gray-500);}
+.view-toggle .vt.on .cnt{color:var(--color-n-700);}
+.view-toggle .vt.is-off{opacity:.4; cursor:default;}
+
+/* ── 템플릿 카드 상세(결정 163 · LAB E-1) — 단계·준비물을 카드 안에 늘 보이게.
+   위(태그·이름·설명)는 고르는 정보, 아래(하는 일·준비물)는 자세한 정보. 사이를 옅은 선으로 가른다 */
+.gal{align-items:stretch;}                      /* 카드 높이를 줄 단위로 맞춘다 */
+.tpl-card{height:100%;}
+.tpl-card .tpl-foot{margin-top:auto; padding-top:10px; border-top:0;}   /* 만들기 위 선 없음(결정 163) — 카드 안 선은 「하는 일」 위 하나뿐 */
+.tpl-detail{display:block; margin-top:10px; padding-top:12px; border-top:1px solid var(--border-subtle);}
+.td-lb{display:block; font-size:10px; font-weight:600; color:var(--gray-500); margin-bottom:6px;}
+.td-lb.gap{margin-top:20px;}   /* 결정 176 — 「하는 일」과 「준비물」 사이 10 → 20 */
+.td-flow{display:flex; align-items:center; flex-wrap:wrap; gap:4px 5px;}
+.fstep{display:inline-flex; align-items:center; height:19px; padding:0 8px; border-radius:100px;
+  background:var(--gray-100); color:var(--black-900); font-size:11px; line-height:1;}
+.farw{color:var(--gray-400); font-size:11px;}
+.td-prep{display:flex; flex-wrap:wrap; gap:4px 5px;}
+.pchip{display:inline-flex; align-items:center; height:19px; padding:0 8px; border-radius:100px;
+  background:rgba(91,118,238,.08); color:var(--black-900); font-size:11px; line-height:1;}
+/* 하단 설명 레이어 — 카드가 같은 내용을 늘 보여 주므로 쓰이지 않는다(결정 163).
+   마크업·스크립트는 남겨 두었으니 이 한 줄만 지우면 돌아온다 */
+#sheet{display:none !important;}
+
+/* 보기 전환(결정 164) — 화면①과 같은 규칙: 상세가 기본이고 맨 왼쪽. 요약은 카드에서 단계·준비물을 감춘다 */
+
+.gal.summary .tpl-detail{display:none;}
+/* 제품 글자 버튼(px-btn-text) — 23px · padding 3 · radius 5 · 11px · 아이콘 16px. 사이 구분선은 두지 않는다(버튼이 둘) */
+   /* 버튼 padding 3 만큼 당겨 첫 아이콘의 왼쪽이 타이틀·카드와 한 선에 선다 */
+
+.px-menu button:not(.px-menu-x){height:28px; padding:0 8px; border:0; background:transparent; border-radius:3px; cursor:pointer;
+  font-family:inherit; font-size:12px; color:var(--color-n-800); letter-spacing:-0.5px; text-align:left;}
+
+.px-menu button .mcnt{color:var(--gray-500); font-size:11px; margin-left:3px;}
+.px-menu button[disabled]{opacity:.4; cursor:default;}
+
+/* 카드 키워드 칩 — 제품 템플릿 카드의 분류 글자와 같은 11px(결정 166) */
+.tpl-tags .tpl-badge{font-size:10px; line-height:1.4; padding:1px 6px;}   /* 화면① key-chip 과 같은 크기(결정 188 · 사용자: 11 은 너무 크다 — 결정 166 의 카드 칩 11 을 뒤집음) */
+/* 키워드 칩을 화면①의 key-chip 과 같은 모양으로(결정 188) — 회색 채움은 왼쪽 단·카드에서 잘 안 보였다. 흰 바탕 + 1px 테두리 */
+.tpl-badge{background:#fff; border:1px solid var(--border-default);}
+
+/* 메뉴 — 고른 뒤에도 열려 있으므로 닫는 길을 준다(결정 165): 우상단 × · 바깥 클릭 · 버튼 다시 누르기 */
+/* 닫기 — 메뉴 안의 자리를 먹지 않게 **우측 상단 모서리에 둥근 버튼**으로 띄운다(결정 165) */
+.px-menu .px-menu-x{position:absolute; top:-9px; right:-9px; width:20px; height:20px; border:0;
+  background:var(--color-n-800); border-radius:50%; color:#fff; cursor:pointer; display:inline-flex;
+  align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.18); padding:0;}
+
+   /* 라이브러리 ico-close-sm 원본(viewBox 16) */
+/* 메뉴가 열려 있는 동안 버튼도 켜진 채로 — 호버와 같은 바탕을 유지한다(결정 165) */
+
+.px-menu .px-menu-x{transition:background .12s;}
+/* 크기는 20px 로 고정하고 **누를 수 있는 범위만** 사방 6px 넓힌다(보이는 크기가 변하면 포인터가 버튼을 벗어난다) */
+
+/* 카드를 누르면 바로 작성 화면으로 가므로(3.14a), **카드에 마우스를 올리면 「만들기」도 같이 켜진다** —
+   라이브러리 `btn-primary-demo.state-hover` 와 같은 값(결정 167) */
+.tpl-card:hover .card-start{border-color:var(--brand-primary);
+  background:linear-gradient(rgba(0,0,0,0.05),rgba(0,0,0,0.05)), var(--brand-primary);}
+.tpl-card:hover{border-color:rgba(91,118,238,.35); box-shadow:0 2px 10px rgba(91,118,238,.14);}
+/* @끝 _공통.css */
+/* @조각 _작성.css */
+/* ── 작성 폼 — 제품 「업무 설정」 창 실측에 맞춘다(결정 168).
+   라벨 12/400 #626b7a · 칸 38(여러 줄 57) · 모서리 8 · 안 여백 8 10 · 칸 사이 16 · 도움글 12 #808897 */
+.head-zone[hidden]{display:none;}
+.fld.ro{height:38px;}
+.sel-wrap select{height:38px; padding-right:26px;}
+
+/* ── 단계 줄기(결정 169 · LAB B-5) — 템플릿이 정한 단계를 세로로 세우고 그 단계에서 쓰는 칸을 아래에 붙인다.
+   「기본」(이름·설명·시작 방식)만 번호 없이 · 로 선다 */
+.wsteps{position:relative;}
+.wsteps::before{content:""; position:absolute; left:9px; top:10px; bottom:10px; width:1px; background:var(--border-default);}
+.wst{position:relative; padding-left:30px;}
+.wst + .wst{margin-top:20px;}
+.wst::before{content:attr(data-n); position:absolute; left:0; top:0; width:19px; height:19px; border-radius:100px;
+  background:#fff; border:1px solid var(--border-default); font-size:10px; color:var(--gray-600);
+  display:flex; align-items:center; justify-content:center;}
+.wst-t{font-size:12px; font-weight:600; color:var(--color-n-800); line-height:19px; margin-bottom:10px;}
+.wst-none{font-size:12px; color:var(--gray-500);}
+.bar-hint.is-ready{color:var(--gray-600);}
+
+/* ── 삼단 작성 화면(결정 175 · LAB G-6) — 왼쪽 단 240px(옅은 바탕 · 경계선) + 오른쪽 작성.
+   왼쪽 설명 열과 오른쪽 입력 열이 **줄마다 맞물린다**(display:contents 로 한 grid 에 두 열).
+   가로선·세로선은 두지 않고 줄 사이 간격(24)만. 왼쪽 위 「‹ 돌아가기」는 단독 층 */
+/* 좌우 24px 여백 칸(.content)과 위 16px(.stage-area)을 되돌려 왼쪽 단이 LNB 경계·경로 줄에 딱 붙는다. 아래는 저장 줄까지 늘인다 */
+body.is-setup:not(.has-rail) .stage-area{grid-column:1 / -1;}   /* 작성 화면에서만 좌우 여백 칸까지 차지 — 음수 여백은 가로 스크롤을 만든다 */
+.g6{position:relative; display:grid; grid-template-columns:240px minmax(0,1fr); margin:-16px 0 0; flex:1 0 auto; align-content:start;}
+#st-form{display:flex; flex-direction:column; min-height:calc(100vh - 41px - 41px - 16px);}   /* GNB 41 · 경로 줄 41 — 왼쪽 단이 바닥까지 */
+/* 2026-09-21 · LAB 설정틀 **M-1 채택** — 왼쪽 회색 단과 경계선을 걷었습니다(결정 187 을 뒤집음).
+   까닭: 화면③ 상세의 왼쪽은 **메뉴 한 덩어리**라 오른쪽과 따로 구르는데, 여기 왼쪽은 **줄마다 쪼개진 조각**이고
+   오른쪽 입력과 같은 격자 줄에 짝으로 놓여(결정 175) 같이 굴러야 합니다. 그런데 회색 단이 화면③ 기둥과
+   똑같이 생겨서 **같아 보이는데 다르게 구는** 꼴이었습니다(사용자 2026-09-21).
+   회색을 걷으면 기둥이 아니라 「입력 칸 왼쪽의 설명 열」로 읽혀 같이 구는 것이 이상하지 않습니다.
+   `.g6:before` 자체는 남겨 둡니다 — 되돌릴 때 여기만 고치면 됩니다 */
+.g6:before{content:""; position:absolute; left:0; top:0; bottom:0; width:240px;}
+.g6-row{display:contents;}
+.g6-l{position:relative; padding:0 20px 0 24px; min-width:0;}
+.g6-r{padding:0 24px; min-width:0; max-width:calc(768px + 48px);}
+.g6-back .g6-l{padding-top:16px; padding-bottom:18px;}
+.g6-back .back{margin:0;}
+.g6-head .g6-r{padding-top:0;}   /* 「템플릿」 글자와 「자동화 이름」 라벨이 같은 줄 */
+.g-kind{font-size:11px; font-weight:600; color:var(--gray-500); margin-bottom:4px;}
+.g-name{font-size:15px; font-weight:600; color:var(--color-n-800); line-height:1.35;}
+.g-desc{font-size:12px; color:var(--gray-600); line-height:1.6; margin-top:8px;}
+.g-tags{margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;}   /* 왼쪽 단 칩 사이 6 — 화면① 카드와 같은 값(8 은 떨어져 보였다) */
+.g-tags:empty{display:none;}
+.g-steps-lb{font-size:11px; font-weight:600; color:var(--gray-500); margin:22px 0 14px; padding-top:16px; border-top:1px solid var(--border-subtle);}
+.g6-step .g6-l,.g6-step .g6-r{padding-bottom:24px;}
+.g6-step:last-of-type .g6-l,.g6-step:last-of-type .g6-r{padding-bottom:24px;}
+.g6-back .g6-r{padding-top:16px;}
+.g6-step .tc-l{display:flex; gap:10px; align-items:flex-start;}
+/* 단계마다 세로선(결정 179 · LAB L-1) — 번호 동그라미 아래(19 + 6)에서 **오른쪽 입력창 바닥**(줄 아래 여백 24 위)까지. 단계끼리 잇지 않고 색은 구분선 */
+.g6-step .g6-l:before{content:""; position:absolute; left:33px; top:25px; bottom:24px; width:1px; background:var(--border-default);}
+.tc-dot{flex:0 0 19px; width:19px; height:19px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:600; background:#fff; border:1px solid var(--border-default); color:var(--gray-500);}
+.g6-step.is-todo .tc-dot{background:var(--color-n-800); border-color:var(--color-n-800); color:#fff;}
+.g6-step.is-done .tc-dot{background:var(--color-success-soft,#ecfdf5); border-color:var(--color-success,#16a34a); color:var(--color-success,#16a34a);}
+.g6-step.is-done .tc-dot svg{width:11px; height:11px;}
+.tc-name{font-size:12px; font-weight:600; color:var(--color-n-800); line-height:19px;}
+.tc-desc{font-size:11px; color:var(--gray-500); line-height:1.5; margin-top:2px;}
+.g6-r .frm{margin:0;}
+.g6-r .fld-row:last-child{margin-bottom:0;}
+/* 저장 줄(결정 180 · LAB B-7) — 오른쪽 열 맨 아래 「남은 개수 · 저장」. 새로고침은 「하는 일」 줄 오른쪽 작은 버튼 */
+.g6-tail .g6-l{padding-bottom:24px;}
+.g6-tail .g6-l .tail-line{border-top:1px solid var(--border-subtle); height:0;}   /* 오른쪽 저장 줄 위 선과 같은 높이에 왼쪽 단에도 — 끊어서 */
+.g6-tail .g6-r{padding-bottom:24px;}
+.g6-tail .bar{margin:0; padding-top:14px;}
+.rf-row{display:flex; justify-content:flex-end; align-items:flex-end; margin-top:22px; padding-top:16px; min-height:19px; border-top:1px solid var(--border-subtle);}   /* 왼쪽 「하는 일」 위 선과 같은 높이에 오른쪽 열에도 — 경계선에서 끊긴다(사용자 2026-09-18) */
+.rf-btn{display:inline-flex; align-items:center; gap:6px;}
+.rf-btn svg{width:14px; height:14px;}
+.g6 .frm{gap:16px;}
+.g6-r .wst-none{font-size:12px; color:var(--gray-500); line-height:19px;}
+
+/* ── 「고급 설정」 자리(3.29b · 결정 148)를 **일단** 화면에서 뺀다(2026-09-18 사용자).
+   마크업은 그대로 두었으니 이 한 줄만 지우면 돌아온다. 2차에 어디에 둘지는 D-65 */
+#adv-zone{display:none !important;}
+
+/* ── 단계 상태(2026-09-18 ②) — 그 단계의 필수 칸이 덜 찼으면 진한 번호, 다 찼으면 옅은 체크.
+   처음 열면 채울 단계만 도드라져 어디를 손대야 하는지 줄기만 보고 안다 */
+.wst.is-todo::before{border-color:var(--color-n-800); color:var(--color-n-800); font-weight:600;}
+.wst.is-done::before{content:"✓"; border-color:var(--border-default); color:var(--gray-500); font-size:11px;}
+.wst.is-done .wst-t{color:var(--gray-600);}
+/* @끝 _작성.css */
+</style></head><body>
+
+<div class="app">
+<div class="gnb"><div class="g-item"><img src="assets/ico-gnb-aiChat.svg" alt=""><span>AI 채팅</span></div><div class="g-item"><img src="assets/ico-gnb-cowork.svg" alt=""><span>협업</span></div><div class="g-item"><img src="assets/ico-gnb-document.svg" alt=""><span>지식/문서</span></div><div class="g-item"><img src="assets/ico-gnb-mail.svg" alt=""><span>이메일</span></div><div class="g-item on"><img src="assets/ico-workflow-active.svg" alt=""><span>자동화</span><!-- 라이브러리엔 ico-gnb-workflow-active 가 없음. 이름 규칙 정리는 디자인 단계에서 --></div><div class="g-item"><img src="assets/ico-gnb-dashboard.svg" alt=""><span>프로젝트</span></div><div class="g-item"><img src="assets/ico-gnb-office.svg" alt=""><span>데이터 분석</span></div><div class="g-item"><img src="assets/ico-gnb-system.svg" alt=""><span>관리</span></div><div class="g-item"><img src="assets/ico-gnb-system02-active.svg" alt=""><span>시스템</span></div></div>
+<div class="main">
+  <div class="hd"><span class="logo">Prixm AI:CREW</span><span class="sp"></span><img src="assets/ico-bell.svg" style="width:18px"><span style="font-size:12px;">박준형</span></div>
+  <div class="body">
+    <div class="lnb-panel">
+      <div class="lnb-top-util"><span class="lnb-top-search"><img alt="검색" src="assets/ico-search.svg"/></span><div class="arrow-double-demo"><img alt="접기" src="assets/ico-arrow-double-left.svg"/></div></div>
+      <div class="lnb-wrap">
+        <div class="lnb-group"><div class="label-toggle"><span>자동화 메뉴</span></div>
+          <div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;">
+            <div class="channel-text-demo active js-to-entry" style="cursor:pointer"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-add.svg"></span><span class="ch-label">새 자동화</span></div></div>
+            <div class="channel-text-demo js-all-menu"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-view-list.svg"></span><span class="ch-label">전체 목록</span></div></div>
+          </div></div>
+        <!-- LNB 자동화 목록 — 화면①과 같은 한 벌(자동 실행 6 · 수동 실행 2 · 2026-09-17) -->
+        <div class="lnb-group wf-list lnb-kind"><div class="label-toggle js-lnbfold"><div class="lt-inner" style="display:flex;align-items:center;gap:4px;cursor:pointer;"><svg class="lnb-caret" width="8" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>자동 실행</span></div></div><div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;"><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot run"></span><span class="ch-label">정기 지식 보고</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot wait"></span><span class="ch-label">데일리 뉴스 검색</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot wait"></span><span class="ch-label">계약서 검토 요청</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot fail"></span><span class="ch-label">민원 답변 작성</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot off"></span><span class="ch-label">월요일 업무 안내</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot draft"></span><span class="ch-label">분기별 매출 정리</span></div></div></div></div>
+        <div class="lnb-group wf-list lnb-kind"><div class="label-toggle js-lnbfold"><div class="lt-inner" style="display:flex;align-items:center;gap:4px;cursor:pointer;"><svg class="lnb-caret" width="8" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>수동 실행</span></div></div><div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;"><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot run"></span><span class="ch-label">회의록 정리</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot draft"></span><span class="ch-label">주간 보고 초안 생성</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="main"><!-- 상단 바(경로 줄 · 타이틀 줄)는 _상단바.js 가 그린다 — 화면①·②가 같은 한 벌을 쓴다(결정 6002).
+     도구 줄은 화면마다 달라 아래에 그대로 둔다 -->
+<div class="js-head"></div><div class="head-zone"><div class="js-ttl"></div><script>PRIXM_HEAD({
+  crumb: [{t:'새 자동화'}, {mid:true}, {t:'템플릿 선택', cur:true, cls:'js-crumb'}],
+  search: '템플릿 검색',
+  title:  {t:'템플릿 선택', cls:'js-ttlrow', tcls:'js-hd-ttl'}
+});</script><div class="tools"><div class="tl-in">
+        <div class="px-btn-text-group"><span class="px-wrap"><button class="px-btn-text js-kwbtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>키워드<span class="pxv js-kw-val">전체</span></button><div class="px-menu js-kw-menu" hidden></div></span></div>
+        <span class="v-gap"></span><div class="view-toggle js-view-sw" aria-label="보기"><button class="vt on" data-v="detail"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.17735 3.52945C5.41587 3.44495 4.64739 3.44495 3.88591 3.52945C3.79795 3.53936 3.71586 3.5785 3.65279 3.64061C3.58972 3.70271 3.54931 3.78419 3.53804 3.87198C3.44783 4.64248 3.44783 5.42087 3.53804 6.19136C3.54946 6.27914 3.59001 6.36055 3.65319 6.42254C3.71637 6.48454 3.79852 6.52354 3.8865 6.5333C4.64102 6.6176 5.42224 6.6176 6.17676 6.5333C6.26473 6.52354 6.34689 6.48454 6.41007 6.42254C6.47325 6.36055 6.5138 6.27914 6.52522 6.19136C6.61545 5.42081 6.61545 4.64194 6.52522 3.87139C6.5138 3.78361 6.47325 3.7022 6.41007 3.64021C6.34689 3.57821 6.26473 3.53921 6.17676 3.52945M3.78677 2.64491C4.61374 2.55312 5.44833 2.55312 6.2753 2.64491C6.863 2.71021 7.33969 3.17326 7.40915 3.76809C7.50741 4.60742 7.50741 5.45534 7.40915 6.29466C7.37442 6.58233 7.24354 6.84984 7.03774 7.05382C6.83193 7.25779 6.56327 7.38627 6.2753 7.41843C5.45489 7.50985 4.60718 7.50985 3.78677 7.41843C3.4988 7.38627 3.23014 7.25779 3.02433 7.05382C2.81853 6.84984 2.68765 6.58233 2.65292 6.29466C2.55466 5.45534 2.55466 4.60742 2.65292 3.76809C2.68778 3.48053 2.81871 3.21315 3.0245 3.0093C3.23029 2.80544 3.49889 2.67704 3.78677 2.64491ZM6.17735 9.46592C5.41587 9.38142 4.64739 9.38142 3.88591 9.46592C3.79804 9.4758 3.71602 9.51486 3.65295 9.57685C3.58989 9.63883 3.54943 9.72017 3.53804 9.80786C3.44779 10.5786 3.44779 11.3571 3.53804 12.1278C3.54946 12.2156 3.59001 12.297 3.65319 12.359C3.71637 12.421 3.79852 12.46 3.8865 12.4698C4.64102 12.5541 5.42224 12.5541 6.17676 12.4698C6.26473 12.46 6.34689 12.421 6.41007 12.359C6.47325 12.297 6.5138 12.2156 6.52522 12.1278C6.61545 11.3573 6.61545 10.5784 6.52522 9.80786C6.5138 9.72008 6.47325 9.63868 6.41007 9.57668C6.34689 9.51468 6.26473 9.47568 6.17676 9.46592M3.78677 8.58139C4.61374 8.4896 5.44833 8.4896 6.2753 8.58139C6.863 8.64669 7.33969 9.10973 7.40915 9.70457C7.50741 10.5439 7.50741 11.3918 7.40915 12.2311C7.37429 12.5187 7.24336 12.7861 7.03757 12.9899C6.83178 13.1938 6.56318 13.3222 6.2753 13.3543C5.45489 13.4463 4.60718 13.4463 3.78677 13.3543C3.49889 13.3222 3.23029 13.1938 3.0245 12.9899C2.81871 12.7861 2.68778 12.5187 2.65292 12.2311C2.55466 11.3918 2.55466 10.5439 2.65292 9.70457C2.68778 9.417 2.81871 9.14963 3.0245 8.94577C3.23029 8.74191 3.49889 8.61352 3.78677 8.58139ZM12.1137 3.52945C11.3523 3.44495 10.5838 3.44495 9.82229 3.52945C9.73433 3.53936 9.65224 3.5785 9.58917 3.64061C9.52609 3.70271 9.48569 3.78419 9.47441 3.87198C9.38421 4.64248 9.38421 5.42087 9.47441 6.19136C9.48584 6.27914 9.52638 6.36055 9.58956 6.42254C9.65274 6.48454 9.7349 6.52354 9.82288 6.5333C10.5774 6.6176 11.3586 6.6176 12.1131 6.5333C12.2011 6.52354 12.2833 6.48454 12.3464 6.42254C12.4096 6.36055 12.4502 6.27914 12.4616 6.19136C12.5518 5.42081 12.5518 4.64194 12.4616 3.87139C12.4502 3.78361 12.4096 3.7022 12.3464 3.64021C12.2833 3.57821 12.2017 3.53921 12.1137 3.52945ZM9.72315 2.64491C10.5501 2.55312 11.3847 2.55312 12.2117 2.64491C12.7994 2.71021 13.2761 3.17326 13.3455 3.76809C13.4438 4.60742 13.4438 5.45534 13.3455 6.29466C13.3108 6.58233 13.1799 6.84984 12.9741 7.05382C12.7683 7.25779 12.4996 7.38627 12.2117 7.41843C11.3913 7.50985 10.5436 7.50985 9.72315 7.41843C9.43518 7.38627 9.16652 7.25779 8.96071 7.05382C8.75491 6.84984 8.62403 6.58233 8.5893 6.29466C8.49104 5.45534 8.49104 4.60742 8.5893 3.76809C8.62416 3.48053 8.75509 3.21315 8.96088 3.0093C9.16667 2.80544 9.43527 2.67704 9.72315 2.64491ZM12.1137 9.46592C11.3523 9.38142 10.5838 9.38142 9.82229 9.46592C9.73441 9.4758 9.65239 9.51486 9.58933 9.57685C9.52627 9.63883 9.48581 9.72017 9.47441 9.80786C9.38416 10.5786 9.38416 11.3571 9.47441 12.1278C9.48584 12.2156 9.52638 12.297 9.58956 12.359C9.65274 12.421 9.7349 12.46 9.82288 12.4698C10.5774 12.5541 11.3586 12.5541 12.1131 12.4698C12.2011 12.46 12.2833 12.421 12.3464 12.359C12.4096 12.297 12.4502 12.2156 12.4616 12.1278C12.5518 11.3573 12.5518 10.5784 12.4616 9.80786C12.4502 9.72008 12.4096 9.63868 12.3464 9.57668C12.2833 9.51468 12.2017 9.47568 12.1137 9.46592ZM9.72315 8.58139C10.5501 8.4896 11.3847 8.4896 12.2117 8.58139C12.7994 8.64669 13.2761 9.10973 13.3455 9.70457C13.4438 10.5439 13.4438 11.3918 13.3455 12.2311C13.3107 12.5187 13.1797 12.7861 12.9739 12.9899C12.7682 13.1938 12.4996 13.3222 12.2117 13.3543C11.3913 13.4463 10.5436 13.4463 9.72315 13.3543C9.43527 13.3222 9.16667 13.1938 8.96088 12.9899C8.75509 12.7861 8.62416 12.5187 8.5893 12.2311C8.49104 11.3918 8.49104 10.5439 8.5893 9.70457C8.62416 9.417 8.75509 9.14963 8.96088 8.94577C9.16667 8.74191 9.43527 8.61352 9.72315 8.58139Z" fill="currentColor"/> </svg><span>상세</span></button><button class="vt" data-v="summary"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g fill="currentColor"><rect x="2.5" y="2.5" width="3" height="3" rx="0.7"/><rect x="6.5" y="2.5" width="3" height="3" rx="0.7"/><rect x="10.5" y="2.5" width="3" height="3" rx="0.7"/><rect x="2.5" y="6.5" width="3" height="3" rx="0.7"/><rect x="6.5" y="6.5" width="3" height="3" rx="0.7"/><rect x="10.5" y="6.5" width="3" height="3" rx="0.7"/><rect x="2.5" y="10.5" width="3" height="3" rx="0.7"/><rect x="6.5" y="10.5" width="3" height="3" rx="0.7"/><rect x="10.5" y="10.5" width="3" height="3" rx="0.7"/></g></svg><span>요약</span></button></div>
+      </div></div></div>
+<div class="content">
+
+    <aside class="rail">
+      <!-- 템플릿 모드 -->
+      <!-- 템플릿 레일은 뺐다 — 목록이 본문을 다 쓰므로 쓰이지 않는다. 레일은 구성 복사에서만(결정 120).
+           구성 복사 입구(rail-copy)도 함께 사라졌다 — 흐름은 ?view=copy 로 살아 있다 -->
+      <!-- 복사 모드 — 레일이 '내 자동화 / 공유받은 자동화'로 바뀐다 -->
+      <div class="rail-mode" data-mode="copy" hidden>
+        <div class="rail-hd">
+          <button class="back js-tpl-mode"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg><span>템플릿 선택</span></button>
+          <div class="rail-mode-ttl">구성 복사 · 원본 고르기</div>
+        </div>
+        <div class="rail-body">
+          <div class="rail-grp">내 자동화</div>
+          <button class="rail-item js-pick-src" data-src="news"><span class="rail-cat">자동 · 대기 중</span><span class="rail-name">데일리 뉴스 검색</span></button><button class="rail-item js-pick-src" data-src="drone"><span class="rail-cat">자동 · 감시 중</span><span class="rail-name">민원 답변 작성</span></button><button class="rail-item js-pick-src" data-src="contract"><span class="rail-cat">수동 · 대기 중</span><span class="rail-name">계약서 검토 요청</span></button>
+        </div>
+      </div>
+    </aside>
+
+      <div class="stage-area">
+
+<!-- @조각 _목록.html -->
+        <!-- 템플릿 리스트 — 첫 화면(결정 133). 레일이 함께 열리고 아무것도 골라져 있지 않다(결정 120) -->
+    <section class="view" id="v-pick" hidden>
+      <!-- 도구 줄 — 왼쪽 정렬 유지. 2026-09-17에 오른쪽으로 밀어 봤다가 되돌림(사용자: 화면①과 달리 왼쪽에 놓일 것이 없어 왼쪽이 비어 보임) -->
+      
+      <div class="gal">
+        <button class="tpl-card js-galcard js-pick-tpl" data-tpl="drone" data-tags="이메일,보고"><span class="tpl-tags"><span class="tpl-badge">이메일</span><span class="tpl-badge">보고</span></span><span class="tpl-name">민원 답변 작성</span><span class="tpl-desc">수신 민원을 판별하고 근거 문서를 찾아 검토용 답변을 작성해 채널에 공유합니다.</span><span class="tpl-detail"><span class="td-lb">하는 일</span><span class="td-flow"><span class="fstep">이메일 수신</span><span class="farw">›</span><span class="fstep">민원 관련성 판별</span><span class="farw">›</span><span class="fstep">근거 검색</span><span class="farw">›</span><span class="fstep">답변 작성</span><span class="farw">›</span><span class="fstep">채널 공유</span></span><span class="td-lb gap">준비물</span><span class="td-prep"><span class="pchip">수신 동기화 중인 이메일 계정</span><span class="pchip">근거 문서 폴더</span><span class="pchip">AI 직원</span><span class="pchip">결과를 공유할 채널</span></span></span><span class="tpl-foot"><span class="sp"></span><span class="btn-primary-demo size-medium state-default card-start js-start-card">만들기</span></span></button>
+        <button class="tpl-card js-galcard js-pick-tpl" data-tpl="report" data-tags="예약,지식/문서,보고"><span class="tpl-tags"><span class="tpl-badge">예약</span><span class="tpl-badge">지식/문서</span><span class="tpl-badge">보고</span></span><span class="tpl-name">정기 지식 보고</span><span class="tpl-desc">지정한 일정에 지식함에서 주제에 맞는 자료를 검색해 보고서를 작성하고 채널에 공유합니다.</span><span class="tpl-detail"><span class="td-lb">하는 일</span><span class="td-flow"><span class="fstep">일정 시작</span><span class="farw">›</span><span class="fstep">지식함 검색</span><span class="farw">›</span><span class="fstep">보고서 작성</span><span class="farw">›</span><span class="fstep">채널 공유</span></span><span class="td-lb gap">준비물</span><span class="td-prep"><span class="pchip">근거 문서 폴더</span><span class="pchip">AI 직원</span><span class="pchip">결과를 공유할 채널</span></span></span><span class="tpl-foot"><span class="sp"></span><span class="btn-primary-demo size-medium state-default card-start js-start-card">만들기</span></span></button>
+        <button class="tpl-card js-galcard js-pick-tpl" data-tpl="notice" data-tags="예약,보고"><span class="tpl-tags"><span class="tpl-badge">예약</span><span class="tpl-badge">보고</span></span><span class="tpl-name">정기 알림</span><span class="tpl-desc">정해진 요일과 시간에 업무 안내를 지정한 채널에 공유합니다.</span><span class="tpl-detail"><span class="td-lb">하는 일</span><span class="td-flow"><span class="fstep">일정 시작</span><span class="farw">›</span><span class="fstep">안내문 작성</span><span class="farw">›</span><span class="fstep">채널 공유</span></span><span class="td-lb gap">준비물</span><span class="td-prep"><span class="pchip">AI 직원</span><span class="pchip">결과를 공유할 채널</span></span></span><span class="tpl-foot"><span class="sp"></span><span class="btn-primary-demo size-medium state-default card-start js-start-card">만들기</span></span></button>
+      </div>
+      <div class="gal-empty" hidden>이 키워드에는 템플릿이 없습니다.</div>
+    </section>
+<!-- @끝 _목록.html -->
+
+    <!-- 소개는 화면에서 빼고 상세(팝업 / 하단 레이어)로 옮겼다 — 단계가 '작성 → 확인' 둘로 줄었다 -->
+
+    <section class="view" id="v-srcpick" hidden>
+      <div class="pg-hd"><div class="pg-ttl-row"><span class="pg-ttl">가져올 원본을 고르세요</span></div>
+        <p class="pg-desc">왼쪽에서 자동화를 고르면 그 구성과 설정을 그대로 가져와 새 자동화를 만듭니다. 복사본은 원본과 끊어진 별개의 자동화이고, 소유자는 나입니다.</p></div>
+      <ul class="pick-note">
+        <li>가져오는 것 — 단계 구성 · 프롬프트 · 설정값(채널 · 계정 · AI 직원 · 폴더)</li>
+        <li>가져오지 않는 것 — 켜짐 여부 · 실행 이력</li>
+      </ul>
+    </section>
+
+<!-- @조각 _작성.html -->
+    <section class="view" id="v-setup" hidden>
+      <!-- 삼단(결정 175 · LAB G-6) — 왼쪽 단은 「어느 템플릿으로 만드는 중인지」, 오른쪽은 작성.
+           머리(돌아가기 · 이름 · 칩 · 설명)는 왼쪽 단이 흡수했다(D-67 닫힘). 왼쪽 설명 열과 오른쪽 입력 열이 줄마다 맞물린다 -->
+      <div class="warn-bar js-s-warn" hidden><b>접근할 수 없는 대상이 원본에서 따라왔습니다.</b> 표시된 항목을 바꾸지 않고 등록하면 <b>설정 중</b>으로 들어갑니다.</div>
+      <div class="stage" id="st-form">
+        <div class="g6">
+          <div class="g6-row g6-back"><div class="g6-l"><button class="back js-to-pick"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg><span>돌아가기</span></button></div><div class="g6-r"></div></div>
+          <div class="g6-row g6-head">
+            <div class="g6-l"><div class="g-kind js-s-kind">템플릿</div><div class="g-name js-s-name">민원 답변 작성</div><div class="g-desc js-s-desc">수신 민원을 판별하고 근거 문서를 찾아 검토용 답변을 작성해 채널에 공유합니다.</div><div class="g-tags js-s-cat"></div><span class="src-note js-s-src" hidden></span></div>
+            <div class="g6-r"><div class="frm js-g6-basic"></div></div>
+          </div>
+          <div class="g6-row g6-steps-lb"><div class="g6-l"><div class="g-steps-lb">하는 일</div></div><div class="g6-r"><div class="rf-row"><button class="btn-basic-demo size-small rf-btn js-refresh" title="아래 칸들의 선택지(계정 · 폴더 · AI 직원 · 채널)를 다시 불러옵니다"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a6 6 0 1 1-1.8-4.3"/><path d="M16 3v3.5h-3.5"/></svg>연결 정보 새로고침</button></div></div></div>
+          <!-- 저장 줄은 마지막 단계 줄 아래, 오른쪽 열에 — layoutForm() 이 단계 줄 뒤로 옮긴다(결정 180) -->
+          <div class="g6-row g6-tail js-g6-tail"><div class="g6-l"><div class="tail-line"></div></div><div class="g6-r"><div class="bar"><span class="sp"></span><span class="bar-hint js-req-hint">아직 고르지 않은 필수 항목이 있습니다</span><button class="btn-primary-demo size-medium state-disabled js-save" disabled>저장</button></div></div></div>
+          <!-- 단계 줄은 layoutForm() 이 여기에 만든다 -->
+        </div>
+        <div class="one" hidden>
+          <div class="frm-col">
+            <div class="frm js-fld-pool">
+              <div class="fld-row"><label class="fld-lb req">자동화 이름</label><input class="fld js-req" name="name" value="새 민원 답변 작성"></div>
+              <div class="fld-row"><label class="fld-lb">설명</label><textarea class="fld" name="desc" rows="2" placeholder="이 자동화가 무엇을 하는지 적습니다. 목록과 카드에 보입니다."></textarea></div>
+                                          <div class="fld-row js-only-mail"><label class="fld-lb req">수신 이메일 계정</label><div class="sel-wrap"><select class="fld js-req" name="mail"><option value="">계정을 선택하세요</option><option>criss_it@naver.com</option><option>support@crissit.com</option></select><svg class="ch-arrow" viewBox="0 0 8 5" fill="none"><path d="M1 1L4 3.5L7 1" stroke="#6b7280" stroke-width="1.2" stroke-linecap="round"/></svg></div></div>
+              <div class="fld-row js-only-mail"><label class="fld-lb req">민원 판단 기준</label><input class="fld js-req" name="rule" value="" placeholder="예: 시설 이용 관련 민원"><div class="fld-help">어떤 메일을 이 자동화가 처리할지 적습니다.</div></div>
+              <div class="fld-row js-only-sched"><label class="fld-lb req">일정</label><div class="sel-wrap"><select class="fld js-req" name="sched"><option value="">요일과 시각을 선택하세요</option><option>평일 09:00</option><option>매일 08:30</option><option>월요일 09:00</option></select><svg class="ch-arrow" viewBox="0 0 8 5" fill="none"><path d="M1 1L4 3.5L7 1" stroke="#6b7280" stroke-width="1.2" stroke-linecap="round"/></svg></div></div>
+                            <div class="fld-row"><label class="fld-lb req">근거 문서 폴더</label><div class="sel-wrap"><select class="fld js-req" name="folder"><option value="">폴더를 선택하세요</option><option>지식함 / 민원 / 처리 기준</option><option>지식함 / 사규</option><option>지식함 / 제품 매뉴얼</option><option>지식함 / 뉴스 / 스크랩</option></select><svg class="ch-arrow" viewBox="0 0 8 5" fill="none"><path d="M1 1L4 3.5L7 1" stroke="#6b7280" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="fld-help">선택한 폴더와 하위 폴더에서 접근 가능한 문서를 검색합니다. <a href="#" class="lnk">지식함 열기</a></div></div>
+              <div class="fld-row"><label class="fld-lb req">AI 직원</label><div class="sel-wrap"><select class="fld js-req" name="agent"><option value="">AI 직원을 선택하세요</option><option>최재원 · 영업 매니저</option><option>이서현 · 인사담당</option><option>김민지 · 시니어 개발자</option><option>수아 · 지식 관리</option></select><svg class="ch-arrow" viewBox="0 0 8 5" fill="none"><path d="M1 1L4 3.5L7 1" stroke="#6b7280" stroke-width="1.2" stroke-linecap="round"/></svg></div></div>
+              <div class="fld-row"><label class="fld-lb">추가 작성 지침</label><textarea class="fld" name="guide" rows="2" placeholder="예: 공손한 문체로 작성해주세요"></textarea><div class="fld-help">근거가 부족하면 확인 필요와 추가 질문을 표시합니다. 답변은 질문 정리 · 근거 · 답변 순서로 작성합니다.</div></div>
+                            <div class="fld-row"><label class="fld-lb req">공유 채널</label><div class="sel-wrap"><select class="fld js-req" name="channel"><option value="">채널을 선택하세요</option><option># 민원-검토</option><option># 민원대응</option><option># 일반</option></select><svg class="ch-arrow" viewBox="0 0 8 5" fill="none"><path d="M1 1L4 3.5L7 1" stroke="#6b7280" stroke-width="1.2" stroke-linecap="round"/></svg></div></div>
+
+              <div id="adv-zone"><div class="fld-sep">고급 설정 <span class="adv-tag">2차</span></div>
+              <div class="adv-lock">
+                <div class="adv-t">단계 구성은 템플릿이 정한 그대로입니다</div>
+                <div class="adv-d">지금은 템플릿이 정한 단계 그대로 <b>값만 고칩니다</b>. 단계를 바꾸거나 더하고 빼는 일은 나중에 이 자리에서 열립니다.</div>
+                <button class="btn-basic-demo size-medium state-disabled" disabled>워크플로우 구성 열기</button>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </section>
+<!-- @끝 _작성.html -->
+
+      </div>
+
+      <!-- B안: 하단 레이어 — 목록을 위에 둔 채 아래에서 펼쳐진다(노드 팔레트와 같은 자리) -->
+      <div class="sheet" id="sheet" hidden>
+        <div class="sheet-hd"><span class="sheet-ttl js-d-name"></span><span class="sheet-hint js-fold-hint">카드를 누르면 설명을 볼 수 있습니다</span><span class="tpl-tags js-d-cat"></span><span class="sp"></span><button class="btn-ico js-fold" aria-label="설명 접기"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8l4.5 4.5L14.5 8"/></svg></button></div>
+        <!-- 조작 버튼 없음 — 접기는 ▾ 나 빈 곳 클릭, 만들기는 카드의 버튼(결정 120) -->
+        <p class="sheet-desc js-d-desc"></p>
+        <div class="sheet-body">
+          <div><div class="intro-lb">이 자동화가 하는 일</div><div class="js-d-flow"></div></div>
+          <div><div class="intro-lb">미리 갖춰야 하는 것</div><ul class="intro-prep js-d-prep"></ul></div>
+        </div>
+      </div>
+    </div></div>
+
+
+  </div>
+</div>
+</div>
+
+<div class="mdl-back" id="back" hidden></div>
+<div class="mdl mdl-narrow" id="m-leave" hidden>
+  <div class="mdl-hd"><span class="mdl-ttl">작성 중인 내용이 있습니다</span></div>
+  <div class="mdl-body"><p class="mdl-p">저장하지 않으면 채운 내용이 사라집니다.</p><p class="mdl-p js-leave-hint" hidden>꼭 골라야 하는 항목이 남아 있어 지금은 저장할 수 없습니다.</p></div>
+  <div class="mdl-ft"><button class="btn-basic-demo size-medium state-default js-leave-stay">취소</button><span class="sp"></span><button class="btn-basic-demo size-medium state-default js-leave-go">저장 안 함</button><button class="btn-primary-demo size-medium state-default js-leave-save">저장</button></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const TPL={"drone": {"name": "민원 답변 작성", "cat": "이메일 · 이메일 수신", "catKey": "이메일", "tags": ["이메일","보고"], "desc": "수신 민원을 판별하고 근거 문서를 찾아 검토용 답변을 작성해 채널에 공유합니다.", "flow": ["이메일 수신", "민원 관련성 판별", "근거 검색", "답변 작성", "채널 공유"], "trigger": "이메일 수신", "needs": [["수신 동기화 중인 이메일 계정","ico-gnb-mail.svg"], ["근거 문서 폴더","ico-folder.svg"], ["AI 직원","ico-teamAI.svg"], ["결과를 공유할 채널","ico-channel.svg"]]}, "report": {"name": "정기 지식 보고", "cat": "보고 · 일정", "catKey": "보고", "tags": ["예약","지식/문서","보고"], "desc": "지정한 일정에 지식함에서 주제에 맞는 자료를 검색해 보고서를 작성하고 채널에 공유합니다.", "flow": ["일정 시작", "지식함 검색", "보고서 작성", "채널 공유"], "trigger": "일정", "needs": [["근거 문서 폴더","ico-folder.svg"], ["AI 직원","ico-teamAI.svg"], ["결과를 공유할 채널","ico-channel.svg"]]}, "notice": {"name": "정기 알림", "cat": "알림 · 일정", "catKey": "알림", "tags": ["예약","보고"], "desc": "정해진 요일과 시간에 업무 안내를 지정한 채널에 공유합니다.", "flow": ["일정 시작", "안내문 작성", "채널 공유"], "trigger": "일정", "needs": [["AI 직원","ico-teamAI.svg"], ["결과를 공유할 채널","ico-channel.svg"]]}}, SRC={"news": {"name": "데일리 뉴스 검색", "shared": false, "state": "자동 · 대기 중", "flow": ["일정 시작", "뉴스 검색", "요약 작성", "채널 공유"], "trigger": "일정", "vals": {"mail": "", "rule": "", "sched": "매일 08:30", "folder": "지식함 / 뉴스 / 스크랩", "agent": "수아 · 지식 관리", "guide": "주요 기사 5개를 한 줄씩", "channel": "# 일반"}}, "drone": {"name": "민원 답변 작성", "shared": false, "state": "자동 · 감시 중", "flow": ["이메일 수신", "민원 관련성 판별", "근거 검색", "답변 작성", "채널 공유"], "trigger": "이메일 수신", "vals": {"mail": "criss_it@naver.com", "rule": "시설 이용 관련 민원", "sched": "", "folder": "지식함 / 민원 / 처리 기준", "agent": "최재원 · 영업 매니저", "guide": "", "channel": "# 민원-검토"}}, "contract": {"name": "계약서 검토 요청", "shared": false, "state": "수동 · 대기 중", "flow": ["문서 업로드", "조항 검토", "위험 정리", "결과 저장"], "trigger": "수동", "vals": {"mail": "", "rule": "", "sched": "", "folder": "지식함 / 사규", "agent": "이서현 · 인사담당", "guide": "위험 조항은 근거 조문과 함께", "channel": "# 일반"}}, "report": {"name": "정기 지식 보고", "shared": true, "state": "자동 · 동작 중", "flow": ["일정 시작", "지식함 검색", "보고서 작성", "채널 공유"], "trigger": "일정", "vals": {"mail": "", "rule": "", "sched": "평일 09:00", "folder": "지식함 / 경영지원 (접근 불가)", "agent": "김민지 · 시니어 개발자", "guide": "", "channel": "# 경영지원 (접근 불가)"}}, "notice": {"name": "월요일 업무 안내", "shared": true, "state": "자동 · 꺼짐", "flow": ["일정 시작", "안내문 작성", "채널 공유"], "trigger": "일정", "vals": {"mail": "", "rule": "", "sched": "월요일 09:00", "folder": "", "agent": "수아 · 지식 관리", "guide": "", "channel": "# 민원대응"}}};
+const FIELD_LB={mail:"수신 이메일 계정",rule:"민원 판단 기준",sched:"일정",folder:"근거 문서 폴더",agent:"AI 직원",guide:"추가 작성 지침",channel:"공유 채널"};
+let mode='template', cur=null, snapshot='', pendingTo=null;
+
+function show(id){ $$('.view').forEach(v=>v.hidden=true); $('#v-'+id).hidden=false;
+  // 목록 화면에 있는 동안 하단 줄이 늘 남는다(최소화 상태)
+  $('#sheet').hidden = id!=='pick'; if(id==='pick') foldSheet();
+  document.body.classList.toggle('is-canvas', id==='canvas');
+  document.body.classList.toggle('is-entry', id==='entry');
+  document.body.classList.toggle('is-setup', id==='setup');   // 삼단 작성 화면 — 좌우 여백 칸을 없앤다(결정 175)
+  $('.stage-area').scrollTop=0;
+  // 상단 바는 이 화면이 무슨 일을 하는 화면인지를 적는다(결정 151). 허브(갈래 고르기)에는 상단 바가 없다
+  // 작성 화면 이름은 풀어 쓴다(결정 175) — 「템플릿 생성」은 템플릿*으로*인지 템플릿*을*인지 헷갈려 버렸다
+  const isCopy = (typeof mode!=='undefined' && mode==='copy');
+  const TT={pick:'템플릿 선택', setup: isCopy ? '구성 복사로 만들기' : '템플릿으로 자동화 만들기', srcpick:'구성 복사'};
+  const nm = TT[id] || '새 자동화';
+  // 경로는 **지나온 길**이다(결정 180) — 작성 화면은 한 단계 더 들어간 곳이므로 조각을 갈아 끼우지 않고 쌓는다.
+  //   목록  새 자동화 › 템플릿 선택
+  //   작성  새 자동화 › 템플릿 선택 › 민원 답변 작성   ← 어느 템플릿으로 만드는 중인지가 경로에 남는다
+  // 조각에 링크를 걸지 않는다 — 돌아가는 일은 본문의 「‹ 돌아가기」가 맡는다(사용자 2026-09-18).
+  const src = isCopy ? (typeof SRC!=='undefined' ? SRC : null) : (typeof TPL!=='undefined' ? TPL : null);
+  const tplName = (id==='setup' && src && cur && src[cur]) ? src[cur].name + (isCopy ? ' (복사)' : '') : '';
+  const mid=$('.js-crumb-mid'), arw=$('.js-crumb-arw'), c0=()=>$('.js-crumb');
+  if(mid && arw){ const on = !!tplName;
+    mid.hidden = !on; arw.hidden = !on;
+    if(on) mid.textContent = isCopy ? '구성 복사' : '템플릿 선택'; }
+  // 2026-09-20 — 상세에서 「설정」으로 들어온 경우는 **새로 만드는 길이 아니다.**
+  //   전에는 「새 자동화 › 템플릿 선택 › … · 설정」이라 거짓말을 했다. 화면③에서 왔으니 그 경로를 잇는다
+  if(typeof EDIT_FROM_DETAIL!=='undefined' && EDIT_FROM_DETAIL){
+    const first=$('.crumb > span:first-child'); if(first) first.textContent='전체 목록';
+    if(mid && arw){ mid.hidden=false; arw.hidden=false; mid.textContent=$('#st-form [name=name]') ? $('#st-form [name=name]').value : ''; }
+    if(c0()) c0().textContent='설정';
+    return;
+  }
+  const c=$('.js-crumb'); if(c) c.textContent = tplName || nm;
+  // 타이틀 줄은 그대로 「무슨 일을 하는 화면인가」를 적는다(결정 151) — 작성 화면에서는 어차피 숨긴다
+  const h=$('.js-hd-ttl'); if(h) h.textContent = nm;
+  // 작성 화면은 본문 머리에 「‹ 돌아가기」 + 자동화 이름이 이미 있어 타이틀 줄을 겹쳐 두지 않는다(D-67)
+  const tr=$('.js-ttlrow'); if(tr) tr.hidden = (id!=='pick');
+  // 도구 줄(키워드 · 보기 전환)은 템플릿 목록을 다루는 손잡이다 — 작성 화면에는 다룰 목록이 없다
+  const hz=$('.head-zone'); if(hz) hz.hidden = (id!=='pick');
+  const hd=$('.page-hd'); if(hd) hd.hidden = (id==='entry'); }
+function railMode(m){ $$('.rail-mode').forEach(r=>r.hidden = r.dataset.mode!==m);
+  // 레일은 구성 복사에서만 — 템플릿 갈래는 목록이 본문을 다 쓴다
+  $('.rail').hidden = m!=='copy'; document.body.classList.toggle('has-rail', m==='copy'); }
+// 템플릿 상세 — 같은 내용을 A안(팝업) · B안(하단 레이어) 두 곳에 채운다
+let pinned=null;   // pinned = 클릭으로 고른 템플릿
+// 최소화 = 접힘 + 카드 선택 해제. 접혀 있는 동안은 호버로 열리지 않는다(누르라고 적혀 있으므로)
+function isFolded(){ return $('#sheet').classList.contains('is-fold'); }
+function foldSheet(){ $('#sheet').classList.add('is-fold'); pinned=null;
+  $$('.tpl-card').forEach(c=>c.classList.remove('is-on','is-peek')); peekTitle(null); }
+// 접혀 있을 때는 이름만 바꾼다 — 펴지 않는다
+function peekTitle(key){ const nm = key && TPL[key] ? TPL[key].name : '';
+  $$('.js-d-name').forEach(e=>e.textContent=nm);
+  $('.js-fold-hint').textContent = nm ? '누르면 설명을 볼 수 있습니다' : '카드를 누르면 설명을 볼 수 있습니다';
+  $$('.tpl-card').forEach(c=>c.classList.toggle('is-peek', !!nm && c.dataset.tpl===key)); }
+function fillDetail(key){ const d=TPL[key];
+  if(!d){ $$('.tpl-card').forEach(c=>c.classList.remove('is-on','is-peek')); return; }
+  $$('.js-d-name').forEach(e=>e.textContent=d.name);
+  $$('.js-d-cat').forEach(e=>e.innerHTML=tagsHtml(d));
+  $$('.js-d-desc').forEach(e=>e.textContent=d.desc);
+  $('.js-d-flow').innerHTML = flowHtml(d.flow);
+  $$('.js-d-prep').forEach(e=>e.innerHTML=(d.needs||[]).map(n=>'<li>'+n[0]+'</li>').join(''));
+  $$('.tpl-card').forEach(c=>{ c.classList.toggle('is-peek', c.dataset.tpl===key);
+    c.classList.toggle('is-on', c.dataset.tpl===pinned); }); }
+// 만들기 — 작성 화면을 열기만 한다. 내 자동화에는 아직 생기지 않는다(결정 123)
+function startWriting(){ closeDetail(); show('setup'); }
+// saveNow — 화면02/_작성.js 로 옮겼습니다(결정 3001)
+function openDetail(){ $('#sheet').hidden=false; $('#sheet').classList.remove('is-fold'); }
+function closeDetail(){ $('#sheet').hidden=true; pinned=null;
+  $$('.tpl-card').forEach(c=>c.classList.remove('is-on','is-peek')); }
+// 호버 — 올리면 미리보기, 클릭하면 고정. 목록 밖으로 나가면 고정된 것으로 되돌아간다(제품 노드 팔레트와 같은 규칙)
+// 열려 있는 동안에는 호버로 내용만 갈아 끼운다. 접혀 있으면 열지 않는다
+document.addEventListener('mouseover',e=>{
+  const c=e.target.closest('.tpl-card'); if(!c || $('#v-pick').hidden) return;
+  if(isFolded()) peekTitle(c.dataset.tpl); else fillDetail(c.dataset.tpl); });
+// 목록 밖으로 나가면 고른 카드로 되돌아간다
+document.addEventListener('mouseout',e=>{
+  const g=e.target.closest('.gal'); if(!g || (e.relatedTarget && g.contains(e.relatedTarget))) return;
+  if(isFolded()) peekTitle(null); else if(pinned) fillDetail(pinned); });
+function markRail(sel_){ $$('.rail-item').forEach(b=>b.classList.remove('is-on')); if(sel_) sel_.classList.add('is-on'); }
+function flowList(steps){ return steps.map((s,i)=>'<li data-n="'+(i+1)+'">'+s+'</li>').join(''); }
+function tagsHtml(d){ return (d.tags||[]).map(t=>'<span class="tpl-badge">'+t+'</span>').join(''); }
+function flowHtml(steps){ return '<div class="flow">'+steps.map(s=>'<span class="flow-step">'+s+'</span>').join('<span class="flow-arrow">→</span>')+'</div>'; }
+/* @조각 _작성.js */
+function formValues(){ return $$('#st-form .fld').map(f=>f.value).join('|'); }
+function setVal(name,v){ const f=$('#st-form [name='+name+']'); if(!f) return; f.value=v||''; f.classList.remove('is-bad'); const help=f.closest('.fld-row').querySelector('.fld-help.bad'); if(help) help.remove(); }
+
+// ── 단계마다 칸을 묶는다(결정 169 · LAB B-5) — 어느 칸이 어느 단계를 위한 것인지 화면이 말해 준다.
+// 칸을 단계 이름에 맞춰 옮긴다. 어느 단계에도 안 붙는 칸은 그 템플릿이 안 쓰는 칸이므로 감춘다.
+// ※ 단계 이름은 템플릿이 정한다(I-21) — 새 템플릿을 넣을 때 이 표에 한 줄을 더한다
+const STEP_FLD = {
+  "이메일 수신":["mail"], "일정 시작":["sched"], "문서 업로드":[],
+  "민원 관련성 판별":["rule"],
+  "근거 검색":["folder"], "지식함 검색":["folder"], "뉴스 검색":["folder"], "조항 검토":["folder"],
+  "답변 작성":["agent","guide"], "보고서 작성":["agent","guide"], "안내문 작성":["agent","guide"],
+  "요약 작성":["agent","guide"], "위험 정리":["agent","guide"],
+  "채널 공유":["channel"], "결과 저장":["channel"]
+};
+// 단계가 하는 일 한 줄 — 왼쪽 열에 단계 이름 아래 붙는다(결정 175). 없으면 이름만
+const STEP_DESC = {
+  "이메일 수신":"고른 계정으로 오는 메일을 받습니다", "일정 시작":"정한 요일·시각에 시작합니다", "문서 업로드":"올린 문서를 받습니다",
+  "민원 관련성 판별":"기준에 맞는 민원 메일만 고릅니다",
+  "근거 검색":"폴더에서 답변 근거가 될 문서를 찾습니다", "지식함 검색":"폴더에서 관련 문서를 찾습니다",
+  "뉴스 검색":"폴더의 스크랩에서 오늘 기사를 고릅니다", "조항 검토":"폴더의 기준 문서와 대조합니다",
+  "답변 작성":"AI 직원이 검토용 답변 초안을 씁니다", "보고서 작성":"AI 직원이 보고서 초안을 씁니다",
+  "안내문 작성":"AI 직원이 안내문을 씁니다", "요약 작성":"AI 직원이 요약을 씁니다", "위험 정리":"AI 직원이 위험 항목을 정리합니다",
+  "채널 공유":"결과를 채널에 올립니다", "결과 저장":"결과를 채널에 남깁니다"
+};
+const CHK_SVG='<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg>';
+function layoutForm(flow, strict){
+  // 삼단(결정 175 · LAB G-6) — 칸 창고(.js-fld-pool)에서 칸을 꺼내 줄마다 오른쪽 열에 붙인다
+  const g6=$('#st-form .g6'); if(!g6) return;
+  const rows={}; $$('#st-form .fld-row').forEach(function(r){ const f=r.querySelector('[name]'); rows[f?f.name:'trigger']=r; });
+  const pool=$('#st-form .js-fld-pool');
+  $$('#st-form .g6-step').forEach(function(d){ d.remove(); });
+  const used={};
+  function take(keys, box){ let any=false;
+    (keys||[]).forEach(function(k){ const r=rows[k]; if(!r) return; r.hidden=false; box.appendChild(r); used[k]=1; any=true; });
+    return any; }
+  // 첫 줄 — 템플릿 이름·설명(왼쪽) ↔ 자동화 이름·설명 칸(오른쪽)
+  const basic=$('#st-form .js-g6-basic'); take(['name','desc'], basic);
+  function addStep(n, ttl, keys){
+    const d=document.createElement('div'); d.className='g6-row g6-step'; d.dataset.n=n;
+    const desc=STEP_DESC[ttl]||'';
+    d.innerHTML='<div class="g6-l"><div class="tc-l"><span class="tc-dot">'+n+'</span><div class="tc-lt"><div class="tc-name">'+ttl+'</div>'
+      +(desc?'<div class="tc-desc">'+desc+'</div>':'')+'</div></div></div><div class="g6-r"><div class="frm"></div></div>';
+    const box=d.querySelector('.frm');
+    if(!take(keys, box)){ const e=document.createElement('div'); e.className='wst-none'; e.textContent='이 단계에서 설정할 것은 없습니다'; box.appendChild(e); }
+    g6.insertBefore(d, $('#st-form .js-g6-tail'));
+  }
+  (flow||[]).forEach(function(s,i){ addStep(i+1, s, STEP_FLD[s]); });
+  // 어느 단계에도 안 붙은 칸. 템플릿은 단계 이름을 우리가 정하므로 안 붙으면 안 쓰는 칸이다 — 감춘다.
+  // 그러나 구성 복사는 원본의 단계 이름을 알 수 없으므로, 값이 있거나 필수인 칸은 「그 밖의 설정」으로 모은다
+  const rest=[];
+  Object.keys(rows).forEach(function(k){ if(used[k]) return;
+    const r=rows[k], f=r.querySelector('select,input,textarea');
+    if(!strict && f && (f.value || f.classList.contains('js-req'))) rest.push(k);
+  });
+  if(rest.length) addStep('·','그 밖의 설정', rest);
+  Object.keys(rows).forEach(function(k){ if(!used[k]){ rows[k].hidden=true; pool.appendChild(rows[k]); } });
+}
+
+function openSetup(kind, key, go){
+  mode=kind; cur=key; const d = kind==='template' ? TPL[key] : SRC[key];
+  $('.js-s-name').textContent = kind==='template' ? d.name : d.name+' (복사)';
+  $('.js-s-cat').innerHTML = kind==='template' ? tagsHtml(d) : '<span class="tpl-badge">구성 복사</span>';
+  $('.js-s-desc').hidden = false; $('.js-s-desc').textContent = d.desc || '';
+  $('.js-s-kind').textContent = kind==='template' ? '템플릿' : '구성 복사 · 원본';
+  $('.js-s-src').hidden = kind!=='copy'; $('.js-s-src').textContent = kind==='copy' ? '원본: '+d.name : '';
+  const tg=$('.js-s-trigger'); if(tg) tg.textContent = d.trigger;   // 칸은 없앴다(2026-09-18 ①)
+  $$('.js-only-mail').forEach(r=>r.hidden = d.trigger!=='이메일 수신'); $$('.js-only-sched').forEach(r=>r.hidden = d.trigger!=='일정');
+  setVal('name', kind==='template' ? '새 '+d.name : d.name+' (복사)');   // 기본값은 「새 」+ 템플릿 이름(결정 177) — 템플릿 이름과 구분되고 이미 있는 자동화와 안 겹친다
+  setVal('desc', kind==='template' ? '' : '원본 「'+d.name+'」의 구성을 가져와 만든 자동화');   // 템플릿이면 빈칸 — 설명은 플레이스홀더로만(결정 175)
+  $('#st-form [name=desc]').placeholder = '이 자동화가 무엇을 하는지 적습니다. 목록과 카드에 보입니다.';   // 예시 문장이 아니라 「이 칸이 무엇인지」(사용자 2026-09-18 오후)
+  ['mail','rule','sched','folder','agent','guide','channel'].forEach(n=>setVal(n, kind==='template' ? ''   /* 판단 기준도 빈칸 — 예시는 플레이스홀더로(결정 178) */ : (d.vals[n]||'')));
+  let bad=false;
+  if(kind==='copy'){ Object.keys(d.vals).forEach(function(n){ const v=d.vals[n];
+      if(/접근 불가/.test(v)){ bad=true; const f=$('#st-form [name='+n+']'); if(!f) return; f.classList.add('is-bad');
+        const help=document.createElement('div'); help.className='fld-help bad'; help.textContent='원본의 "'+v+'"는 내가 접근할 수 없어 비웠습니다. 다시 고르세요.'; f.closest('.fld-row').appendChild(help); f.value=''; } }); }
+  $('.js-s-warn').hidden=!bad;
+  layoutForm(d.flow, kind==='template');   // 단계 줄기로 다시 세운다(결정 169) — 값을 채운 뒤에 옮긴다
+  snapshot=formValues(); checkReq();
+  // 템플릿을 고르면 **곧장 작성 화면**으로 간다(결정 167) — 카드 아무 데나 눌러도, 「만들기」를 눌러도 같다.
+  // 설명(단계·준비물)은 카드가 이미 보여 주므로 거쳐 갈 상세가 없다(결정 163)
+  if(kind==='template'){ closeDetail(); startWriting(); }
+  else { closeDetail(); show('setup'); }
+  markRail(kind==='template' ? $('.rail-item[data-tpl='+key+']') : $('.rail-item[data-src='+key+']'));
+}
+// 단계는 하나다 — 작성해서 저장하면 그때 내 자동화에 생긴다(결정 123)
+function reqFields(){ return $$('#st-form .js-req').filter(s=>!s.closest('.fld-row').hidden); }
+// 단계마다 「아직 고를 것이 남았나」를 줄기에 적는다(2026-09-18 ②) —
+// 덜 찬 단계는 진한 번호, 다 찬 단계는 옅은 체크. 필수가 없는 단계(기본 등)는 그대로 둔다
+function markSteps(){ $$('#st-form .g6-step').forEach(function(d){
+  const req=[...d.querySelectorAll('.js-req')].filter(function(f){ return !f.closest('.fld-row').hidden; });
+  // 필수가 있으면 필수가 다 찼는지, 없으면 값 있는 칸이 하나라도 있는지 — 어느 쪽이든 「이 단계는 됐다」를 초록 체크로(결정 175 손질)
+  const all=[...d.querySelectorAll('select,input,textarea')].filter(function(f){ return !f.closest('.fld-row').hidden; });
+  const done = req.length ? req.every(function(f){ return f.value; }) : all.some(function(f){ return f.value; });
+  d.classList.toggle('is-done', done===true); d.classList.toggle('is-todo', done===false && req.length>0);
+  const dot=d.querySelector('.tc-dot'); if(dot) dot.innerHTML = done===true ? CHK_SVG : d.dataset.n; }); }
+function checkReq(){ const left=reqFields().filter(function(s){ return !s.value; }).length; const ok=!left; const b=$('.js-save'); b.disabled=!ok; b.classList.toggle('state-disabled',!ok); b.classList.toggle('state-default',ok);
+  // 자동 실행을 묻지 않으므로(결정 169) 저장이 무슨 일을 하는지 버튼 옆에 적어 둔다
+  const h=$('.js-req-hint'); h.hidden=false; h.classList.toggle('is-ready',ok);
+  h.textContent = ok ? '저장하면 바로 켜집니다 — 목록이나 상세에서 언제든 끕니다'
+                     : '아직 고르지 않은 필수 항목 ' + left + '개';
+  markSteps();
+  $$('#st-form .js-req').forEach(s=>s.classList.toggle('is-empty',!s.value)); }
+// ── 드롭다운 목록(2026-09-18 오후) — 브라우저 기본 팝업 대신 도구 줄 메뉴(.px-menu · 결정 165)와 같은 부품을 그린다.
+//    값은 native <select> 가 그대로 갖는다. 목록에서 고르면 select.value 를 바꾸고 change 를 쏜다.
+function closeFldMenus(){ $$('.sel-wrap.is-open').forEach(function(w){ w.classList.remove('is-open'); const m=w.querySelector('.fld-menu'); if(m) m.remove(); }); }
+function openFldMenu(wrap){
+  closeFldMenus();
+  const sel=wrap.querySelector('select'); if(!sel) return;
+  const m=document.createElement('div'); m.className='fld-menu';
+  [...sel.options].forEach(function(o){
+    if(!o.value) return;   // 「…를 선택하세요」는 빈 값 안내 — 목록 항목이 아니다(사용자 2026-09-18)
+    const b=document.createElement('button'); b.type='button'; b.textContent=o.textContent;
+    if(o.selected) b.classList.add('on');
+    b.addEventListener('click', function(ev){ ev.stopPropagation(); sel.value=o.value; sel.dispatchEvent(new Event('change',{bubbles:true})); closeFldMenus(); });
+    m.appendChild(b);
+  });
+  wrap.appendChild(m); wrap.classList.add('is-open');
+}
+document.addEventListener('mousedown', function(e){
+  const sel=e.target.closest('#st-form .sel-wrap select');
+  if(sel){ e.preventDefault(); const w=sel.closest('.sel-wrap'); if(w.classList.contains('is-open')) closeFldMenus(); else openFldMenu(w); return; }
+  if(!e.target.closest('.fld-menu')) closeFldMenus();
+});
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeFldMenus(); });
+document.addEventListener('change',e=>{ if(e.target.closest('#st-form')) checkReq(); });
+document.addEventListener('input',e=>{ if(e.target.closest('#st-form')) checkReq(); });
+// 저장 — 이 순간 내 자동화에 생긴다. 자동 실행을 켜 두었으면 바로 대기 중
+var EDIT_FROM_DETAIL=false;
+function saveNow(){ const on=true;   // 저장하면 곧장 켜짐(결정 169 · A-2) — 묻지 않는다
+  if(EDIT_FROM_DETAIL){ goPage('화면03_자동화상세.html'); return; }   // 설정으로 들어왔으면 상세로 돌아간다(P-5 · goPage 는 시연용 화면 이동 블록에)
+  const nm=addToMine($('#st-form [name=name]').value, on);
+  setVal('name', nm); $('.js-s-name').textContent=nm; snapshot=formValues();
+  railMode('template'); markRail(null); show('pick'); }
+
+// 작성 중이면 되묻고, 아니면 곧장 간다(3.49~3.51)
+function tryLeaveTo(go){
+  const inSetup=!$('#v-setup').hidden; const dirty = inSetup && formValues()!==snapshot;
+  if(dirty){ pendingTo=go; const can=!$('.js-save').disabled;
+    const sv=$('.js-leave-save'); sv.disabled=!can; sv.classList.toggle('state-disabled',!can); sv.classList.toggle('state-default',can);
+    $('.js-leave-hint').hidden=can;
+    $('#back').hidden=false; $('#m-leave').hidden=false; $('.js-leave-stay').focus(); return; }
+  go();
+}
+
+// 작성 화면에서 누를 수 있는 것들 — 저장 · 새로고침 · 「나갈까요」 확인창.
+// 정본의 클릭 처리 **맨 끝**에서 불린다(원래 순서 그대로). 처리했으면 true 를 돌려준다.
+function 작성클릭(e){
+    if(e.target.closest('.js-save') && !$('.js-save').disabled){ saveNow(); return true; }
+    if(e.target.closest('.js-refresh')){ e.preventDefault(); toast('연결 정보를 다시 불러왔습니다. 계정 · 폴더 · AI 직원 · 채널 목록을 갱신했습니다.'); return true; }
+    if(e.target.closest('.js-leave-stay')){ $('#m-leave').hidden=true; $('#back').hidden=true; pendingTo=null; return true; }
+    if(e.target.closest('.js-leave-go')){ $('#m-leave').hidden=true; $('#back').hidden=true; const go=pendingTo; pendingTo=null; if(go) go(); return true; }
+    if(e.target.closest('.js-leave-save') && !$('.js-leave-save').disabled){ $('#m-leave').hidden=true; $('#back').hidden=true; pendingTo=null; saveNow(); return true; }
+  return false;
+}
+/* @끝 _작성.js */
+
+document.addEventListener('click',e=>{
+  // 레일 — 구성 복사 모드로 / 템플릿 모드로
+  if(e.target.closest('.js-copy-mode')){ tryLeaveTo(function(){ railMode('copy'); markRail(null); show('srcpick'); }); return; }
+  if(e.target.closest('.js-tpl-mode')){ tryLeaveTo(function(){ railMode('template'); markRail(null); show('pick'); }); return; }
+  const sc=e.target.closest('.js-start-card');
+  if(sc){ const k=sc.closest('.tpl-card').dataset.tpl; tryLeaveTo(function(){ openSetup('template', k, true); }); return; }
+  if(e.target.closest('.js-fold')){ foldSheet(); return; }   // 화살표는 펼친 상태에만 있다 = 접는 버튼
+  const t=e.target.closest('.js-pick-tpl'); if(t){ const k=t.dataset.tpl; tryLeaveTo(function(){ openSetup('template', k, true); }); return; }   // 카드 = 만들기와 같은 동작(결정 167)
+  const s2=e.target.closest('.js-pick-src'); if(s2){ const k=s2.dataset.src; tryLeaveTo(function(){ openSetup('copy', k); }); return; }
+  if(e.target.closest('.js-to-entry')){ tryLeaveTo(function(){ railMode('template'); markRail(null); show('pick'); }); return; }   // 첫 화면 = 템플릿 목록(결정 133)
+  if(e.target.closest('.js-back-list')){ toast('전체 목록으로 돌아갑니다 (시안: 화면①)'); return; }
+  // 호버 안에서는 '닫기'가 아니라 '최소화' — 줄은 남고 호버는 잠시 꺼진다
+  if(e.target.closest('.js-to-pick')){ if(typeof EDIT_FROM_DETAIL!=='undefined' && EDIT_FROM_DETAIL){ tryLeaveTo(function(){ goPage('화면03_자동화상세.html'); }); return; }
+    tryLeaveTo(function(){ closeDetail(); railMode('template'); markRail(null); show('pick'); }); return; }
+  // 여기부터는 작성 화면 — 화면02/_작성.js 의 작성클릭() 이 맡는다(결정 3001)
+  if(작성클릭(e)) return;
+});
+// tryLeaveTo — 화면02/_작성.js 로 옮겼습니다(결정 3001)
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!$('#m-leave').hidden){ $('#m-leave').hidden=true; $('#back').hidden=true; pendingTo=null; }
+  else if(!$('#sheet').hidden && !isFolded()){ foldSheet(); } else closeMenus(); } });
+// 분류 필터(3.8) + 드롭다운 — 화면①과 같은 규칙(열리면 화살표 위, 하나 고르면 닫힘). 레일과 첫 화면이 같은 값을 씀
+document.addEventListener('click',e=>{
+  const d=e.target.closest('.js-drop');
+  if(d){ const m=d.parentElement.querySelector('.drop-menu'); const was=!m.hidden; closeMenus(); m.hidden=was; d.classList.toggle('is-open',!was); e.stopPropagation(); return; }
+  const v=e.target.closest('.js-view-sw .vt');
+  if(v){ document.querySelectorAll('.js-view-sw .vt').forEach(b=>b.classList.toggle('on',b===v));
+    document.querySelector('.gal').classList.toggle('summary', v.dataset.v==='summary'); return; }
+  if(e.target.closest('.px-menu-x')){ document.querySelectorAll('.px-menu').forEach(m=>m.hidden=true); return; }
+  const kb=e.target.closest('.js-kwbtn'); const km=$('.js-kw-menu');
+  if(kb){ km.hidden=!km.hidden; return; }
+  const ki=e.target.closest('.js-kw-menu button:not(.px-menu-x)');
+  if(ki && !ki.disabled){ const k=ki.dataset.k; kwOn=(k==='all'||kwOn===k)?null:k; setFilter(); return; }   // 열어 둔다(결정 165)
+  if(!e.target.closest('.px-wrap')) km.hidden=true;
+  if(!e.target.closest('.drop')) closeMenus();
+  // 목록의 빈 곳을 누르면 고정이 풀리고 설명도 접힌다
+  if(!$('#v-pick').hidden && !isFolded() && !e.target.closest('.tpl-card')
+     && !e.target.closest('.sheet')) foldSheet();
+});
+function closeMenus(){ $$('.drop-menu').forEach(m=>m.hidden=true); $$('.js-drop.is-open').forEach(b=>b.classList.remove('is-open')); }
+// 키워드는 한 축이고 템플릿마다 개수가 다르다 — 덩이 버튼을 여러 개 켜 좁힌다(결정 147 · 화면①의 덩이 버튼과 같은 부품)
+const KW=['이메일','지식/문서','예약','보고'];   // 키워드 축(결정 122) — 값은 화면①의 카드 칩과 같다
+let kwOn=null;                                   // null = 전체. 단건 선택(결정 161)
+function buildSub(){
+  // 화면①의 구분 버튼과 같은 부품 — 글자 버튼에 고른 값을 적고, 누르면 메뉴(결정 164)
+  const cards=$$('.js-galcard');
+  const cnt=k=>cards.filter(c=>(c.dataset.tags||'').split(',').includes(k)).length;
+  $('.js-kw-val').textContent = kwOn || '전체';
+  $('.js-kw-menu').innerHTML = '<button class="px-menu-x" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="1.3"><path d="M4.99126 11.0017L11.0017 4.99126M4.99833 4.99126L11.0087 11.0017" stroke="currentColor" stroke-linecap="round"/></svg></button>' +
+    '<button data-k="all"'+(kwOn?'':' class="on"')+'>전체 <span class="mcnt">'+cards.length+'</span></button>'
+    + KW.map(k=>'<button data-k="'+k+'"'+(kwOn===k?' class="on"':'')+(cnt(k)?'':' disabled')+'>'+k+' <span class="mcnt">'+cnt(k)+'</span></button>').join('');
+}
+function setFilter(){
+  let n=0;
+  $$('.js-galcard').forEach(c=>{ const tags=(c.dataset.tags||'').split(',');
+    const ok = !kwOn || tags.includes(kwOn); c.hidden=!ok; if(ok) n++; });
+  $('.gal-empty').hidden = n>0; $$('.js-tpl-cnt').forEach(e=>e.textContent=n);
+  buildSub();   // 개수 0인 덩이도 자리를 지킨다(2.2g)(화면①과 같은 규칙)
+}
+// 내 자동화에 '설정 중'으로 추가 — LNB에 바로 생긴다(1.3 · 2.20)
+function addToMine(name, on){
+  const list=document.querySelector('.lnb-group.wf-list .lnb-list'); if(!list) return name;
+  // 같은 이름이 이미 있으면 뒤에 번호를 붙인다(3.27)
+  const taken=function(n){ return [...list.children].some(function(c){ const l=c.querySelector('.ch-label'); return l && l.textContent===n; }); };
+  if(taken(name)){ let i=2; while(taken(name+' '+i)) i++; name=name+' '+i; }
+  const row=document.createElement('div'); row.className='channel-text-demo';
+  row.innerHTML='<div class="ch-inner"><span class="lnb-dot'+(on?' wait':' off')+'"></span><span class="ch-label">'+name+'</span></div>';
+  list.appendChild(row);
+  toast('「'+name+'」을(를) 저장했습니다. '+(on?'자동 · 대기 중입니다':'자동 실행은 꺼져 있습니다')+'. (시안: 실제로는 화면③ 자동화 상세로 이동)');
+  return name;
+}
+let toastT; function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(function(){ t.hidden=true; },5000); }
+
+// 첫 화면 = 템플릿 목록(결정 133 · 직접 구성·캔버스는 2차). 주소로 바로 열기: ?view=copy / ?tpl=report
+const q=new URLSearchParams(location.search);
+railMode('template');
+if(q.get('view')==='copy'){ railMode('copy'); show('srcpick'); }
+else if(TPL[q.get('tpl')]){ openSetup('template', q.get('tpl'));
+  // 화면③에서 「설정」으로 들어온 경우(?edit=1 · 결정 P-5) — 이 자동화의 값이 채워진 작성 화면. 돌아가기·저장은 화면③으로
+  if(q.get('edit')==='1'){ EDIT_FROM_DETAIL=true;
+    setVal('name','민원 답변 작성'); setVal('mail','criss_it@naver.com'); setVal('rule','시설 이용 관련 민원'); setVal('folder','지식함 / 민원 / 처리 기준'); setVal('agent','최재원 · 영업 매니저'); setVal('channel','# 민원-검토');
+    $('#st-form [name=desc]').value='시설 이용 관련 민원 메일이 오면 근거 문서를 찾아 답변 초안을 쓰고 채널에 공유합니다.';
+    const bk=$('#st-form .g6-back .back span'); if(bk) bk.textContent='민원 답변 작성으로 돌아가기';
+    const sv=$('.js-save'); if(sv) sv.textContent='저장';
+    // 경로 줄 — 상세에서 「설정」으로 들어온 길이라 「전체 목록 › 이름 › 설정」이다(2026-09-20).
+    //   setupCrumb 는 EDIT_FROM_DETAIL 이 켜지기 전에 이미 돌았으므로 여기서 한 번 더 맞춘다
+    (function(){
+      const first=document.querySelector('.crumb > span:first-child'); if(first) first.textContent='전체 목록';
+      const mid=$('.js-crumb-mid'), arw=$('.js-crumb-arw');
+      if(mid && arw){ mid.hidden=false; arw.hidden=false; mid.textContent='민원 답변 작성'; }
+      const c=$('.js-crumb'); if(c) c.textContent='설정';
+    })();
+    snapshot=formValues(); checkReq(); }
+}
+else if(q.get('view')==='list') show('pick');
+else show('pick');           // 새 자동화 = 템플릿 목록. 아무것도 골라져 있지 않다(결정 121)
+setFilter();                 // 덩이 버튼(키워드)을 그리고 개수를 채운다(결정 147)</script>
+
+
+
+<!-- ── 시연용 화면 이동 (2026-09-16) ──
+     세 화면을 하나로 이어 보여 주려고 붙인 것. LNB 항목과 카드·행을 누르면 해당 화면으로 간다.
+     기존 클릭 처리(메뉴 열기 등)를 건드리지 않도록 버튼·메뉴 위에서는 이동하지 않는다. -->
+<script>
+(function(){
+  var S1='화면01_전체목록.html', S2='화면02_자동화생성.html', S3='화면03_자동화상세.html';
+  // 이 문서들은  를 쓰므로 상대 주소가 컴포넌트 폴더로 간다.
+  // 그래서 지금 문서가 있는 폴더를 직접 붙여 절대 경로로 만든다.
+  var dir=location.pathname.replace(/[^/]*$/,'');
+  var here=decodeURIComponent(location.pathname.split('/').pop());
+  function go(u){ if(u && here!==u) location.href=dir+encodeURIComponent(u); }
+  // 같은 길을 작성 화면(화면02/_작성.js)에서도 쓴다 — 그냥 상대 주소로 가면 컴포넌트 폴더로 가 404 (2026-09-19)
+  window.goPage=function(f,q){ location.href=dir+encodeURIComponent(f)+(q||''); };
+
+  // LNB — 라벨로 대상을 정한다
+  document.querySelectorAll('.channel-text-demo').forEach(function(el){
+    var t=(el.querySelector('.ch-label')||{}).textContent||'';
+    var dot=el.querySelector('.lnb-dot');
+    var to = t.trim()==='새 자동화' ? S2 : t.trim()==='전체 목록' ? S1 : dot ? S3 : null;
+    if(!to) return;
+    if(el.classList.contains('js-to-entry') && decodeURIComponent(here)===S2) return; // 화면②의 새 자동화는 화면 안에서 처리
+    el.style.cursor='pointer';
+    el.addEventListener('click', function(e){ e.stopPropagation(); go(to); }, true);
+  });
+
+  // 카드·행 — 버튼이나 메뉴를 누른 것이면 이동하지 않는다
+  document.querySelectorAll('.wf-card, .wf-row').forEach(function(el){
+    el.style.cursor='pointer';
+    el.addEventListener('click', function(e){
+      if(e.target.closest('button, .card-menu, .run-menu, .share-chip')) return;
+      go(S3);
+    });
+  });
+
+
+  // 화면③ 머리의 `‹ 전체 목록` 되돌아가기 링크
+  document.querySelectorAll('a').forEach(function(a){
+    if((a.textContent||'').trim().indexOf('전체 목록')>=0){
+      a.style.cursor='pointer';
+      a.addEventListener('click', function(e){ e.preventDefault(); go(S1); });
+    }
+  });
+  // 화면② 마무리 · 화면① 빈 상태의 새 자동화
+  document.querySelectorAll('button').forEach(function(b){
+    var t=(b.textContent||'').trim();
+    if(t==='설정 완료') b.addEventListener('click', function(){ go(S1); });
+    if(t==='새 자동화'||t==='+ 새 자동화') b.addEventListener('click', function(){ go(S2); });
+  });
+})();
+</script>
+<script>
+/* 실행 방식 묶음(자동 실행 / 수동 실행) 접기 — 화면①과 같음 */
+document.querySelectorAll('.lnb-kind .js-lnbfold').forEach(function(h){
+  h.addEventListener('click', function(e){ e.stopPropagation(); h.closest('.lnb-kind').classList.toggle('is-folded'); });
+});
+</script>
+
+
+<script>
+  // 메뉴의 hidden 이 바뀌면 그 버튼에 .is-open 을 붙였다 뗀다 — 어디서 닫히든(×·바깥·버튼) 따라온다
+  (function(){
+    function sync(){ document.querySelectorAll('.px-wrap').forEach(function(w){
+      var m=w.querySelector('.px-menu'), b=w.querySelector('.px-btn-text');
+      if(m&&b) b.classList.toggle('is-open', !m.hidden); }); }
+    var mo=new MutationObserver(sync);
+    document.querySelectorAll('.px-menu').forEach(function(m){ mo.observe(m,{attributes:true, attributeFilter:['hidden']}); });
+    document.addEventListener('click', function(){ setTimeout(sync,0); });
+    sync();
+  })();
+</script>
+</body></html>

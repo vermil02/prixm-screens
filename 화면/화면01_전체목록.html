@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<title>화면① 전체 목록 — as-is 시안</title>
+
+<base href="../컴포넌트/">
+<link rel="stylesheet" href="common/common.css">
+<link rel="stylesheet" href="../화면/_공용.css">
+<script src="../화면/_뼈대.js" defer></script>
+<script src="../화면/부품/상단바/_상단바.js"></script><!-- 상단 바 한 벌 — defer 를 쓰면 화면 인라인 스크립트가 먼저 돌아 못 찾는다 --><!-- 자동화 영역 공용 부품 — 컴포넌트 목록 50~58. 고치면 이 ?v= 를 올릴 것 -->
+<style>
+/* 공용 부품(_공용.css)과 값이 같은 규칙 70개는 그쪽으로 옮겼습니다 — 여기 남은 것은 이 화면 전용입니다 */
+/* 본문 최대 폭 1440px — 넓은 화면에서는 남는 폭을 좌우 여백으로 돌려 가운데에 둔다(결정 41 · 2.5b).
+   .content는 스크롤 컨테이너라 max-width로 줄이면 스크롤바가 화면 가운데로 들어온다. 그래서 폭은 그대로 두고
+   안을 3열 그리드(여백 · 최대 1440 · 여백)로 나눠 내용물을 가운데 열에 넣는다. 좁은 화면에서는 여백이 24px까지 줄어든다 */
+.content{flex:1; min-width:0; overflow:auto; padding:20px 0;
+  display:grid; grid-template-columns:24px minmax(0,1fr) 24px; align-content:start;}
+
+/* 도구 줄은 좌우로 가른다 — 왼쪽 = 결과를 좁히는 도구(검색·상태·공유·초기화) / 오른쪽 = 같은 결과를 다르게 보여주는 도구(정렬·보기 전환).
+   shadcn Data Table Toolbar와 같은 구조(결정 40) */
+/* 좌우 무리 사이를 밀어내는 빈 칸 */
+.btn-reset{display:inline-flex; align-items:center; gap:3px; text-decoration:none;}
+/* 새로고침은 목록을 다루는 도구가 아니라 자료를 다시 받는 것 — 줄을 달리한다 */
+.btn-reset{height:32px; padding:0 6px; border:0; background:none; cursor:pointer;
+  font-family:inherit; font-size:12px; letter-spacing:-0.5px; color:var(--gray-500);
+  text-decoration:underline; text-underline-offset:2px;}
+/* 목록형 — 카드와 같은 재료를 한 줄에. 이름은 카드처럼 크지 않게 13px */
+/* overflow:hidden 을 쓰면 행 안에서 절대 배치된 ⋯ 메뉴가 잘린다 — 둥근 모서리는 머리 줄에 직접 준다 */
+/* 목록형 열 — 이름 200 / 공유 72 / 설명 1fr / 상태 130 / 상태 정보 1fr / 실행 80 / ⋯ 28.
+   행마다 독립된 grid라 열 정의를 한 변수로 공유한다(2.1a). 공유·⋯는 이름·실행 칸에 섞여 있던 것을 별도 열로 뺐다(결정 44) */
+/* 열 폭 — 넉넉할 때: 이름 200 / 공유 72 / 설명 나머지 / 상태 130 / 상태 정보 260 / 실행 140 / ⋯ 32.
+   상태 정보 260은 시안 최장값(criss_it@naver.com · support@crissit.com 감시 중) 237px 실측, 실행 140은 끄기+지금 실행 132px 실측.
+   좁아질 때: ① 설명이 먼저 120까지 줄고 ② 그다음 이름(→140)·상태 정보(→160)가 함께 줄고 ③ 그 아래(약 900px)에서는 가로 스크롤(2.1e).
+   그리드 규칙상 fr 열이 먼저 줄고, minmax(최소,최대) 열은 그 뒤에 나눠 줄어든다 */
+/* 좁은 화면 — 열 최소폭 합 906px(열 794 + 간격 84 + 안쪽 여백 28)보다 목록이 좁아지는 지점은 뷰포트 1240px
+   (GNB 56 + LNB 230 + 본문 여백 48 = 334 → 906 + 334). 그 아래에서는 목록 상자 안에 가로 스크롤. 이때 ⋯ 메뉴가 상자에 잘릴 수 있음(2.1e 주의) */
+/* 머리 줄 — 컴포넌트 34-tbl의 th 규격(Gray/100 배경 · 11px/600 · 아래 테두리) */
+  background:var(--gray-100); border-bottom:1px solid var(--border-default);
+  font-size:11px; font-weight:600; color:var(--gray-600); letter-spacing:-0.3px;}
+  align-items:center; gap:14px; height:46px; padding:0 14px;
+  border-bottom:1px solid var(--border-subtle); cursor:pointer;}
+.rn-txt{font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+/* 행마다 실행 버튼 폭이 달라 열이 어긋나므로 컨트롤 칸을 고정폭으로 잡는다 */
+/* 실행 열 — 카드 하단 버튼 줄과 같은 버튼(아이콘 + 글자)을 그대로 쓴다(결정 46) */
+/* 공유 안 함은 빈칸 — "–"를 넣어 봤더니 칩 옆에서 붕 떠 보여 뺐다(결정 47) */
+/* ⋯ — 카드는 호버에서만 보이지만 목록형에서는 항상 보인다(결정 45). 표에서는 shadcn·GitHub·Ant Design 모두 상시 노출 —
+   행이 촘촘해 숨은 버튼은 있는지 알기 어렵고, 터치 기기에는 호버가 없다 */
+.empty{min-height:calc(100vh - 280px); display:flex; align-items:center; justify-content:center;}
+.em-case{display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;}
+.em-case[hidden]{display:none !important;}
+.em-case button{display:inline-flex; align-items:center; gap:4px;}
+.em-plus{width:15px; height:15px;}
+/* 자동화가 하나도 없는 상태 — 거를 것도 정렬할 것도 없으므로 도구 줄을 감춘다 */
+body.is-first .tools, body.is-first .ttl-row, body.is-first .js-all-menu,
+body.is-first .lnb-group.wf-list, body.is-first .grid, body.is-first .tools{display:none;}
+body.is-first .empty{min-height:calc(100vh - 180px);}
+body.is-empty .grid{display:none;}
+.wf-card[hidden]{display:none !important;}
+.viewsw{display:inline-flex; gap:4px; align-items:center; padding:2px; background:var(--color-n-100,#f3f4f6); border:1px solid var(--border-default); border-radius:5px;}
+.viewsw div{width:26px; height:23px; display:flex; align-items:center; justify-content:center; border:1px solid transparent; border-radius:3px; cursor:pointer;}
+.viewsw div.on{background:#fff; border-color:var(--border-subtle);}
+.viewsw img,.viewsw svg{width:15px; height:15px;} .viewsw svg{color:var(--color-n-600,#626b7a);} .viewsw div.on svg{color:#2a3445;} .viewsw div[hidden]{display:none;}
+/* 카드 최소 폭 300→360 (2026-09-17 저녁 · 줄카드 LAB R-0 채택 + "좌우로 좀 더"): 본문 1440에서 3열 472px, 1106(1440 노트북)에서 3열 361px, 그 아래 2열.
+   300이면 1440에서 4열 351이라 실패 문구가 잘렸음 */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px;}   /* 최소 폭 360→280 (2026-09-17 오후 · 사용자: 오른쪽 여백이 남음) — 1440 본문에서 4열. 6칸 노드 줄(225px)이 들어가는 폭 */
+.wf-card{position:relative; border:1px solid var(--border-default); border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px; background:#fff; cursor:pointer;}
+.wf-card:hover{border-color:var(--gray-500); background:var(--gray-50,#f8fafc);}
+.wf-card:has(.js-more:hover){background:#fff;}
+.c-row{display:flex; align-items:center; gap:5px;}
+
+/* 공유 칩이 없는 카드에서는 ⋯ 가 오른쪽 끝으로 밀려야 한다 */
+.c-tags > .btn-more-dot{margin-left:auto;}
+/* 키워드(결정 98) — 자동화 하나에 여러 개. 값은 이메일 · 지식/문서 · 보고 · 예약.
+   화면②는 칩(배경)이지만 여기서는 배경을 뺀 글자다 — 카드 안에서 세 층을 갈라야 하기 때문:
+   이름(14px/600 검정, 가장 강함) > 공유함(10px 회색 칩, 중간) > 키워드(10px 회색 글자, 가장 약함).
+   화면②는 아직 안 만든 것 중에 고르는 자리라 키워드가 판단 근거지만, 여기는 이미 내 것이라 맥락이다 */
+/* 맨 윗줄 = 이 자동화의 메타 정보 — 왼쪽에 키워드, 오른쪽 끝에 공유 상태와 ⋯.
+   공유 칩·⋯를 이름 줄에서 올려 **이름 줄에는 이름만** 남겼다(결정 127). 가장 강한 층이 혼자 서야 가장 강하다 */
+.c-tags{display:flex; align-items:center; gap:4px; min-height:24px;}
+.c-tags .sp{display:none;}
+/* 키워드는 **테두리만** 있는 칩 — 채움이 층을 가른다. 채운 칩 = 공유 상태(공유함 회색 · 공유받음 보라),
+   테두리 칩 = 키워드. 모양이 같고 채움만 달라 한 줄에 나란히 있어도 무엇이 무엇인지 보인다 */
+.c-title{font-size:14px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;}
+/* 설명 1줄 — 2줄 고정이 카드 높이를 떠받치고 있었는데, 실측해 보니 여덟 장 모두 한 줄에 들어간다(가장 긴 것이 322px, 카드 안쪽 327px) */
+.c-desc{font-size:12px; color:var(--gray-600); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-height:16px;}
+.c-meta{font-size:11px; color:var(--gray-500);}
+/* 카드 4째 줄 — 실행 컨트롤. 상태 줄에 끼워 넣던 드롭다운(실행 ▾)을 풀어 아이콘 + 글자 버튼으로 내려놓음(결정 46).
+   자동: 끄기/켜기 + 지금 실행 · 수동: 지금 실행 · 동작 중: 중지 · 설정 중: 줄 없음("설정 이어하기" 링크를 넣어 봤다가 뺌 — 카드 클릭이 곧 설정 진입이라 중복, 결정 47) */
+/* 하단 줄(결정 128) — 주 동작 버튼 하나 + ⋯ 를 한 층으로. 구분선으로 층을 긋는다.
+   ⋯ 가 제 자리를 가지므로 호버 숨김이 필요 없다(목록형과 같아짐, 결정 45).
+   버튼 폭은 글자에 맞춰 각각 다르고 오른쪽 끝만 맞춘다 */
+.c-foot{display:flex; align-items:center; justify-content:flex-end; gap:6px; min-height:24px;
+  border-top:1px solid var(--border-subtle); padding-top:8px; margin-top:2px;}
+/* ⋯ — 실행 버튼과 같은 높이·테두리의 정사각 버튼. 떼어 놓아 `버튼의 변형`으로 안 읽히게 */
+/* 실행 컨트롤 단일화(결정 46 재검토 · 2026-09-16) — 자동은 `실행 ▾` 하나로 접는다.
+   검증된 자동 자동화에서는 끄기도 지금 실행도 부가적이라 어느 쪽도 버튼 자리를 차지할 이유가 없다.
+   메뉴 순서는 ⋯ 메뉴와 같은 규칙 — 되돌릴 수 있는 끄기 위, 한 번 돌면 못 되돌리는 지금 실행 아래, 사이에 구분선 */
+.run-wrap{position:relative; flex:0 0 auto;}
+.run-btn.is-open .ch-arrow{transform:rotate(180deg);}
+.c-edit{width:13px;height:13px;color:var(--gray-500);flex-shrink:0;margin-left:5px;}
+/* 상태 줄이 실행 버튼까지 품는다(결정 103) — 버튼이 132→49px로 줄어 결정 46이 걱정하던 잘림이 거의 사라졌다.
+   상태 정보는 말줄임으로 버틴다(여덟 장 중 민원 답변 작성 한 장만 지금 폭에서 잘림) */
+.lv-txt{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1 1 auto;}
+/* 대기·감시 = 바깥 원이 퍼짐(1.6초 주기) · 동작 중 = 작은 원만 깜빡 · 꺼짐/작성 중 = 정지 */
+/* 설정 중 = 속 빈 회색 원. 꽉 찬 회색(꺼짐·대기)과 채움만 다르게 — 색을 안 쓰고 모양으로 가른다.
+   연필을 쓰다가 뺐다: 같은 연필이 ⋯ 메뉴의 `이름 변경`에 이미 쓰여 있어 한 화면에서 동작과 상태 두 뜻이 됐다.
+   빈 원은 "아직 채워지지 않음"이라 상태 어휘 안에 머물고, LNB·카드·목록 세 곳이 점 하나로 같아진다 */
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(34,197,94,.32)}70%{box-shadow:0 0 0 3.5px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* 동작 중 = 스피너. 회전과 호 길이를 같은 주기로 돌리면 매 바퀴 같은 자리에서 호가 줄어
+   맥박처럼 보인다. 그래서 바깥은 270도, 호 자체는 450도를 돌려 합이 두 바퀴(720도)가 되게 한다. */
+/* LNB 점은 _공용.css 의 한 벌을 그대로 씁니다 — 결정 176(0.85초 점멸 · 실패 빨간 점) */
+/* 실행 방식 묶음(자동 실행 / 수동 실행) — 참고 화면 실측: 머리 16px·12/500, ▾ 8×16(lucide chevron, 선 1.6) 왼쪽 5px, 글자와 4px.
+   머리를 누르면 그 묶음의 항목이 접히고 ▾가 옆(−90°)을 향한다 */
+
+@keyframes sp-rot{0%{transform:rotate(0)} 100%{transform:rotate(270deg)}}
+@keyframes sp-dash{
+  0%{stroke-dashoffset:50.27}
+  50%{stroke-dashoffset:12.57; transform:rotate(135deg)}
+  100%{stroke-dashoffset:50.27; transform:rotate(450deg)}
+}
+.card-menu{position:absolute; top:auto; bottom:38px; right:10px; z-index:8;}
+.card-menu[hidden]{display:none !important;}
+/* 컴포넌트 05-btn-utils 의 btn-more-dot 규격은 16px 이지만 누르는 영역이 좁아 24px 로 키움(점 모양·간격은 그대로, 결정 48) */
+.btn-more-dot.js-more{background:none; border:0; padding:0; cursor:pointer; border-radius:5px; width:24px; height:24px;}
+.btn-more-dot.js-more:hover,
+.wf-card.menu-open .btn-more-dot.js-more{background:var(--button-hover,rgba(0,0,0,0.05));}
+/* 카드 전체가 눌리는 영역이고 ⋯ 는 그 안의 별도 버튼이다.
+   ⋯ 위에 마우스가 있을 때는 카드 강조를 꺼서 어느 쪽을 누르는지 분명히 한다. */
+.wf-card:has(.js-more:hover){border-color:var(--border-default);}
+.wf-card:has(.js-more:hover) .c-title{color:var(--gray-600);}
+/* 마우스가 있는 기기에서만 평소 숨김 — 터치 기기에서는 항상 보임 */
+/* ⋯ 는 카드에서도 항상 보인다 — 제 자리(하단 줄)를 가지므로 숨길 이유가 없다(결정 128) */
+.wf-card.menu-open{z-index:9;}
+.wf-card.has-menu{z-index:9;}
+.run-btn{display:flex; align-items:center; gap:4px; height:24px; padding:0 8px; border-radius:5px;
+  border:1px solid var(--border-default); background:#fff; font-size:11px; font-family:inherit; letter-spacing:-0.5px;
+  color:var(--black-900); cursor:pointer; flex-shrink:0;}
+.run-btn{white-space:nowrap;}
+/* 카드 실행 버튼 한 단계 크게(2026-09-17 저녁 · 카드 최소 폭 360으로 넓힌 뒤 "버튼 크기만 조절"): 24px·11px → 28px·12px(화면③ 머리의 .is-lg와 같은 크기), 좌우 12px */
+.wf-card .run-btn{height:28px; padding:0 12px; font-size:12px;}
+/* 드롭다운 화살표 — 메뉴가 열려 있으면 위를 향한다(180도 회전, 0.15초). 닫힘 = 아래 · 열림 = 위 */
+.run-menu{position:absolute; top:28px; right:0; z-index:20; min-width:130px;}
+.run-menu[hidden]{display:none !important;}
+.wf-card:has(.run-btn:hover),.wf-card:has(.js-more:hover){border-color:var(--border-default); background:#fff;}
+.run-chip{font-size:11px; color:var(--gray-600); background:var(--color-primitive-blue-10); padding:3px 7px; border-radius:5px;}
+/* 공유 표시도 키워드와 같은 테두리를 두른다 — 셋이 한 벌로 보이고, 채움만으로 갈린다.
+   공유받음은 보라 배경이라 회색 테두리가 탁해 보여 보라 계열로 옅게 준다 */
+.share-chip{flex-shrink:0; font-size:10px; color:var(--gray-600); background:var(--color-primitive-gray-100);
+  border:1px solid var(--border-default); padding:1px 6px; border-radius:4px;}
+.mk{display:inline-flex; width:15px; height:15px; border-radius:100px; background:#ef4444; color:#fff; font-size:9px;
+  align-items:center; justify-content:center; font-weight:700; margin-left:2px; flex-shrink:0;}
+/* LNB 항목 표시자 — 실행 방식(아이콘) + 도는지(색) + 작성 중(연필) */
+/* LNB는 점만 — 동작 중(0.85초 점멸) / 켜짐(정지) / 실패(빨강) / 꺼짐(회색) / 설정 중(빈 원) · 결정 176 */
+/* 점은 20px 자리 안에 놓는다 — 점 크기가 달라져도 이름이 늘 같은 자리에서 시작하도록
+   (메뉴 행의 아이콘 자리와 같은 폭이라 '전체 목록'과도 줄이 맞는다) */
+.lnb-dot{width:20px; height:20px; flex:0 0 auto; margin:0;
+  display:flex; align-items:center; justify-content:center; background:none; border-radius:0;}
+
+/* ===== 카드 한 벌 (결정 135~137 · 2026-09-17 · 노드 결과 = 테두리 + 색 점 V3-20) — 상태 칩 · 노드 칸 줄 · 진행 상자 · 토글/아이콘 버튼 · 호버 ⋯ ===== */
+.wf-card{gap:8px;}
+.wf-card .c-live,.wf-card .c-foot{display:none;}
+/* 상태 칩 — 라이브러리 state-badge(11px/500 · 3px 8px · radius 5) 재사용. 변형: 켜짐(run·watch·wait·idle) = is-active 색 / 꺼짐 = is-inactive / 설정 중 = is-draft */
+.wf-card .state-badge{display:inline-flex; align-items:center; white-space:nowrap; flex:0 0 auto; line-height:1;}
+.state-badge.run,.state-badge.watch,.state-badge.wait,.state-badge.idle{background:var(--color-success-soft); color:var(--color-success-strong);}
+.state-badge.off{background:var(--color-n-100); color:var(--color-n-600);}
+.state-badge.draft{background:transparent; color:var(--color-n-600); border-color:var(--border-default); border-style:dashed;}
+.wf-card .c-tags{gap:6px; flex-wrap:nowrap; overflow:hidden; padding-right:30px; min-width:0; -webkit-mask:linear-gradient(90deg,#000 calc(100% - 46px),transparent calc(100% - 30px)); mask:linear-gradient(90deg,#000 calc(100% - 46px),transparent calc(100% - 30px));}
+.wf-card .c-tags .key-chip{flex:0 0 auto;}
+.wf-card .more{position:absolute; right:8px; top:8px; width:26px; height:26px; border:0; border-radius:5px; background:#fff; opacity:0; transition:opacity .12s, background-color .12s; z-index:2; flex:none;}
+.wf-card:hover .more,.wf-card.menu-open .more{opacity:1;} .wf-card .more:hover{background:var(--color-n-100);}
+.card-menu{bottom:auto; top:36px; right:8px;}
+.nrow{display:flex; gap:9px; align-items:center; min-height:32px; padding-top:6px;}
+.n{position:relative; width:30px; height:30px; border-radius:5px; border:1px solid var(--color-n-300); background:#fff; color:var(--color-n-800); display:flex; align-items:center; justify-content:center; flex:0 0 auto; box-sizing:border-box; transition:border-color .12s;}
+.n .ico{display:flex;} .n .ico svg{width:17px; height:17px; display:block;}
+.n .bd{position:absolute; right:-5px; top:-5px; width:12px; height:12px; border-radius:100px; border:2px solid #fff; box-sizing:border-box; transition:transform .12s ease; transform-origin:center;}
+.n .bd svg{display:none;}
+.n.done{border-color:var(--color-success);} .n.done .bd{background:var(--color-success);}
+.n.waitc,.n.waitp{border-color:var(--color-warning);} .n.waitc .bd,.n.waitp .bd{background:var(--color-warning);}
+.n.skipc{border-style:dashed;} .n.skipc .bd{background:var(--color-n-400);}
+.n.fail{border-color:var(--color-danger);} .n.fail .bd{background:var(--color-danger);}
+.n.dis{background:var(--color-n-100); border-color:var(--color-n-100); color:var(--color-n-400);}
+.n .donut{display:none;}
+.n.cur{border-color:var(--color-success);} .n.retry{border-color:var(--color-warning);}
+.n.cur .donut,.n.retry .donut{display:block; position:absolute; right:-6px; top:-6px; width:14px; height:14px; border-radius:100px; background:#fff; padding:1.5px; box-sizing:border-box; animation:sp-rot 1.4s linear infinite; transform-origin:center;}
+.n .donut circle{fill:none; stroke:var(--color-success); stroke-width:3.4; stroke-linecap:round; stroke-dasharray:50.27; stroke-dashoffset:50.27; transform-origin:center; animation:sp-dash 1.4s ease-in-out infinite;}
+.n .donut .trk{stroke:var(--color-success-soft); stroke-dasharray:none; stroke-dashoffset:0; animation:none;}
+.n.retry .donut circle{stroke:var(--color-warning);} .n.retry .donut .trk{stroke:var(--color-warning-soft);}
+/* 호버 — 점만 1.2배, 테두리 색은 상태별 그대로 */
+.n:hover .bd{transform:scale(1.2);} .n:hover .donut{transform:scale(1.15);}
+.n:hover{border-color:var(--color-n-300);} .n.done:hover,.n.cur:hover{border-color:var(--color-success);} .n.retry:hover,.n.waitc:hover,.n.waitp:hover{border-color:var(--color-warning);} .n.fail:hover{border-color:var(--color-danger);} .n.skipc:hover{border-color:var(--color-n-300);} .n.dis:hover{border-color:var(--color-n-100);}
+.nrow .gap{font-size:12px; color:var(--color-n-400); letter-spacing:1px; flex:0 0 auto; padding:0 1px;}
+/* 아래 묶음(결정 138 · LAB G-12 + C-7) — 구분선 아래 노드 줄, 그 아래 진행 글(상자 없음) + 오른쪽 조작. 번호는 칩(동작 중 n/N)이 맡는다 */
+.wf-card .grp{border-top:1px solid var(--border-subtle); margin-top:2px; padding-top:8px; display:flex; flex-direction:column; gap:8px;}
+.wf-card .line{display:flex; align-items:center; gap:8px;} .wf-card .line .nrow{padding-top:0; min-height:0; flex:1 1 auto; min-width:0;}
+.wf-card .bot{display:flex; align-items:center; gap:8px; min-height:24px;} .wf-card .bot .acts{flex:0 0 auto; display:flex; align-items:center; gap:6px; margin-left:auto;}
+.nowbox.txt{display:flex; align-items:center; gap:8px; background:transparent; border:0; padding:0 2px; min-height:0; flex:1 1 auto; min-width:0;}
+.nowbox .nm{font-size:12px; font-weight:600; color:var(--color-n-800); white-space:nowrap; flex:0 0 auto;}
+.nowbox .sub{font-size:11px; color:var(--gray-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1;}
+.grp.fail .nowbox.txt .nm,.grp.fail .nowbox.txt .sub{color:var(--color-danger-strong);}   /* 실패 = 빨간 글자만(상자·테두리 없음) */
+.grp.wait .nowbox.txt .nm{color:var(--color-warning-strong,#b45309);}
+.wf-card .c-tags{min-height:20px;}   /* 칩이 없는 카드도 윗줄 높이를 지킨다 */
+/* 중지 · 실행 — run-btn(컴포넌트 52 · 24px) 글자만(결정 138 · 아이콘 없음) */
+/* 켜기/끄기 — 라이브러리 switch-demo 그대로(32×18 · 켜짐 --status-active → --color-success · 꺼짐 --gray-500 · is-disabled) */
+.bot .switch-demo{flex:0 0 auto;}
+/* 목록형 — 상태 칩 · 단계 칸(작게) · 조작 */
+/* 툴팁 — 라이브러리 19-floating-pop 의 tooltip 방식(5px 7px · radius 4 · 12px/500 · 아래 꼬리)을 따르되 불투명(결정: 반투명 안 씀) */
+.tip{position:fixed; z-index:200; pointer-events:none; background:var(--color-n-800,var(--color-n-800)); color:#fff; font-size:12px; font-weight:500; letter-spacing:-0.5px; line-height:1.4; padding:5px 7px; border-radius:4px; max-width:260px; opacity:0; transform:translate(-50%,-100%); transition:opacity .12s ease;}
+.tip::after{content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); border-width:4px 4px 0 4px; border-style:solid; border-color:var(--color-n-800,var(--color-n-800)) transparent transparent transparent;}
+.tip.on{opacity:1;}
+
+/* ===== 도구 줄 (결정 139~141) — 구분 기준 세그먼트 · 덩이 버튼 · 정렬 세그먼트. 라벨 없음 ===== */
+.seg{display:inline-flex; gap:4px; align-items:center; padding:2px; background:var(--color-n-100,#f3f4f6); border:1px solid var(--border-default); border-radius:5px; flex:0 0 auto;}   /* 라이브러리 segment-control-demo 규격 */
+.seg button{display:inline-flex; gap:3px; align-items:center; justify-content:center; border:1px solid transparent; background:transparent; padding:4px 8px; border-radius:3px; font-size:12px; font-weight:400; color:var(--color-n-600,#626b7a); cursor:pointer; white-space:nowrap;}
+.seg button:hover{background:rgba(0,0,0,0.04);} .seg button.on{background:#fff; border-color:var(--border-subtle); font-weight:500; color:#2a3445;} .seg button.on:hover{background:#fff;}
+.seg .arw{display:inline-flex; align-items:center; color:#2a3445;} .seg .arw:empty{display:none;} .seg .arw svg{width:12px; height:12px;}   /* 정렬 방향 — Lucide arrow-up/down 12px stroke 2(글자 ↑↓ 대신) */
+.tools .sep{width:1px; height:18px; background:var(--border-default); margin:0 4px; flex:0 0 auto;} .tools .sep:has(+ .subrow:empty){display:none;}
+
+.subbtn{height:28px; border:1px solid var(--border-default); border-radius:5px; background:#fff; padding:0 8px; font-size:12px; color:var(--color-n-700); cursor:pointer; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; flex:0 0 auto;}
+     
+.tools .ipt{margin-right:4px;}
+/* 묶음 머리 — LNB 실행 방식 머리와 같은 크기(12/500). 접기 없음, 개수 없음(덩이 버튼이 말함) */
+.ghd{grid-column:1/-1; display:flex; align-items:center; height:24px; margin:22px 0 2px; font-size:12px; font-weight:500; color:var(--color-n-800);}   /* 첫 머리도 같은 margin-top — 전체를 볼 때와 한 덩이만 볼 때 간격이 같아야 한다(2026-09-17 사용자) */   /* 덩이 사이 간격 — 머리 위 22+gap 12 = 34px, 아래 2+12 = 14px. 머리가 아래 묶음에 붙어 보이게(2026-09-17 사용자) */
+.grid:not(:has(.ghd)){margin-top:16px;}   /* 「구분 안 함」이라 머리가 없을 때도 도구 줄과의 간격이 같게 — 18+16 = 머리 있을 때의 34px */
+/* 줄 카드(2.27e · 결정 139) — 카드 HTML 그대로, 세 묶음을 가로로: 상태+태그 | 이름/설명 | 노드 줄 / 진행 글+조작 */
+.grid.rows{display:flex; flex-direction:column; gap:8px;}
+.wf-card.rc{display:grid; align-items:center; column-gap:16px; row-gap:2px; padding:10px 14px; grid-template-columns:220px minmax(0,1fr) 440px; grid-template-areas:"a t c" "a d c";}
+.wf-card.rc .c-tags{grid-area:a; padding-right:0; -webkit-mask:none; mask:none; flex-wrap:wrap; overflow:visible; min-height:0; row-gap:4px;} .wf-card.rc .c-row{grid-area:t; min-width:0;} .wf-card.rc .c-desc{grid-area:d;}
+.wf-card.rc .grp{grid-area:c; min-width:0; border-top:0; margin-top:0; padding-top:0; border-left:1px solid var(--border-subtle); padding-left:14px; padding-right:30px; gap:6px;}
+.wf-card.rc .more{top:50%; transform:translateY(-50%);}
+@media (max-width:1100px){ .wf-card.rc{grid-template-columns:180px minmax(0,1fr) 380px;} .tools .ipt{width:160px;} }
+
+/* ===== 요약 카드(S-2f · 2026-09-17 13시 · _lab/요약카드_lab.html) — 카드 HTML 그대로, 설명·노드 줄·키워드 칩을 숨기고 3줄로:
+   ① 왼쪽 위 스위치/「수동」 알약 · 오른쪽 위 ⋯(항시)  ② 이름 + 바로 옆 상태 칩  ③ 진행 글 + 오른쪽 아래 「중지」/「실행」 ===== */
+.grid.summary{grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px;}
+.wf-card.sc{display:grid; grid-template-columns:auto minmax(0,1fr) auto; grid-template-areas:"x x m" "t b ." "s s y"; column-gap:10px; row-gap:6px; padding:10px 12px; align-items:center;}
+.wf-card.sc .c-tags{display:contents;} .wf-card.sc .key-chip{display:none;}
+.wf-card.sc .state-badge{grid-area:b; justify-self:start; align-self:center;}
+.wf-card.sc .c-row{grid-area:t; min-width:0;} .wf-card.sc .c-title{max-width:100%;} .wf-card.sc .c-desc{display:none;}
+.wf-card.sc .grp,.wf-card.sc .bot{display:contents;} .wf-card.sc .line{display:none;}
+.wf-card.sc .nowbox{display:flex; grid-area:s; align-self:center; min-width:0;}
+.wf-card.sc .acts{margin-left:0;}   /* 정본 .acts의 margin-left:auto 를 끈다 — 격자 칸이 자리를 정한다 */
+.wf-card.sc .acts:has(.switch-demo){grid-area:x; justify-self:start; align-self:center;}
+.wf-card.sc .acts:has(.run-btn){grid-area:y; justify-self:end; align-self:center;}
+.wf-card.sc[data-kind="수동"] .acts:has(.switch-demo){display:none;}   /* 수동은 스위치가 없는 종류 — 알약이 그 자리 */
+.wf-card.sc .more{grid-area:m; position:static; transform:none; opacity:1; background:transparent; width:22px; height:22px; justify-self:end;}
+.wf-card.sc .more:hover{background:var(--gray-100,#f1f5f9);}
+.wf-card.sc .run-btn{height:24px; padding:0 8px; font-size:11px;}
+.acts-sw,.mode-mark{display:none;}   /* 요약 보기에서만 */
+.wf-card.sc .acts-sw{display:flex; grid-area:x; justify-self:start; align-self:center; cursor:pointer;}
+.wf-card.sc .mode-mark{grid-area:x; justify-self:start; align-self:center; height:18px; min-width:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 8px; border-radius:9px; font-size:10px; font-weight:500; color:#fff; letter-spacing:-0.3px; background:var(--gray-400,#9ca3af);}
+/* 확인창 — 동작 중 자동의 스위치를 껐을 때 */
+.cf-wrap{position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center;}
+.cf-wrap[hidden]{display:none;}
+.cf-box{width:340px; border:1px solid var(--border-default); border-radius:10px; background:#fff; padding:18px; box-shadow:0 12px 32px rgba(0,0,0,.14);}
+.cf-t{font-size:14px; font-weight:600; color:var(--color-n-800); margin-bottom:6px;} .cf-d{font-size:12px; color:var(--gray-600); line-height:1.5;}
+.cf-a{display:flex; justify-content:flex-end; gap:6px; margin-top:14px;} .cf-a .run-btn{height:28px; padding:0 12px; font-size:12px;}
+.cf-danger{background:var(--color-danger-strong,#dc2626) !important; border-color:var(--color-danger-strong,#dc2626) !important; color:#fff !important;}
+
+/* 상단 바(결정 151) — 41px · 아래 선 · 스크롤 밖. 안쪽 여백은 본문과 같은 24px(결정 150).
+   이 화면이 무슨 일을 하는 화면인지를 적는다. 허브(갈래 고르기)에는 두지 않는다 */
+.main{flex:1; min-width:0; display:flex; flex-direction:column;}
+
+.content{flex:1 1 auto; min-height:0;}
+.content{padding-top:8px;}
+
+/* 상단 바 + 타이틀 줄(결정 152) — 제품 지식/문서 실측(2068 덤프):
+   상단 바 41px · 아래 선 · 경로 13px(마지막 조각 500) / 타이틀 줄 pt22 pb7 · 18px/600 / 그 아래 도구 줄.
+   좌우 여백은 본문과 같은 24px 로 통일했다(제품은 바 15 · 타이틀 30 으로 다름) */
+
+.crumb .cur{color:var(--color-n-800); font-weight:500;}
+
+.ttl-in{grid-column:2; display:flex; align-items:center; gap:10px; min-width:0;}
+.ttl-in .btn-ico{margin-left:2px;}   /* 새로고침은 제목 바로 오른쪽 — 무엇을 새로고침하는지가 붙어 읽힌다(결정 155) */
+
+/* ── 도구 줄 N-14(결정 157) — 제품 규격 부품 + 위아래 선을 화면 폭으로 */
+.tools{grid-column:1 / -1; height:34px; margin:15px 0 0;   /* 아래는 묶음 머리(.ghd)의 위 여백 22px 이 맡는다 */ padding:0;
+  display:grid; grid-template-columns:24px minmax(0,1fr) 24px; gap:0;}   /* 공용 .tools 의 gap:8px 이 격자에도 걸려 본문 칸이 8px 밀려 있었다 */
+/* 위아래 선은 두지 않는다(N-10) — 가로선은 상단 바 아래 하나뿐. 되살리려면 위 규칙에 border-top/bottom 두 줄 */
+
+/* 제품 글자 버튼(px-btn-text) — 23px · padding 3 · radius 5 · 11px · 아이콘 16px. 사이 구분선은 두지 않는다(버튼이 둘) */
+   /* 버튼 padding 3 만큼 당겨 첫 아이콘의 왼쪽이 타이틀·카드와 한 선에 선다 */
+
+.px-menu button:not(.px-menu-x){height:28px; padding:0 8px; border:0; background:transparent; border-radius:3px; cursor:pointer;
+  font-family:inherit; font-size:12px; color:var(--color-n-800); letter-spacing:-0.5px; text-align:left;}
+
+.px-menu button:not(.px-menu-x){display:flex; align-items:center;}
+
+.px-menu .dir{margin-left:auto; display:inline-flex; width:12px; height:12px; color:var(--color-n-800);}
+.px-menu .dir svg{width:12px; height:12px;}
+/* 보기 전환 — 제품 .view-toggle 실측(28px · gray-100 + 테두리 · padding 1 · gap 2 / 칸 24px · 12px · radius 3) */
+
+.view-toggle .vt{height:24px; padding:3px 8px; border:0; border-radius:3px; background:transparent; cursor:pointer;
+  font-family:inherit; font-size:12px; font-weight:400; color:#626b7a; letter-spacing:-0.5px;
+  display:inline-flex; align-items:center; gap:3px; white-space:nowrap;}
+
+.view-toggle .vt svg{flex:0 0 auto;}
+.view-toggle .vt[hidden]{display:none;}   /* 줄 카드는 숨김(결정 144) — inline-flex 가 [hidden] 을 이기므로 눌러 준다 */
+
+/* ── 머리 영역(결정 158 · LAB H-11) — 타이틀과 도구 줄을 한 덩어리로 묶고 아래에만 선.
+   경로 줄(.page-hd)의 선은 그대로 둔다. 색을 입히려면 아래 background 주석을 풀면 H-7 이 된다 */
+.head-zone{flex:0 0 auto; background:#fff;  /* background:var(--color-n-50); → H-7(색 있는 판) */
+  border-bottom:1px solid var(--border-default); padding-bottom:12px;}
+
+.head-zone .tools{margin:10px 0 0;}
+.content{padding-top:0;}   /* 선 아래 간격은 묶음 머리(.ghd)의 위 여백 22px 이 맡는다 */
+
+/* 메뉴 — 고른 뒤에도 열려 있으므로 닫는 길을 준다(결정 165): 우상단 × · 바깥 클릭 · 버튼 다시 누르기 */
+/* 닫기 — 메뉴 안의 자리를 먹지 않게 **우측 상단 모서리에 둥근 버튼**으로 띄운다(결정 165) */
+.px-menu .px-menu-x{position:absolute; top:-9px; right:-9px; width:20px; height:20px; border:0;
+  background:var(--color-n-800); border-radius:50%; color:#fff; cursor:pointer; display:inline-flex;
+  align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.18); padding:0;}
+
+   /* 라이브러리 ico-close-sm 원본(viewBox 16) */
+/* 메뉴가 열려 있는 동안 버튼도 켜진 채로 — 호버와 같은 바탕을 유지한다(결정 165) */
+
+.px-menu .px-menu-x{transition:background .12s;}
+/* 크기는 20px 로 고정하고 **누를 수 있는 범위만** 사방 6px 넓힌다(보이는 크기가 변하면 포인터가 버튼을 벗어난다) */
+
+</style></head><body>
+<div class="app">
+<div class="gnb"><div class="g-item"><img src="assets/ico-gnb-aiChat.svg" alt=""><span>AI 채팅</span></div><div class="g-item"><img src="assets/ico-gnb-cowork.svg" alt=""><span>협업</span></div><div class="g-item"><img src="assets/ico-gnb-document.svg" alt=""><span>지식/문서</span></div><div class="g-item"><img src="assets/ico-gnb-mail.svg" alt=""><span>이메일</span></div><div class="g-item on"><img src="assets/ico-workflow-active.svg" alt=""><span>자동화</span><!-- 라이브러리엔 ico-gnb-workflow-active 가 없음. 이름 규칙 정리는 디자인 단계에서 --></div><div class="g-item"><img src="assets/ico-gnb-dashboard.svg" alt=""><span>프로젝트</span></div><div class="g-item"><img src="assets/ico-gnb-office.svg" alt=""><span>데이터 분석</span></div><div class="g-item"><img src="assets/ico-gnb-system.svg" alt=""><span>관리</span></div><div class="g-item"><img src="assets/ico-gnb-system02-active.svg" alt=""><span>시스템</span></div></div>
+<div class="main">
+  <div class="hd"><span class="logo">Prixm AI:CREW</span><span class="sp"></span><img src="assets/ico-bell.svg" style="width:18px"><span style="font-size:12px;">박준형</span></div>
+  <div class="body">
+    <div class="lnb-panel">
+      <div class="lnb-top-util"><span class="lnb-top-search"><img alt="검색" src="assets/ico-search.svg"/></span><div class="arrow-double-demo"><img alt="접기" src="assets/ico-arrow-double-left.svg"/></div></div>
+      <div class="lnb-wrap">
+        <div class="lnb-group"><div class="label-toggle"><span>자동화 메뉴</span></div>
+          <div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;">
+            <div class="channel-text-demo"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-add.svg"></span><span class="ch-label">새 자동화</span></div></div>
+            <div class="channel-text-demo active js-all-menu"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-view-list.svg"></span><span class="ch-label">전체 목록</span></div></div>
+          </div></div>
+        <!-- 실행 방식 2묶음(2026-09-17 저녁) — 참고 화면(AI 채팅)의 `고정 채팅`·`채팅 내역`과 같은 묶음 머리(12px + ▾) 아래 항목을 바로 붙임.
+             `내 자동화` 머리·아이콘·ㄴ자·들여쓰기는 뺌(사용자 결정). 공유 자동화가 오면 같은 층에 묶음 머리 하나 더  LNB 항목은 카드 8장과 같게(2026-09-17 13시 40분 · 데모 일치): 자동 6 · 수동 2. 점 = 동작 중 스피너 / 대기 초록 / 꺼짐·실패 회색 / 설정 중 빈 원 -->
+        <div class="lnb-group wf-list lnb-kind"><div class="label-toggle js-lnbfold"><div class="lt-inner" style="display:flex;align-items:center;gap:4px;cursor:pointer;"><svg class="lnb-caret" width="8" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>자동 실행</span></div></div><div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;"><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot run"></span><span class="ch-label">정기 지식 보고</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot wait"></span><span class="ch-label">데일리 뉴스 검색</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot wait"></span><span class="ch-label">계약서 검토 요청</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot fail"></span><span class="ch-label">민원 답변 작성</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot off"></span><span class="ch-label">월요일 업무 안내</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot draft"></span><span class="ch-label">분기별 매출 정리</span></div></div></div></div>
+        <div class="lnb-group wf-list lnb-kind"><div class="label-toggle js-lnbfold"><div class="lt-inner" style="display:flex;align-items:center;gap:4px;cursor:pointer;"><svg class="lnb-caret" width="8" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>수동 실행</span></div></div><div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;"><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot run"></span><span class="ch-label">회의록 정리</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot draft"></span><span class="ch-label">주간 보고 초안 생성</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="main"><!-- 상단 바(경로 줄 · 타이틀 줄)는 _상단바.js 가 그린다 — 화면①·②가 같은 한 벌을 쓴다(결정 6002).
+     도구 줄은 화면마다 달라 아래에 그대로 둔다 -->
+<div class="js-head"></div><div class="head-zone"><div class="js-ttl"></div><script>PRIXM_HEAD({
+  crumb: [{t:'전체 목록', cur:true}],
+  search: '자동화 검색',
+  title:  {t:'자동화 목록', refresh:'자동화 목록 새로고침'}
+});</script><div class="tools"><div class="tl-in"><div class="px-btn-text-group"><span class="px-wrap"><button class="px-btn-text js-grp"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 9H3"/><path d="M21 15H3"/></svg>구분<span class="pxv js-grp-val">구분 안 함</span></button><div class="px-menu js-grp-menu" hidden><button class="px-menu-x" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="1.3"><path d="M4.99126 11.0017L11.0017 4.99126M4.99833 4.99126L11.0087 11.0017" stroke="currentColor" stroke-linecap="round"/></svg></button><button data-v="none">구분 안 함</button><button data-v="state">현재 상태</button><button data-v="auto">실행 방식</button></div></span><span class="px-btn-text-divider"></span><span class="px-wrap"><button class="px-btn-text js-sort"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>정렬<span class="pxv js-sort-val">최근 실행순</span></button><div class="px-menu js-sort-menu" hidden><button class="px-menu-x" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke-width="1.3"><path d="M4.99126 11.0017L11.0017 4.99126M4.99833 4.99126L11.0087 11.0017" stroke="currentColor" stroke-linecap="round"/></svg></button><button data-k="최근 실행순">최근 실행순<span class="dir"></span></button><button data-k="이름순">이름순<span class="dir"></span></button></div></span></div><span class="v-gap"></span><div class="view-toggle" aria-label="보기"><button class="vt js-view on" data-v="card"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.17735 3.52945C5.41587 3.44495 4.64739 3.44495 3.88591 3.52945C3.79795 3.53936 3.71586 3.5785 3.65279 3.64061C3.58972 3.70271 3.54931 3.78419 3.53804 3.87198C3.44783 4.64248 3.44783 5.42087 3.53804 6.19136C3.54946 6.27914 3.59001 6.36055 3.65319 6.42254C3.71637 6.48454 3.79852 6.52354 3.8865 6.5333C4.64102 6.6176 5.42224 6.6176 6.17676 6.5333C6.26473 6.52354 6.34689 6.48454 6.41007 6.42254C6.47325 6.36055 6.5138 6.27914 6.52522 6.19136C6.61545 5.42081 6.61545 4.64194 6.52522 3.87139C6.5138 3.78361 6.47325 3.7022 6.41007 3.64021C6.34689 3.57821 6.26473 3.53921 6.17676 3.52945M3.78677 2.64491C4.61374 2.55312 5.44833 2.55312 6.2753 2.64491C6.863 2.71021 7.33969 3.17326 7.40915 3.76809C7.50741 4.60742 7.50741 5.45534 7.40915 6.29466C7.37442 6.58233 7.24354 6.84984 7.03774 7.05382C6.83193 7.25779 6.56327 7.38627 6.2753 7.41843C5.45489 7.50985 4.60718 7.50985 3.78677 7.41843C3.4988 7.38627 3.23014 7.25779 3.02433 7.05382C2.81853 6.84984 2.68765 6.58233 2.65292 6.29466C2.55466 5.45534 2.55466 4.60742 2.65292 3.76809C2.68778 3.48053 2.81871 3.21315 3.0245 3.0093C3.23029 2.80544 3.49889 2.67704 3.78677 2.64491ZM6.17735 9.46592C5.41587 9.38142 4.64739 9.38142 3.88591 9.46592C3.79804 9.4758 3.71602 9.51486 3.65295 9.57685C3.58989 9.63883 3.54943 9.72017 3.53804 9.80786C3.44779 10.5786 3.44779 11.3571 3.53804 12.1278C3.54946 12.2156 3.59001 12.297 3.65319 12.359C3.71637 12.421 3.79852 12.46 3.8865 12.4698C4.64102 12.5541 5.42224 12.5541 6.17676 12.4698C6.26473 12.46 6.34689 12.421 6.41007 12.359C6.47325 12.297 6.5138 12.2156 6.52522 12.1278C6.61545 11.3573 6.61545 10.5784 6.52522 9.80786C6.5138 9.72008 6.47325 9.63868 6.41007 9.57668C6.34689 9.51468 6.26473 9.47568 6.17676 9.46592M3.78677 8.58139C4.61374 8.4896 5.44833 8.4896 6.2753 8.58139C6.863 8.64669 7.33969 9.10973 7.40915 9.70457C7.50741 10.5439 7.50741 11.3918 7.40915 12.2311C7.37429 12.5187 7.24336 12.7861 7.03757 12.9899C6.83178 13.1938 6.56318 13.3222 6.2753 13.3543C5.45489 13.4463 4.60718 13.4463 3.78677 13.3543C3.49889 13.3222 3.23029 13.1938 3.0245 12.9899C2.81871 12.7861 2.68778 12.5187 2.65292 12.2311C2.55466 11.3918 2.55466 10.5439 2.65292 9.70457C2.68778 9.417 2.81871 9.14963 3.0245 8.94577C3.23029 8.74191 3.49889 8.61352 3.78677 8.58139ZM12.1137 3.52945C11.3523 3.44495 10.5838 3.44495 9.82229 3.52945C9.73433 3.53936 9.65224 3.5785 9.58917 3.64061C9.52609 3.70271 9.48569 3.78419 9.47441 3.87198C9.38421 4.64248 9.38421 5.42087 9.47441 6.19136C9.48584 6.27914 9.52638 6.36055 9.58956 6.42254C9.65274 6.48454 9.7349 6.52354 9.82288 6.5333C10.5774 6.6176 11.3586 6.6176 12.1131 6.5333C12.2011 6.52354 12.2833 6.48454 12.3464 6.42254C12.4096 6.36055 12.4502 6.27914 12.4616 6.19136C12.5518 5.42081 12.5518 4.64194 12.4616 3.87139C12.4502 3.78361 12.4096 3.7022 12.3464 3.64021C12.2833 3.57821 12.2017 3.53921 12.1137 3.52945ZM9.72315 2.64491C10.5501 2.55312 11.3847 2.55312 12.2117 2.64491C12.7994 2.71021 13.2761 3.17326 13.3455 3.76809C13.4438 4.60742 13.4438 5.45534 13.3455 6.29466C13.3108 6.58233 13.1799 6.84984 12.9741 7.05382C12.7683 7.25779 12.4996 7.38627 12.2117 7.41843C11.3913 7.50985 10.5436 7.50985 9.72315 7.41843C9.43518 7.38627 9.16652 7.25779 8.96071 7.05382C8.75491 6.84984 8.62403 6.58233 8.5893 6.29466C8.49104 5.45534 8.49104 4.60742 8.5893 3.76809C8.62416 3.48053 8.75509 3.21315 8.96088 3.0093C9.16667 2.80544 9.43527 2.67704 9.72315 2.64491ZM12.1137 9.46592C11.3523 9.38142 10.5838 9.38142 9.82229 9.46592C9.73441 9.4758 9.65239 9.51486 9.58933 9.57685C9.52627 9.63883 9.48581 9.72017 9.47441 9.80786C9.38416 10.5786 9.38416 11.3571 9.47441 12.1278C9.48584 12.2156 9.52638 12.297 9.58956 12.359C9.65274 12.421 9.7349 12.46 9.82288 12.4698C10.5774 12.5541 11.3586 12.5541 12.1131 12.4698C12.2011 12.46 12.2833 12.421 12.3464 12.359C12.4096 12.297 12.4502 12.2156 12.4616 12.1278C12.5518 11.3573 12.5518 10.5784 12.4616 9.80786C12.4502 9.72008 12.4096 9.63868 12.3464 9.57668C12.2833 9.51468 12.2017 9.47568 12.1137 9.46592ZM9.72315 8.58139C10.5501 8.4896 11.3847 8.4896 12.2117 8.58139C12.7994 8.64669 13.2761 9.10973 13.3455 9.70457C13.4438 10.5439 13.4438 11.3918 13.3455 12.2311C13.3107 12.5187 13.1797 12.7861 12.9739 12.9899C12.7682 13.1938 12.4996 13.3222 12.2117 13.3543C11.3913 13.4463 10.5436 13.4463 9.72315 13.3543C9.43527 13.3222 9.16667 13.1938 8.96088 12.9899C8.75509 12.7861 8.62416 12.5187 8.5893 12.2311C8.49104 11.3918 8.49104 10.5439 8.5893 9.70457C8.62416 9.417 8.75509 9.14963 8.96088 8.94577C9.16667 8.74191 9.43527 8.61352 9.72315 8.58139Z" fill="currentColor"/> </svg><span>상세</span></button><button class="vt js-view" data-v="summary"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g fill="currentColor"><rect x="2.5" y="2.5" width="3" height="3" rx="0.7"/><rect x="6.5" y="2.5" width="3" height="3" rx="0.7"/><rect x="10.5" y="2.5" width="3" height="3" rx="0.7"/><rect x="2.5" y="6.5" width="3" height="3" rx="0.7"/><rect x="6.5" y="6.5" width="3" height="3" rx="0.7"/><rect x="10.5" y="6.5" width="3" height="3" rx="0.7"/><rect x="2.5" y="10.5" width="3" height="3" rx="0.7"/><rect x="6.5" y="10.5" width="3" height="3" rx="0.7"/><rect x="10.5" y="10.5" width="3" height="3" rx="0.7"/></g></svg><span>요약</span></button><button class="vt js-view" data-v="row" hidden><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M4.96296 5.14286C4.79506 5.14286 4.65442 5.088 4.54104 4.97828C4.42766 4.86857 4.37077 4.73295 4.37037 4.57143C4.36998 4.4099 4.42687 4.27429 4.54104 4.16457C4.65521 4.05486 4.79585 4 4.96296 4L13.4074 4C13.5753 4 13.7161 4.05486 13.8299 4.16457C13.9437 4.27429 14.0004 4.4099 14 4.57143C13.9996 4.73295 13.9427 4.86876 13.8293 4.97886C13.7159 5.08895 13.5753 5.14362 13.4074 5.14286H4.96296ZM4.96296 8.57142C4.79506 8.57142 4.65442 8.51657 4.54104 8.40685C4.42766 8.29714 4.37077 8.16152 4.37037 8C4.36998 7.83847 4.42687 7.70285 4.54104 7.59314C4.65521 7.48343 4.79585 7.42857 4.96296 7.42857H13.4074C13.5753 7.42857 13.7161 7.48343 13.8299 7.59314C13.9437 7.70285 14.0004 7.83847 14 8C13.9996 8.16152 13.9427 8.29733 13.8293 8.40742C13.7159 8.51752 13.5753 8.57219 13.4074 8.57142H4.96296ZM4.96296 12C4.79506 12 4.65442 11.9451 4.54104 11.8354C4.42766 11.7257 4.37077 11.5901 4.37037 11.4286C4.36998 11.267 4.42687 11.1314 4.54104 11.0217C4.65521 10.912 4.79585 10.8571 4.96296 10.8571H13.4074C13.5753 10.8571 13.7161 10.912 13.8299 11.0217C13.9437 11.1314 14.0004 11.267 14 11.4286C13.9996 11.5901 13.9427 11.7259 13.8293 11.836C13.7159 11.9461 13.5753 12.0008 13.4074 12H4.96296ZM2.59259 5.14286C2.42469 5.14286 2.28405 5.088 2.17067 4.97828C2.05729 4.86857 2.0004 4.73295 2 4.57143C1.99961 4.4099 2.0565 4.27429 2.17067 4.16457C2.28484 4.05486 2.42548 4 2.59259 4C2.75971 4 2.90054 4.05486 3.01511 4.16457C3.12968 4.27429 3.18637 4.4099 3.18519 4.57143C3.184 4.73295 3.12711 4.86876 3.01452 4.97886C2.90193 5.08895 2.76129 5.14362 2.59259 5.14286ZM2.59259 8.57142C2.42469 8.57142 2.28405 8.51657 2.17067 8.40685C2.05729 8.29714 2.0004 8.16152 2 8C1.99961 7.83847 2.0565 7.70285 2.17067 7.59314C2.28484 7.48343 2.42548 7.42857 2.59259 7.42857C2.75971 7.42857 2.90054 7.48343 3.01511 7.59314C3.12968 7.70285 3.18637 7.83847 3.18519 8C3.184 8.16152 3.12711 8.29733 3.01452 8.40742C2.90193 8.51752 2.76129 8.57219 2.59259 8.57142ZM2.59259 12C2.42469 12 2.28405 11.9451 2.17067 11.8354C2.05729 11.7257 2.0004 11.5901 2 11.4286C1.99961 11.267 2.0565 11.1314 2.17067 11.0217C2.28484 10.912 2.42548 10.8571 2.59259 10.8571C2.75971 10.8571 2.90054 10.912 3.01511 11.0217C3.12968 11.1314 3.18637 11.267 3.18519 11.4286C3.184 11.5901 3.12711 11.7259 3.01452 11.836C2.90193 11.9461 2.76129 12.0008 2.59259 12Z" fill="currentColor"/> </svg><span>줄 카드</span></button></div></div></div></div>
+<div class="content">
+      
+      
+      <div class="empty" hidden><div class="em-case em-first" hidden><div class="em-ttl">아직 자동화가 없습니다</div><div class="em-sub">반복하는 업무를 자동화로 만들어 두면 알아서 처리됩니다.</div><button class="btn-primary-demo size-medium state-default"><svg class="em-plus" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M10 4.5v11M4.5 10h11"/></svg>새 자동화</button></div><div class="em-case em-filtered" hidden><div class="em-ttl">조건에 맞는 결과가 없습니다</div><div class="em-sub">다른 상태 조건으로 조회해 보세요.</div></div></div>
+      <div class="grid"><div class="wf-card js-item" data-t="정기 지식 보고" data-kind="자동" data-state="run" data-run="2026-09-17T10:40" data-made="2026-08-03"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="state-badge lv-state run">동작 중 3/5</span><span class="key-chip">예약</span><span class="key-chip">지식/문서</span><span class="key-chip">보고</span></div><div class="c-row"><div class="c-title">정기 지식 보고</div></div><div class="c-desc">지정한 일정에 지식함에서 자료를 검색해 보고서를 작성합니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n done" data-tip="1/5 일정 매주 월 — 완료"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></span><span class="n done" data-tip="2/5 문서 검색 — 완료"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></span><span class="n cur" data-tip="3/5 근거 검색 — 동작 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="4/5 보고서 작성 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="5/5 채널 공유 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">근거 검색</span><span class="sub">12초째 · 근거 3건 찾음</span></div><span class="acts"><button class="run-btn">중지</button></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="회의록 정리" data-kind="수동" data-state="run" data-run="2026-09-17T10:40" data-made="2026-08-20"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="state-badge lv-state run">동작 중 3/5</span><span class="key-chip">지식/문서</span></div><div class="c-row"><div class="c-title">회의록 정리</div></div><div class="c-desc">올린 녹취를 정리해 회의록 초안을 만듭니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n done" data-tip="1/5 수동 시작 — 완료"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></span><span class="n done" data-tip="2/5 문단 정리 — 완료"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></span><span class="n retry" data-tip="3/5 회의록 작성 — 재시도 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="4/5 검토 요청 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="5/5 결과 저장 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">회의록 작성 재시도 중</span><span class="sub">AI 직원 응답 지연 — 2번째 시도</span></div><span class="acts"><button class="run-btn">중지</button></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="민원 답변 작성" data-kind="자동" data-state="fail" data-run="2026-09-17T09:12" data-made="2026-07-15"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="key-chip">이메일</span><span class="key-chip">보고</span></div><div class="c-row"><div class="c-title">민원 답변 작성</div></div><div class="c-desc">수신 민원을 판별하고 근거 문서를 찾아 검토용 답변을 작성해 채널에 공유합니다.</div><div class="grp fail"><div class="line"><div class="nrow"><span class="n done" data-tip="1/6 이메일 수신 — 완료"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></span><span class="n done" data-tip="2/6 민원 판별 — 완료"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></span><span class="n skipc" data-tip="3/6 긴급 여부 — 건너뜀"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span><span class="n fail" data-tip="4/6 근거 검색 — 실패"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg><span class="bd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></span><span class="n pend" data-tip="5/6 답변 작성 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="6/6 채널 공유 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox fail txt"><span class="nm">근거 검색 실패</span><span class="sub">지식함 폴더 &quot;민원 / 처리 기준&quot;에 접근할 수 없습니다</span></div><span class="acts"><span class="switch-demo"></span></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="데일리 뉴스 검색" data-kind="자동" data-state="wait" data-run="2026-09-15T09:00" data-made="2026-06-10"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="key-chip">예약</span><span class="key-chip">보고</span></div><div class="c-row"><div class="c-title">데일리 뉴스 검색</div></div><div class="c-desc">매일 아침 AI 뉴스를 모아 채널에 공유합니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n pend" data-tip="1/4 일정 09:00 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="2/4 뉴스 검색 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="3/4 요약 작성 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="4/4 채널 공유 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">다음 실행</span><span class="sub">9월 16일 09:00</span></div><span class="acts"><span class="switch-demo is-on"></span></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="월요일 업무 안내" data-kind="자동" data-state="off" data-run="2026-09-08T14:20" data-made="2026-05-02"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="key-chip">예약</span><span class="key-chip">보고</span></div><div class="c-row"><div class="c-title">월요일 업무 안내</div></div><div class="c-desc">정해진 요일과 시간에 업무 안내를 채널에 공유합니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n pend" data-tip="1/3 일정 매주 월 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="2/3 안내문 작성 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="3/3 채널 공유 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">꺼져 있음</span><span class="sub">켜면 매주 월 14:20에 시작</span></div><span class="acts"><span class="switch-demo"></span></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="분기별 매출 정리" data-kind="자동" data-state="setup" data-run="" data-made="2026-09-16"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="key-chip">예약</span></div><div class="c-row"><div class="c-title">분기별 매출 정리</div></div><div class="c-desc">분기가 끝나면 매출 자료를 모아 표로 정리합니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n dis" data-tip="1/4 일정 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n dis" data-tip="2/4 자료 수집 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n dis" data-tip="3/4 표 정리 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n dis" data-tip="4/4 결과 저장 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">설정 중</span><span class="sub">업무 설정을 채우면 돌 수 있습니다</span></div><span class="acts"><span class="switch-demo is-disabled"></span></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="계약서 검토 요청" data-kind="자동" data-state="wait" data-run="2026-09-16T17:40" data-made="2026-07-28"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="key-chip">지식/문서</span></div><div class="c-row"><div class="c-title">계약서 검토 요청</div></div><div class="c-desc">올린 계약서를 검토해 위험 조항을 정리합니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n pend" data-tip="1/4 문서 올라옴 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="2/4 계약서 읽기 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="3/4 위험 조항 정리 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n pend" data-tip="4/4 결과 저장 — 기본"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">문서 올라옴 대기</span><span class="sub">지식함 &#x27;계약서&#x27; 폴더</span></div><span class="acts"><span class="switch-demo is-on"></span></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div><div class="wf-card js-item" data-t="주간 보고 초안 생성" data-kind="수동" data-state="setup" data-run="" data-made="2026-09-17"><button class="sq-dots more js-more" aria-label="자동화 메뉴"><span></span><span></span><span></span></button><div class="c-tags"><span class="key-chip">보고</span></div><div class="c-row"><div class="c-title">주간 보고 초안 생성</div></div><div class="c-desc">설명이 없습니다.</div><div class="grp base"><div class="line"><div class="nrow"><span class="n dis" data-tip="1/4 수동 시작 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n dis" data-tip="2/4 자료 모으기 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n dis" data-tip="3/4 초안 작성 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span><span class="n dis" data-tip="4/4 채널 공유 — 설정 중"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span><svg class="donut" viewBox="0 0 20 20"><circle class="trk" cx="10" cy="10" r="8"/><circle cx="10" cy="10" r="8"/></svg></span></div></div><div class="bot"><div class="nowbox base txt"><span class="nm">설정 중</span><span class="sub">AI 직원을 정하면 돌 수 있습니다</span></div><span class="acts"><span class="switch-demo is-disabled"></span></span></div></div><div class="overflow-menu-demo card-menu" hidden><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></div><div class="overflow-menu-item"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg><span>이름 변경</span></div><div class="mn-sep"></div><div class="overflow-menu-item is-danger"><svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><span>삭제</span></div></div></div></div>
+      
+      <div style="height:220px;"></div>
+    </div></div>
+
+  </div>
+</div></div>
+<script>
+// ===== 도구 줄 (결정 139~141) — 구분 기준 · 덩이 버튼 · 정렬 버튼 · 카드/줄 =====
+// 구분은 카드에 적힌 값(data-state · data-kind)으로, 정렬은 data-run · data-made · 이름으로 한다. 동작 중은 "지금"이라 최근 실행순 맨 앞.
+const STATE_GROUPS=[['run','동작 중'],['wait','대기 중'],['fail,off','꺼짐'],['setup','설정 중']];   // 결정 142 — 상태 어휘 4덩이. 대기 중 = 대기·감시·수동의 실행 전 / 꺼짐 = 사용자가 끔 + 실패로 멈춤(결정 132로 둘 다 꺼짐)
+const ARROW=d=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(d?'<path d="M12 5v14M19 12l-7 7-7-7"/>':'<path d="M12 19V5M5 12l7-7 7 7"/>')+'</svg>';   // Lucide arrow-down / arrow-up
+const SORT_DEF={'최근 실행순':'desc','이름순':'asc'};   // 기본 방향 — 최신 먼저 / ㄱ→ㅎ
+const st={grp:'none',filter:'all',key:'최근 실행순',flip:false,view:'card'};
+const grid=document.querySelector('.grid'); const cards=[...grid.querySelectorAll('.wf-card')];
+// ===== 요약 카드(S-2f · _lab/요약카드_lab.html · 2026-09-17) — 왼쪽 위 칸: 자동+동작 중 → 켜진 스위치 / 수동 → 「수동」 알약 / 그 외 자동 → 정본 스위치.
+// 요소는 여기서 심고 CSS(.sc)가 요약 보기에서만 보여 준다. 상세·줄 카드에서는 display:none.
+cards.forEach(c=>{
+  const more=c.querySelector('.js-more');
+  if(c.dataset.kind==='수동') more.insertAdjacentHTML('afterend','<span class="mode-mark" aria-label="수동 실행">수동</span>');
+  else if(c.dataset.state==='run') more.insertAdjacentHTML('afterend','<span class="acts-sw js-autosw"><span class="switch-demo is-on"></span></span>');
+});
+// 동작 중인 자동의 스위치를 끄면 확인창 — 자동 실행을 끄면 지금 도는 것도 멈추기 때문(「중지」는 확인 없이 이번 실행만)
+const dlg=document.createElement('div'); dlg.className='cf-wrap'; dlg.hidden=true;
+dlg.innerHTML='<div class="cf-box" role="dialog" aria-modal="true"><div class="cf-t">자동 실행을 끌까요?</div><div class="cf-d">지금 진행 중인 자동화가 도중에 중지됩니다.</div><div class="cf-a"><button class="run-btn js-cf-no">취소</button><button class="run-btn cf-danger js-cf-yes">끄기</button></div></div>';
+document.body.appendChild(dlg); let cfCard=null;
+document.addEventListener('click',e=>{
+  const sw=e.target.closest('.js-autosw'); if(sw){ cfCard=sw.closest('.wf-card'); dlg.hidden=false; e.stopPropagation(); return; }
+  if(e.target.closest('.js-cf-no')||(e.target===dlg)){ dlg.hidden=true; cfCard=null; return; }
+  if(e.target.closest('.js-cf-yes')&&cfCard){   // 시연: 스위치 꺼짐 · 칩 제거 · 진행 글 「꺼져 있음」 · 「중지」 제거 · 상태 off
+    const c=cfCard; c.querySelector('.js-autosw .switch-demo').classList.remove('is-on');
+    c.querySelector('.state-badge')?.remove(); c.querySelector('.acts')?.remove();
+    const nb=c.querySelector('.nowbox'); if(nb){ nb.querySelector('.nm').textContent='꺼져 있음'; nb.querySelector('.sub').textContent='방금 끔 · 켜면 다음 예약부터'; }
+    c.querySelector('.grp')?.classList.remove('run'); c.dataset.state='off'; c.dataset.run=new Date().toISOString().slice(0,16);
+    dlg.hidden=true; cfCard=null; render(); return; }
+},true);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!dlg.hidden){ dlg.hidden=true; cfCard=null; } });
+// 진행 글 툴팁(2026-09-17 13시 40분 · 사용자: "잘리면 툴팁으로") — 상태 이름 + 설명 전문. 카드 폭에서 잘린 실패 원인을 여기서 읽는다
+cards.forEach(c=>{ const nb=c.querySelector('.nowbox'); if(!nb) return; const nm=nb.querySelector('.nm')?.textContent.trim()||'', sub=nb.querySelector('.sub')?.textContent.trim()||''; if(sub) nb.dataset.full=nm+' · '+sub; });
+// **말줄임된 것에만** 툴팁을 붙인다(사용자 2026-09-18) — 다 보이는 글에 툴팁이 뜨면 읽은 것을 또 읽는다.
+// 카드 폭·보기(요약/상세)에 따라 잘리는지가 달라지므로 그릴 때마다·창 크기가 바뀔 때마다 다시 잰다
+function syncNowTip(){ cards.forEach(c=>{ const nb=c.querySelector('.nowbox'); if(!nb||!nb.dataset.full) return;
+  const sub=nb.querySelector('.sub'); const cut = sub && sub.scrollWidth > sub.clientWidth + 1;
+  if(cut) nb.dataset.tip=nb.dataset.full; else nb.removeAttribute('data-tip'); }); }
+window.addEventListener('resize', syncNowTip);
+// 실패로 멈춘 자동의 스위치를 켤 때 한 줄 안내(결정 142 뒤 · 사용자 "그래도 될 듯") — 원인이 그대로면 다음 실행도 실패할 수 있음
+const dlg2=document.createElement('div'); dlg2.className='cf-wrap'; dlg2.hidden=true;
+dlg2.innerHTML='<div class="cf-box" role="dialog" aria-modal="true"><div class="cf-t">다시 켤까요?</div><div class="cf-d js-cf2-d"></div><div class="cf-a"><button class="run-btn js-cf2-no">취소</button><button class="run-btn js-cf2-yes">켜기</button></div></div>';
+document.body.appendChild(dlg2); let cf2Card=null;
+document.addEventListener('click',e=>{
+  const sw=e.target.closest('.wf-card[data-state="fail"] .acts .switch-demo');
+  if(sw){ cf2Card=sw.closest('.wf-card'); const sub=cf2Card.querySelector('.nowbox .sub')?.textContent.trim()||'';
+    dlg2.querySelector('.js-cf2-d').textContent='실패 원인이 그대로면 다음 실행도 실패할 수 있습니다.'+(sub?' 원인: '+sub:''); dlg2.hidden=false; e.stopPropagation(); return; }
+  if(e.target.closest('.js-cf2-no')||e.target===dlg2){ dlg2.hidden=true; cf2Card=null; return; }
+  if(e.target.closest('.js-cf2-yes')&&cf2Card){   // 시연: 스위치 켜짐 · 실패 빨강 해제 · 진행 글 「다음 실행」 · 상태 wait
+    const c=cf2Card; c.querySelector('.acts .switch-demo').classList.add('is-on'); c.querySelector('.grp').classList.replace('fail','base');
+    const nb=c.querySelector('.nowbox'); nb.querySelector('.nm').textContent='다음 실행'; nb.querySelector('.sub').textContent='9월 18일 09:00'; nb.dataset.tip='다음 실행 · 9월 18일 09:00';
+    c.dataset.state='wait'; dlg2.hidden=true; cf2Card=null; render(); return; }
+},true);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!dlg2.hidden){ dlg2.hidden=true; cf2Card=null; } });
+const inGroup=(c,k)=> st.grp==='state' ? k.split(',').includes(c.dataset.state) : c.dataset.kind===k;
+const sortVal=c=>({'최근 실행순':c.dataset.run,'이름순':c.dataset.t})[st.key];
+function sorted(list){
+  const dir=(SORT_DEF[st.key]==='desc')!==st.flip?-1:1;
+  return list.slice().sort((a,b)=>{ const x=sortVal(a),y=sortVal(b);
+    if(!x&&!y) return 0; if(!x) return 1; if(!y) return -1;   // 실행한 적 없음(설정 중)은 방향과 무관하게 맨 뒤
+    return x.localeCompare(y,'ko')*dir; });
+}
+function render(){
+  grid.querySelectorAll('.ghd').forEach(h=>h.remove());
+  grid.classList.toggle('rows',st.view==='row');
+  grid.classList.toggle('summary',st.view==='summary');   // 요약 카드(S-2f · 2026-09-17 13시)
+  const vis = st.filter==='all' ? cards : cards.filter(c=>inGroup(c,st.filter));
+  cards.forEach(c=>{ c.classList.toggle('rc',st.view==='row'); c.classList.toggle('sc',st.view==='summary'); c.hidden=!vis.includes(c); });
+  const groups = st.grp==='none' ? [] : st.grp==='state' ? STATE_GROUPS.map(([k,l])=>[k,l,cards.filter(c=>inGroup(c,k))])
+               : ['자동','수동'].map(k=>[k,k+' 실행',cards.filter(c=>c.dataset.kind===k)]);
+  // 덩이 버튼 — 맨 앞 「전체」, 비어 있는 덩이는 버튼도 머리도 없음
+  const sub=null;   // 덩이 버튼 폐지(결정 157) — 묶음 머리가 덩이를 대신한다
+  // 덩이가 0개여도 버튼은 자리를 지킨다(개수 0 · 비활성) — 버튼이 나타났다 사라지면 옆 버튼 위치가 흔들린다. 머리는 카드가 없으면 안 그린다
+  if(!groups.length){ sorted(vis).forEach(c=>grid.appendChild(c)); }
+  else groups.forEach(([k,label,list])=>{ const shown=list.filter(c=>vis.includes(c)); if(!shown.length) return;
+    const h=document.createElement('div'); h.className='ghd'; h.textContent=label; grid.appendChild(h);
+    sorted(shown).forEach(c=>grid.appendChild(c)); });
+  // 버튼 표시
+  // 글자 버튼에 고른 값을 적는다(결정 157) — 제품은 값을 안 적지만 우리는 적어 둔다
+  const GL={state:'현재 상태',auto:'실행 방식',none:'구분 안 함'};
+  document.querySelector('.js-grp-val').textContent = GL[st.grp];
+  document.querySelector('.js-sort-val').textContent = st.key;
+  document.querySelectorAll('.js-grp-menu button:not(.px-menu-x)').forEach(b=>b.classList.toggle('on',b.dataset.v===st.grp));
+  // 정렬 메뉴 — 켜진 항목에 지금 방향(↑↓)을 붙인다. 구분 메뉴에는 방향이 없다(축을 고르는 것이라 순서가 없다)
+  document.querySelectorAll('.js-sort-menu button:not(.px-menu-x)').forEach(b=>{
+    const on=b.dataset.k===st.key; b.classList.toggle('on',on);
+    const newest=(SORT_DEF[b.dataset.k]==='desc')!==st.flip;
+    const down = b.dataset.k==='최근 실행순' ? newest : !st.flip;
+    b.querySelector('.dir').innerHTML = on ? ARROW(down) : '';
+    b.title = !on ? '' : b.dataset.k==='최근 실행순'
+      ? (newest?'최신 먼저 · 누르면 오래된 먼저':'오래된 먼저 · 누르면 최신 먼저')
+      : (st.flip?'ㅎ→ㄱ · 누르면 ㄱ→ㅎ':'ㄱ→ㅎ · 누르면 ㅎ→ㄱ'); });
+  document.querySelectorAll('.js-view').forEach(v=>v.classList.toggle('on',v.dataset.v===st.view));
+  showEmpty(vis.length);
+  syncNowTip();   // 잘린 진행 글에만 툴팁
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('.js-gseg button'); if(g){ st.grp=g.dataset.v; st.filter='all'; render(); return; }
+  // 구분 · 정렬 — 글자 버튼을 누르면 메뉴, 고르면 닫힌다. 같은 정렬을 다시 고르면 방향이 뒤집힌다
+  if(e.target.closest('.px-menu-x')){ document.querySelectorAll('.px-menu').forEach(m=>m.hidden=true); return; }
+  const gb=e.target.closest('.js-grp'); const sb2=e.target.closest('.js-sort');
+  const gm=document.querySelector('.js-grp-menu'), sm=document.querySelector('.js-sort-menu');
+  if(gb){ const was=!gm.hidden; gm.hidden=true; sm.hidden=true; gm.hidden=was; return; }
+  if(sb2){ const was=!sm.hidden; gm.hidden=true; sm.hidden=true; sm.hidden=was; return; }
+  const gi=e.target.closest('.js-grp-menu button:not(.px-menu-x)'); if(gi){ st.grp=gi.dataset.v; render(); return; }   // 정렬과 같이 열어 둔다(결정 165)
+  const si=e.target.closest('.js-sort-menu button:not(.px-menu-x)');
+  // 정렬은 고른 뒤에도 메뉴를 **열어 둔다** — 같은 항목을 다시 누르면 방향이 뒤집히므로 연달아 누르기 쉽다(결정 165)
+  if(si){ if(st.key===si.dataset.k) st.flip=!st.flip; else { st.key=si.dataset.k; st.flip=false; } render(); return; }
+  if(!e.target.closest('.px-wrap')){ gm.hidden=true; sm.hidden=true; }
+  const s=e.target.closest('.js-sseg button'); if(s){ if(st.key===s.dataset.k) st.flip=!st.flip; else { st.key=s.dataset.k; st.flip=false; } render(); return; }
+  const v=e.target.closest('.js-view'); if(v){ st.view=v.dataset.v; render(); closeAllMenus(); return; }
+  // 카드 ⋯ 메뉴 — 한 번에 하나만 열린다
+  const btn=e.target.closest('.js-more'); const target=btn?btn.closest('.js-item').querySelector('.card-menu'):null;
+  const wasOpen=target&&!target.hidden; closeAllMenus();
+  if(target){ target.hidden=wasOpen; target.closest('.js-item').classList.toggle('menu-open',!wasOpen); e.stopPropagation(); }
+});
+function closeAllMenus(){
+  document.querySelectorAll('.card-menu').forEach(m=>{ m.hidden=true; });
+  document.querySelectorAll('.js-item.menu-open').forEach(c=>{ c.classList.remove('menu-open'); });
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeAllMenus(); });
+
+// 빈 화면은 두 가지 — ① 자동화 자체가 없음 → 만들기 하나 · ② 거른 결과 0개 → 문구만
+function showEmpty(shown){
+  const first = document.body.classList.contains('is-first');
+  const empty = document.querySelector('.empty');
+  empty.hidden = !first && shown>0;
+  document.body.classList.toggle('is-empty', !empty.hidden);
+  empty.querySelector('.em-first').hidden    = !first;
+  empty.querySelector('.em-filtered').hidden = first;
+}
+// 빈 상태(자동화가 하나도 없음) 보기 — 주소 끝에 ?state=first 를 붙이면 됨. 검토용이라 화면 안에 스위치는 두지 않음
+if(new URLSearchParams(location.search).get('state')==='first') document.body.classList.add('is-first');
+render();
+</script>
+
+
+<!-- ── 시연용 화면 이동 (2026-09-16) ──
+     세 화면을 하나로 이어 보여 주려고 붙인 것. LNB 항목과 카드·행을 누르면 해당 화면으로 간다.
+     기존 클릭 처리(메뉴 열기 등)를 건드리지 않도록 버튼·메뉴 위에서는 이동하지 않는다. -->
+<script>
+(function(){
+  var S1='화면01_전체목록.html', S2='화면02_자동화생성.html', S3='화면03_자동화상세.html';
+  // 이 문서들은  를 쓰므로 상대 주소가 컴포넌트 폴더로 간다.
+  // 그래서 지금 문서가 있는 폴더를 직접 붙여 절대 경로로 만든다.
+  var dir=location.pathname.replace(/[^/]*$/,'');
+  var here=decodeURIComponent(location.pathname.split('/').pop());
+  function go(u){ if(u && here!==u) location.href=dir+encodeURIComponent(u); }
+
+  // LNB — 라벨로 대상을 정한다
+  document.querySelectorAll('.channel-text-demo').forEach(function(el){
+    var t=(el.querySelector('.ch-label')||{}).textContent||'';
+    var dot=el.querySelector('.lnb-dot');
+    var to = t.trim()==='새 자동화' ? S2 : t.trim()==='전체 목록' ? S1 : dot ? S3 : null;
+    if(!to) return;
+    if(el.classList.contains('js-to-entry') && decodeURIComponent(here)===S2) return; // 화면②의 새 자동화는 화면 안에서 처리
+    el.style.cursor='pointer';
+    el.addEventListener('click', function(e){ e.stopPropagation(); go(to); }, true);
+  });
+
+  // 카드·행 — 버튼이나 메뉴를 누른 것이면 이동하지 않는다
+  document.querySelectorAll('.wf-card').forEach(function(el){
+    el.style.cursor='pointer';
+    el.addEventListener('click', function(e){
+      if(e.target.closest('button, .card-menu, .run-menu, .share-chip, .switch-demo, .run-btn, .more')) return;
+      go(S3);
+    });
+  });
+
+
+  // 화면③ 머리의 `‹ 전체 목록` 되돌아가기 링크
+  document.querySelectorAll('a').forEach(function(a){
+    if((a.textContent||'').trim().indexOf('전체 목록')>=0){
+      a.style.cursor='pointer';
+      a.addEventListener('click', function(e){ e.preventDefault(); go(S1); });
+    }
+  });
+  // 화면② 마무리 · 화면① 빈 상태의 새 자동화
+  document.querySelectorAll('button').forEach(function(b){
+    var t=(b.textContent||'').trim();
+    if(t==='설정 완료') b.addEventListener('click', function(){ go(S1); });
+    if(t==='새 자동화'||t==='+ 새 자동화') b.addEventListener('click', function(){ go(S2); });
+  });
+})();
+</script>
+
+<div class="tip" id="tip"></div>
+<script>
+// 노드 칸·토글 툴팁 — 라이브러리 19-floating-pop 방식 · 불투명 · 페이드만
+(function(){ const tip=document.getElementById('tip'); let tt=null;
+document.addEventListener('mouseover',e=>{ const el=e.target.closest('[data-tip]'); if(!el) return; clearTimeout(tt); const r=el.getBoundingClientRect(); tip.textContent=el.dataset.tip; tip.style.left=(r.left+r.width/2)+'px'; tip.style.top=(r.top-9)+'px'; tip.classList.add('on'); });
+document.addEventListener('mouseout',e=>{ const el=e.target.closest('[data-tip]'); if(!el) return; const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest('[data-tip]'); if(to) return; tt=setTimeout(()=>tip.classList.remove('on'),120); });
+})();
+</script>
+<script>
+/* 실행 방식 묶음(자동 실행 / 수동 실행) 접기 — 머리를 누르면 그 묶음의 항목만 접힌다 */
+document.querySelectorAll('.lnb-kind .js-lnbfold').forEach(function(h){
+  h.addEventListener('click', function(e){ e.stopPropagation(); h.closest('.lnb-kind').classList.toggle('is-folded'); });
+});
+</script>
+
+
+<script>
+  // 메뉴의 hidden 이 바뀌면 그 버튼에 .is-open 을 붙였다 뗀다 — 어디서 닫히든(×·바깥·버튼) 따라온다
+  (function(){
+    function sync(){ document.querySelectorAll('.px-wrap').forEach(function(w){
+      var m=w.querySelector('.px-menu'), b=w.querySelector('.px-btn-text');
+      if(m&&b) b.classList.toggle('is-open', !m.hidden); }); }
+    var mo=new MutationObserver(sync);
+    document.querySelectorAll('.px-menu').forEach(function(m){ mo.observe(m,{attributes:true, attributeFilter:['hidden']}); });
+    document.addEventListener('click', function(){ setTimeout(sync,0); });
+    sync();
+  })();
+</script>
+</body></html>

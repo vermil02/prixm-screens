@@ -1,0 +1,370 @@
+/* ===========================================================================
+   자동화 영역 공용 부품 — 2026-09-16
+
+   세 시안(화면①·②·③)에 **값까지 똑같이** 복사돼 있던 규칙을 한 장으로 모은 것입니다.
+   엑셀 `컴포넌트 목록` 50~58번이 목록의 정본이고, 이 파일은 그 구현입니다.
+
+   ★ 값의 기준은 **정본 시안**(`화면/화면0N_*.html`)입니다. 여기 값이 정본과 달라지면 화면이 조용히 바뀝니다 —
+     `python 화면/_공용점검.py` 로 어긋난 곳을 찾을 수 있습니다.
+
+   여는 법 — 시안 <head> 에서 common.css 다음에 한 줄:
+     <link rel="stylesheet" href="../화면/_공용.css">
+   (시안들은 <base href="../컴포넌트/"> 를 쓰므로 위 경로가 화면/ 과 _3기둥안/ 모두에서 맞습니다)
+
+   ★ 라이브러리(`컴포넌트/common.css`)는 건드리지 않았습니다. 디자인 단계에서 이 파일을
+     조각(components/*.html)으로 옮깁니다.
+
+   ★ 여기에 **일부러 안 넣은 것**: `.step` `.steps` `.flow` `.back`.
+     화면마다 다른 것을 가리키는 이름이라(컴포넌트 57번) 합치면 서로 덮어씁니다.
+     이름을 가르기 전까지는 각 시안 안에 그대로 둡니다.
+   =========================================================================== */
+
+
+/* ── 0. 색·글꼴 이름 — 제품과 같은 이름으로 (2026-09-16) ─────────────────────────
+   제품 캡처(`기존 화면/*_knowledge_*.html`)의 기본 테마 값을 제품 이름 그대로 둡니다.
+   라이브러리 이름(--gray-500 …)은 아래에서 제품 이름을 가리키게 이었습니다 — 값은 전과 같아
+   화면이 바뀌지 않고, 이름만 제품과 같아집니다. 제품 테마(mono·indigo …)가 정해지면 이 블록만 바꿉니다. */
+:root{
+  --font-sans:"Pretendard Variable","Pretendard",system-ui,sans-serif;
+  --color-p-50:#eff6ff; --color-p-100:#dbeafe; --color-p-200:#bfdbfe; --color-p-300:#93c5fd; --color-p-400:#3b82f6;
+  --color-p-500:#2563eb; --color-p-600:#1d4ed8; --color-p-700:#1e40af;
+  --color-n-50:#f8fafc; --color-n-100:#f3f4f6; --color-n-200:#e5e7eb; --color-n-300:#cccfd6; --color-n-400:#a8afbc;
+  --color-n-500:#808897; --color-n-600:#626b7a; --color-n-700:#475062; --color-n-800:#2a3445;
+  --color-text-basic:#222; --color-white:#fff;
+  --color-brand:#2563eb; --color-brand-hover:#1d4ed8; --color-brand-soft:#eff6ff;
+  --color-success:#1dba57; --color-success-soft:#e7f8ee; --color-warning:#f59e0b; --color-warning-soft:#fef4e2;
+  --color-danger:#ef4444; --color-danger-strong:#b91c1c; --color-danger-soft:#fdecec;
+  --color-ai-100:#f3f0ff; --color-ai-500:#7c5cbf; --color-ai-900:#840afe;
+  --color-gnb-bg:#f4f6fc; --color-gnb-panel-bg:#fafafd; --color-gnb-active:#e8eeff; --color-gnb-active-text:#2563eb;
+  --color-gnb-stroke:#e5e7eb; --color-gnb-ink:#222; --color-gnb-sub2:#808897;
+  --color-lnb-hover:#f3f4f6; --color-lnb-selected:#efefff;
+  --color-ico-base-default:#a8afbc; --color-ico-accent-default:#3b82f6;
+  --radius:5px; --radius-xs:3px; --radius-gnb-menu:5px; --radius-input:7px; --tracking-gnb:-0.5px;
+
+  /* 라이브러리 이름 → 제품 이름 (값 동일) */
+  --black-900:var(--color-text-basic); --border-default:var(--color-n-200); --border-subtle:#f3f4f6;
+  --gray-100:var(--color-n-100); --gray-500:var(--color-n-500); --gray-600:var(--color-n-600);
+  --brand-primary:var(--color-brand); --gnb-background:var(--color-gnb-bg); --gnb-on:var(--color-gnb-active);
+  --background-page:var(--color-gnb-panel-bg); --red-500:var(--color-danger);
+  --status-active:var(--color-success); --color-warning-strong:#b45309;   /* 초록은 하나 — 제품 success 토큰(규칙 3) */
+}
+
+
+/* ── 1. 뼈대 — 제품 값 (2026-09-16 · `기존 화면/` 캡처 실측) ──────────────────────── */
+body{margin:0; padding:0; background:#fff; color:var(--color-text-basic); font-family:var(--font-sans); letter-spacing:-0.5px;}
+/* 제품 뼈대: 1행 = 헤더(GNB 위까지 전체 폭) / 2행 = GNB 68 + 본문. `_뼈대.js` 가 .hd 를 .app 첫 자식으로 올린다 */
+.app{display:grid; grid-template-columns:68px minmax(0,1fr); grid-template-rows:45px minmax(0,1fr); height:100vh; overflow:hidden;}
+.app > .hd{grid-column:1 / -1; grid-row:1;}
+.app > .gnb{grid-column:1; grid-row:2; min-height:0;}
+.main{grid-column:2; grid-row:2; display:flex; flex-direction:column; min-width:0; min-height:0; background:#fff;}
+.body{flex:1; display:flex; min-height:0;}
+/* .content 는 화면마다 구조가 달라 부품이 아닙니다 — 각 시안 안에 둡니다 */
+
+/* GNB — 제품 aside: 폭 68 · 칸 60×55 · 오른쪽 선 · 켜짐 #e8eeff + 안쪽 그림자 */
+.gnb{width:68px; box-sizing:border-box; background:var(--color-gnb-bg); border-right:1px solid var(--color-gnb-stroke);
+  display:flex; flex-direction:column; align-items:center; padding:15px 4px; gap:4px;}
+.g-item{width:60px; height:55px; box-sizing:border-box; padding:7px 5px; border-radius:var(--radius-gnb-menu); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:var(--color-gnb-ink);
+  transition:color .2s ease-out, background-color .2s ease-out;}
+.g-item svg{width:20px; height:20px; flex:0 0 auto;}
+.g-item img{width:20px; height:20px;}
+.g-item span{font-size:12px; font-weight:500; letter-spacing:var(--tracking-gnb); line-height:normal; white-space:nowrap; color:inherit;}
+.g-item:hover{background:#fff; box-shadow:inset 0 0 0 1px var(--color-gnb-stroke);}
+.g-item:hover span{font-weight:600;}
+.g-item.on{background:var(--color-gnb-active); box-shadow:inset 1px 1px 1px #ccd4e2; color:var(--color-gnb-active-text);}
+.g-item.on span{font-weight:600;}
+
+/* 상단 헤더 — 제품 header: 높이 45 · 좌우 20 · 로고 25 · 알림 24 + 배지 · 아바타 32 + 이름 15 */
+.hd{height:45px; flex:0 0 auto; box-sizing:border-box; display:flex; align-items:center; justify-content:space-between; gap:20px;
+  padding:0 20px; background:#fff; border-bottom:1px solid var(--color-gnb-stroke);}
+.hd .logo{display:block; flex:0 0 auto; font-weight:700; font-size:15px;}
+.hd .logo svg{height:25px; width:auto; display:block;}
+.hd .sp{margin-left:auto;}
+.hd-right{display:flex; align-items:center; gap:20px;}
+.hd-bell{position:relative; width:24px; height:24px; border:0; border-radius:3px; background:none; padding:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; color:var(--color-gnb-ink);}
+.hd-bell:hover{background:var(--color-n-100);}
+.hd-bell svg{width:17px; height:17px;}
+.hd-badge{position:absolute; top:-3px; left:14px; height:16px; min-width:16px; padding:0 2px; box-sizing:border-box; border-radius:999px;
+  background:var(--color-gnb-ink); color:#fff; font-size:9px; font-weight:600; line-height:1; display:flex; align-items:center; justify-content:center;}
+.hd-user{display:flex; align-items:center; gap:5px; margin:0 -5px; padding:3px 5px; border:0; border-radius:10px; background:none; cursor:pointer; font-family:inherit;}
+.hd-user:hover{background:var(--color-n-100);}
+.hd-avatar{width:32px; height:32px; border-radius:50%; background:#009c5d; color:#fff; font-size:12px; font-weight:500; letter-spacing:-0.5px;
+  display:flex; align-items:center; justify-content:center;}
+.hd-name{font-size:15px; font-weight:500; line-height:1.5; letter-spacing:var(--tracking-gnb); color:var(--color-gnb-ink);}
+
+/* LNB — 제품 aside: 폭 240 · 바탕 #fafafd · 오른쪽 선 n-200 · 위 유틸 줄 28 + 안쪽 여백 10.
+   라이브러리 `.lnb-panel`(둥근 카드 모양)을 제품 값으로 덮습니다. 행(`.channel-text-demo`)은 제품 `.px-lnb-row` 값. */
+.lnb-panel{width:240px; flex:0 0 auto; box-sizing:border-box; height:auto; min-height:0; overflow:hidden auto;
+  background:var(--color-gnb-panel-bg); border:0; border-right:1px solid var(--color-n-200); border-radius:0;
+  padding:38px 10px 25px; position:relative; letter-spacing:-0.5px;}
+.lnb-panel .lnb-wrap{min-width:0; gap:20px;}
+.lnb-panel .lnb-group{gap:10px;} /* 2026-09-17 참고 화면(AI 채팅) 실측: 묶음 머리→첫 항목 10px */
+.lnb-panel .label-toggle{min-height:16px; align-items:center;}
+.lnb-panel .label-toggle span{font-size:12px; font-weight:500; color:var(--color-n-800); padding-left:5px;}
+.lnb-panel .label-toggle .lt-inner span{padding-left:0;}
+.lnb-panel .lnb-list{gap:2px;}
+.lnb-panel .channel-text-demo{min-height:30px; padding:0 5px; gap:3px; border-radius:5px; cursor:pointer; position:relative;
+  font-size:14px; font-weight:400; color:var(--color-text-basic); transition:background-color .12s;}
+.lnb-panel .channel-text-demo:hover{background:rgba(0,0,0,.05);}
+.lnb-panel .channel-text-demo.active{background:var(--color-lnb-selected);}
+.lnb-panel .channel-text-demo .ch-inner{min-width:0; flex:1;}
+.lnb-panel .channel-text-demo .ch-label{padding:6px 2px; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.lnb-panel .lnb-top-util{top:6px; right:9px; gap:7px; height:16px;}
+.lnb-panel .lnb-top-search,.lnb-panel .lnb-top-fold{width:16px; height:16px; border:0; padding:0; background:none; cursor:pointer;
+  border-radius:var(--radius-xs); color:var(--color-n-600); display:grid; place-items:center;}
+.lnb-panel .lnb-top-fold{color:#475062; border-radius:5px;}
+.lnb-panel .lnb-top-search:hover,.lnb-panel .lnb-top-fold:hover{background:rgba(0,0,0,.05);}
+.lnb-panel .lnb-top-search svg,.lnb-panel .lnb-top-fold svg{width:16px; height:16px; display:block;}
+
+
+/* ── 2. 제목 줄 ──────────────────────────────────────────────────────────── */
+.ttl-row{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+.ttl{font-size:18px; font-weight:700;}
+.ttl-sub{font-size:13px; color:var(--gray-500); font-weight:400;}
+.ttl-sub b{font-weight:600; color:var(--black-900);}
+
+
+/* ── 3. 도구 줄 한 벌 (컴포넌트 54) ──────────────────────────────────────────
+   왼쪽 = 결과를 좁히는 도구(검색·필터·초기화) / `.v-gap` / 오른쪽 = 같은 결과를 다르게
+   보여주는 도구(정렬·보기 전환). shadcn Data Table Toolbar 구조 · 결정 40 */
+.tools{display:flex; align-items:center; gap:8px; margin-bottom:18px; flex-wrap:nowrap;}
+.v-gap{flex:1 1 8px; min-width:8px;}
+.view-ctl{display:flex; align-items:center; gap:8px;}
+
+.ipt{height:32px; border:1px solid var(--border-default); border-radius:5px; padding:0 10px; font-size:12px;
+  width:250px; flex:0 0 auto; color:var(--gray-500); display:flex; align-items:center; gap:6px;}
+
+.drop{position:relative;}
+.drop-menu{position:absolute; top:36px; left:0; z-index:20; min-width:140px;}
+.drop-menu[hidden]{display:none !important;}
+.drop-menu.drop-right{left:auto; right:0;}
+.drop-menu.is-check .overflow-menu-item img{width:15px; height:15px;}
+
+.sel{height:32px; border:1px solid var(--border-default); border-radius:5px; padding:0 10px; font-size:12px;
+  display:flex; align-items:center; gap:6px; background:#fff; cursor:pointer; color:var(--black-900);
+  font-family:inherit; letter-spacing:-0.5px;}
+.sel:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+.sel .sel-txt{white-space:nowrap;}
+.sel.is-on{border-color:var(--black-900); font-weight:600;}
+
+/* 드롭다운 화살표 — 열려 있는 동안 위를 향한다(180도, 0.15초 · 2.31) */
+.ch-arrow{width:8px; height:5px; flex-shrink:0; transition:transform .15s;}
+.sel.is-open .ch-arrow{transform:rotate(180deg);}
+
+/* 선택지마다 개수(facet count) */
+.chk-cnt{margin-left:auto; padding-left:12px; font-size:11px; color:var(--gray-500); font-variant-numeric:tabular-nums;}
+
+.btn-reset{display:inline-flex; align-items:center; gap:3px; height:32px; padding:0 6px; border:0; background:none;
+  cursor:pointer; font-family:inherit; font-size:12px; letter-spacing:-0.5px; color:var(--gray-500);
+  text-decoration:underline; text-underline-offset:2px;}
+.btn-reset:hover{color:var(--black-900);}
+.btn-reset svg{width:13px; height:13px;}
+.btn-reset[hidden]{display:none !important;}
+
+/* 아이콘 전용 버튼 26px (컴포넌트 55) — 새로고침·레이어 접기 */
+.btn-ico{width:26px; height:26px; border:0; border-radius:5px; background:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; color:var(--gray-500); padding:0;}
+.btn-ico:hover{background:var(--button-hover,rgba(0,0,0,0.05)); color:var(--black-900);}
+.btn-ico svg{width:16px; height:16px;}
+
+/* 메뉴 부속 */
+.mn-ico{width:15px; height:15px; flex:0 0 auto;}
+.mn-sep{height:1px; background:var(--border-subtle); margin:4px 0;}
+
+
+/* ── 4. 칩 한 벌 (컴포넌트 50 · 결정 125) ──────────────────────────────────────
+   모양은 같고 **채움만** 다릅니다.
+     채운 칩 = 공유 상태 (공유함 = 회색 / 공유받음 = 보라)
+     빈  칩 = 키워드
+   화면②의 템플릿 칩(.tpl-badge)이 채운 회색인 것은 의도된 변형입니다 —
+   그 화면은 아직 안 만든 것 중에 고르는 자리라 키워드가 판단 근거이고,
+   화면①은 이미 내 것이라 맥락이기 때문입니다. */
+.share-chip{flex-shrink:0; font-size:10px; color:var(--gray-600); background:var(--color-primitive-gray-100);
+  border:1px solid var(--border-default); padding:1px 6px; border-radius:4px; white-space:nowrap;}
+.share-chip.is-recv{background:var(--color-primitive-purple-100); color:#6d28d9; border-color:#dcdcfb;}
+.share-chip.js-share{cursor:pointer;}
+.share-chip.js-share:hover{filter:brightness(.95);}
+
+.key-chip{font-size:10px; color:var(--gray-600); background:#fff; border:1px solid var(--border-default);
+  padding:1px 6px; border-radius:4px; white-space:nowrap; letter-spacing:-0.2px;}
+
+.tpl-badge{align-self:flex-start; font-size:10px; color:var(--gray-600); background:var(--color-primitive-gray-100);
+  padding:2px 6px; border-radius:4px; white-space:nowrap;}
+
+
+/* ── 5. 상태 점 (컴포넌트 51 · 결정 100) ──────────────────────────────────────
+   대기·감시 = 초록 원이 퍼짐 / 동작 중 = 도는 스피너 /
+   꺼짐·수동 대기 = 채운 회색 / **설정 중 = 속 빈 회색** — 채움만으로 가릅니다. */
+.live-dot{width:6px; height:6px; border-radius:100px; flex-shrink:0;}
+.live-dot.wait,.live-dot.watch{background:var(--color-success); animation:ring 1.6s infinite;}
+.live-dot.idle,.live-dot.off{background:var(--gray-500,#808897);}
+.live-dot.draft{background:none; border:1.3px solid var(--gray-500,#808897); box-sizing:border-box;}
+
+/* LNB 는 20px 자리 안에 넣어 점 크기가 달라도 이름이 늘 같은 자리에서 시작합니다 */
+.lnb-dot{width:20px; height:20px; flex:0 0 auto; margin:0; display:inline-flex; align-items:center; justify-content:center;}
+.lnb-dot::before{content:''; width:6px; height:6px; border-radius:100px; background:var(--gray-500,#808897);}
+/* ── LNB 점 어휘 (결정 176 · 2026-09-18 · LAB `_lab/LNB점_lab.html` G-1e + E-e) ──────────
+   모두 같은 6px 점이고 **채움과 색만** 다릅니다 — 모양을 늘리지 않습니다.
+     동작 중 = 초록 점이 0.85초로 옅어졌다 진해짐(부드러운 점멸)
+     켜짐    = 초록 점, 정지
+     실패    = 빨간 점 — 새 상태가 아니라 **꺼짐의 이유**입니다(결정 132: 실패하면 자동 실행이 꺼짐).
+               사람이 끈 것(회색)과 실패해서 꺼진 것(빨강)을 색으로만 가릅니다.
+     꺼짐    = 회색 점 (위 기본값)
+     설정 중 = 속 빈 회색 원
+   ★ 회전 도넛과 퍼지는 링을 여기서 뺐습니다 — 도넛은 **카드의 노드 줄에만** 남습니다.
+     둘은 뜻이 다릅니다: LNB = 이 자동화가 돈다 / 카드 = 몇 번째 단계가 도는가(칩 `3/5`의 그 3번째).
+     버린 안: 점 자리를 !로 갈아 끼우기(E-a — 꺼짐인데 꺼짐으로 안 보임) ·
+              이름 옆에 ! 붙이기(E-b·E-c·E-d — 이름 자리를 7px 먹어 실패한 줄만 더 일찍 잘림) ·
+              맥박(G-2 — 점 자리 안에서 커져 줄이 들썩임) · 정지(G-3 — 도는지 알아채기 어려움) */
+.lnb-dot.wait::before{background:var(--color-success);}
+.lnb-dot.fail::before{background:var(--color-danger);}
+.lnb-dot.draft::before{background:none; border:1.3px solid var(--gray-500,#808897); box-sizing:border-box;}
+/* 동작 중 — 계단식으로 깜빡이면 어색해서 ease-in-out 으로 숨쉬게 합니다(사용자 2026-09-18).
+   1.6초는 한 번 옅어지는 사이 눈이 딴 데로 가 「안 보인다」 → 0.85초(사람 맥박 언저리)로. */
+.lnb-dot.run::before{background:var(--color-success); animation:lnb-breathe .85s ease-in-out infinite;}
+@keyframes lnb-breathe{0%,100%{opacity:1} 50%{opacity:.3}}
+
+@keyframes ring{
+  0%{box-shadow:0 0 0 0 rgba(29,186,87,.32)}
+  70%{box-shadow:0 0 0 3.5px rgba(29,186,87,0)}
+  100%{box-shadow:0 0 0 0 rgba(29,186,87,0)}
+}
+
+/* 동작 중 = 스피너. 바깥은 270도, 호 자체는 450도를 돌려 합이 두 바퀴가 되게 하면
+   매 바퀴 같은 자리에서 호가 줄어 맥박처럼 보입니다. */
+.live-dot.run{width:11px; height:11px; background:none; border:0; border-radius:0;}
+.live-dot.run svg{width:11px; height:11px; display:block; animation:sp-rot 1.4s linear infinite;}
+.live-dot.run circle{fill:none; stroke:var(--color-success); stroke-width:2.6; stroke-linecap:round;
+  stroke-dasharray:50.27; stroke-dashoffset:50.27; transform-origin:center;
+  animation:sp-dash 1.4s ease-in-out infinite;}
+/* ※ 여기 스피너는 이제 화면③의 `.live-dot` 만 씁니다. LNB 는 결정 176 으로 점멸이 됐습니다.
+   화면③의 `.live-dot` 도 같은 층(자동화 단위)이라 어휘가 어긋나 있습니다 — `D-74` 로 열어 둡니다. */
+
+@keyframes sp-rot{0%{transform:rotate(0)} 100%{transform:rotate(270deg)}}
+@keyframes sp-dash{
+  0%{stroke-dashoffset:50.27}
+  50%{stroke-dashoffset:12.57; transform:rotate(135deg)}
+  100%{stroke-dashoffset:50.27; transform:rotate(450deg)}
+}
+
+
+/* ── 6. 상태 줄 (컴포넌트 56 · 결정 126) ──────────────────────────────────────
+   `자동 · 대기 중` + 내용 **한 가지**. 내용은 상태마다 정해져 있습니다(2.25b) —
+   대기 → 다음 실행 일시 / 감시 → 감시 대상 / 동작 → 진행 단계 /
+   꺼짐·수동 대기 → 최근 실행 + 결과 / 설정 중 → 모자란 것. 통계는 넣지 않습니다.
+
+   크기 두 가지 — 기본 11px(목록·카드) · `.is-lg` 12px(화면③ 머리) */
+.c-live{font-size:11px; color:var(--gray-600); display:flex; align-items:center; gap:8px; min-height:24px; min-width:0;}
+.c-live.is-lg{font-size:12px; min-height:17px; margin-top:8px;}
+/* flex:1 1 auto 는 화면①의 카드/행에서만 필요해 그 시안에 둡니다 */
+.lv-txt{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;}
+.lv-state{display:flex; align-items:center; gap:5px; flex-shrink:0; font-weight:500; color:var(--gray-600);}
+.lv-state.wait,.lv-state.watch,.lv-state.run{color:var(--color-success-strong);}
+
+
+/* ── 7. 실행 컨트롤 (컴포넌트 52 · 결정 128) ────────────────────────────────
+   **바로 되는 일 하나만** 버튼으로, 글자만(아이콘 없음).
+   자동 켜짐 `끄기` / 자동 꺼짐 `켜기` / 동작 중 `중지` / 수동 대기 `지금 실행` / 설정 중 없음.
+   나머지는 전부 ⋯ 메뉴로.
+
+   크기 두 가지 — 기본 24px(카드 하단 줄·목록 실행 열) · `.is-lg` 28px(화면③ 머리) */
+.run-btn{display:flex; align-items:center; gap:4px; height:24px; padding:0 8px; border-radius:5px;
+  border:1px solid var(--border-default); background:#fff; font-size:11px; font-family:inherit;
+  letter-spacing:-0.5px; color:var(--black-900); cursor:pointer; flex-shrink:0; white-space:nowrap;}
+.run-btn:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+.run-btn.is-lg{height:28px; padding:0 10px; font-size:12px;}
+.run-btn.is-off{opacity:.4; cursor:default;}
+.run-btn.is-off:hover{background:#fff;}
+.rb-ico{width:13px; height:13px; flex:0 0 auto; color:var(--gray-600);}
+
+/* ⋯ — 실행 버튼과 **같은 높이·같은 테두리**의 정사각 버튼(컴포넌트 53).
+   떼어 놓아 `앞 버튼의 변형`으로 읽히지 않게 합니다. 카드에서도 항상 보입니다. */
+.sq-dots{width:24px; height:24px; padding:0; border:1px solid var(--border-default); border-radius:5px;
+  background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:2px; flex:0 0 24px;}
+.sq-dots span{width:3px; height:3px; border-radius:100px; background:var(--gray-500,#808897);}
+.sq-dots:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+
+
+/* ── 8. 빈 상태 (컴포넌트 58 · 결정 43) ──────────────────────────────────────
+   원인에 따라 둘로 갈립니다 — 자동화가 아예 없음(버튼 있음) / 필터 결과 0개(버튼 없음) */
+/* 높이(min-height)는 화면마다 달라 각 시안에 둡니다 — 여기는 가운데 정렬만 */
+.empty{display:flex; align-items:center; justify-content:center;}
+.empty[hidden]{display:none !important;}
+.em-ttl{font-size:15px; font-weight:600; color:var(--black-900);}
+.em-sub{font-size:13px; color:var(--gray-500); margin-bottom:10px;}
+
+/* ── 9. 목록 기둥 머리 (3기둥 · 컴포넌트 54의 변형) ─────────────────────────────
+   제품 이메일 목록 기둥 실측 그대로 — 검색 h32 · 좌30/우26 · 13px · 포커스 테두리.
+   아래 줄은 거르기(다중 선택 드롭다운) + 오른쪽 끝에 개수.
+   화면①(자동화 목록)과 화면②(템플릿 목록)가 **같은 마크업**을 씁니다. */
+.wl-top{padding:10px 12px; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:6px;}
+.wl-search{position:relative; min-width:0; flex:1;}
+.wl-search img{position:absolute; left:10px; top:50%; transform:translateY(-50%); width:14px; height:14px; opacity:.5; pointer-events:none;}
+.wl-search input{height:32px; width:100%; box-sizing:border-box; border:1px solid var(--border-default); border-radius:5px; background:#fff;
+  padding:0 26px 0 30px; font-size:13px; font-family:inherit; letter-spacing:-0.5px; color:var(--black-900); outline:none;}
+.wl-search input::placeholder{color:var(--gray-500);}
+.wl-search input:focus{border-color:var(--black-900);}
+.wl-row{display:flex; align-items:center; gap:6px; padding:0 12px 10px; border-bottom:1px solid var(--border-subtle);}
+.wl-row .sel{height:28px; font-size:11px; padding:0 8px;}
+.wl-cnt{margin-left:auto; font-size:11px; color:var(--gray-500);}
+.wl-items{overflow:auto; flex:1;}
+
+/* ===========================================================================
+   화면에서 뽑아 올린 것 (2026-09-18 · 결정 184)
+   시안 둘 이상에 **값까지 똑같이** 들어 있던 규칙입니다. 값이 같은 것만 옮겼으므로
+   화면은 안 바뀝니다 — 앞으로 여기만 고치면 세 화면이 함께 따라옵니다.
+   상단 바(.page-hd · .crumb · .page-ttl · .head-zone · .tools) · 도구 줄(.px-btn-text · .px-menu ·
+   .view-toggle) · 하위 버튼(.subrow · .subbtn) · LNB 묶음 머리(.lnb-kind) 가 여기 모였습니다.
+   값이 **다른 것**은 안 옮겼습니다 — `python 화면/_공용점검.py` 의 「어긋남」이 그것입니다.
+   =========================================================================== */
+.content > *{grid-column:2; min-width:0;}
+.sp{margin-left:auto;}
+.lnb-kind .label-toggle{padding-left:5px; color:var(--color-n-800);}
+.lnb-kind .lnb-caret{flex:0 0 auto; transition:transform .15s;}
+.lnb-kind.is-folded .lnb-caret{transform:rotate(-90deg);}
+.lnb-kind.is-folded .lnb-list{display:none !important;}
+.subrow{display:flex; gap:6px; flex-wrap:nowrap; min-width:0; overflow:hidden;}
+.subbtn:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+.subbtn.is-off{opacity:.4; cursor:default;}
+.subbtn.is-off:hover{background:#fff;}
+.subbtn.on{border-color:var(--black-900); color:var(--color-n-900); font-weight:600;}
+.subbtn .cnt{font-weight:500; font-size:11px; color:var(--gray-500);}
+.subbtn.on .cnt{color:var(--color-n-700);}
+.page-hd{height:41px; flex:0 0 41px; border-bottom:1px solid var(--border-default); background:#fff;
+  display:grid; grid-template-columns:24px minmax(0,1fr) 24px;}
+.hd-in{grid-column:2; display:flex; align-items:center; gap:10px; min-width:0;}
+.page-hd .ttl{font-size:14px; font-weight:600;}
+.page-hd .ttl-sub{font-size:12px; color:var(--gray-500);}
+.crumb{grid-column:2; display:flex; align-items:center; gap:5px; min-width:0; font-size:13px; color:var(--gray-600); letter-spacing:-0.5px;}
+.crumb .arw{color:var(--gray-400); font-size:11px;}
+.page-ttl{flex:0 0 auto; background:#fff; display:grid; grid-template-columns:24px minmax(0,1fr) 24px; padding:22px 0 8px;}
+.page-ttl .t{grid-column:2; font-size:18px; font-weight:600; color:var(--color-n-800); letter-spacing:-0.5px;}
+.tl-in{grid-column:2; display:flex; align-items:center; gap:8px; min-width:0;}
+.px-btn-text-group{display:flex; align-items:center; gap:7px; margin-left:-3px;}
+.px-btn-text-divider{width:1px; height:9px; background:var(--border-default); flex:0 0 auto;}
+.px-wrap{position:relative;}
+.px-btn-text{height:23px; padding:3px; border:0; background:transparent; border-radius:5px; font-family:inherit;
+  font-size:11px; color:var(--black-900); letter-spacing:-0.5px; display:inline-flex; align-items:center; gap:4px;
+  cursor:pointer; white-space:nowrap;}
+.px-btn-text:hover{background:var(--button-hover,rgba(0,0,0,0.05));}
+.px-btn-text svg{color:#475062; flex:0 0 auto;}
+.px-btn-text .pxv{color:var(--gray-500); margin-left:2px;}
+.px-menu{position:absolute; top:26px; left:0; z-index:40; min-width:132px; padding:4px; background:#fff;
+  border:1px solid var(--border-default); border-radius:5px; box-shadow:0 4px 14px rgba(0,0,0,.10); display:flex;
+  flex-direction:column;}
+.px-menu[hidden]{display:none;}
+.px-menu button:not(.px-menu-x):hover{background:var(--color-n-50);}
+.px-menu button.on{font-weight:600;}
+.view-toggle{display:inline-flex; align-items:center; gap:2px; height:28px; padding:1px; border-radius:5px;
+  background:var(--gray-100); border:1px solid var(--border-default); flex:0 0 auto;}
+.view-toggle .vt.on{background:#fff; font-weight:500; color:#2a3445;}
+.crumb .btn-ico{margin-left:auto;}
+.head-zone .page-ttl{padding:22px 0 0;}
+.px-menu .px-menu-x:hover{background:var(--black-900);}
+.px-menu .px-menu-x svg{width:12px; height:12px; flex:0 0 auto;}
+.px-btn-text.is-open{background:var(--button-hover,rgba(0,0,0,0.05));}
+.px-menu .px-menu-x::before{content:''; position:absolute; inset:-6px; border-radius:50%;}
+.wf-edit{width:14px; height:14px; margin-left:auto; flex-shrink:0; color:var(--gray-500,#808897);}
+.back:hover{color:var(--black-900);}
+.back svg{width:14px; height:14px;}

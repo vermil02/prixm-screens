@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<title>화면③ 자동화 상세 — as-is 시안</title>
+
+<base href="../컴포넌트/">
+<link rel="stylesheet" href="common/common.css">
+<link rel="stylesheet" href="../화면/_공용.css">
+<script src="../화면/_뼈대.js" defer></script>
+<script src="../화면/부품/상단바/_상단바.js"></script><!-- 상단 바 한 벌 — defer 를 쓰면 화면 인라인 스크립트가 먼저 돌아 못 찾는다 --><!-- 자동화 영역 공용 부품 — 컴포넌트 목록 50~58. 고치면 이 ?v= 를 올릴 것 -->
+<style>
+/* ── 화면③ 자동화 상세 — 3기둥(결정 6xxx 화면③ 구간 · LAB 상세3기둥 P-1~P-5 · 실행상세 R-2g · 상세상태 S-1~S-4) ──
+   왼쪽 단 240px = 이 자동화 안의 메뉴(홈 · 실행 이력 · 설정). 오른쪽 = 고른 것. 작성 화면(화면② 삼단)과 폭·바탕이 같다 */
+.body > .main{flex:1; min-width:0; display:flex; flex-direction:column;}   /* 화면①과 같은 값 — 없으면 본문이 내용 폭으로 줄어든다 */
+/* 2026-09-19 — 왼쪽 단과 오른쪽이 **각자 스크롤**한다(사용자). 그래서 바깥은 안 굴리고(overflow:hidden)
+   왼쪽은 실행 이력 목록만, 오른쪽은 본문이 굴러간다. 「‹ 전체 목록」·홈·바닥 「설정」은 늘 제자리 */
+.content{display:block; min-height:0; overflow:hidden; flex:1;}
+.p-page{display:grid; grid-template-columns:240px minmax(0,1fr); height:100%; min-height:0; position:relative;}
+.p-page:before{content:""; position:absolute; left:0; top:0; bottom:0; width:240px; background:#fbfbfb; border-right:1px solid var(--border-default);}
+/* 왼쪽 단 */
+.pn{position:relative; padding:16px 12px 20px; display:flex; flex-direction:column; min-height:0; box-sizing:border-box;}
+.pn-back{font-size:12px; color:var(--gray-500); padding:0 8px 16px; cursor:pointer; display:flex; align-items:center; gap:4px;}
+.pn-back:hover{color:var(--black-900);}
+.pn-home{display:flex; align-items:center; gap:6px; padding:8px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:var(--color-n-800);}
+.pn-home.on{background:var(--color-lnb-selected,#eef2ff);} .pn-home:hover:not(.on){background:rgba(0,0,0,.04);}
+.pn-home .dot{width:6px; height:6px; border-radius:50%; flex:0 0 auto; background:#22c55e;}
+.pn-home .dot.off{background:#a8afbc;} .pn-home .dot.fail{background:#ef4444;} .pn-home .dot.draft{background:#fff; border:1px solid #a8afbc; box-sizing:border-box;}
+.pn-home .dot.run{background:#22c55e; animation:p-blink .85s ease-in-out infinite alternate;}
+@keyframes p-blink{from{opacity:1}to{opacity:.3}}
+.pn-lb{font-size:11px; font-weight:600; color:var(--gray-500); margin:20px 8px 6px; display:flex; gap:6px; align-items:center;} .pn-cnt{font-weight:400;}
+.pn-list{display:flex; flex-direction:column; gap:2px; flex:1 1 auto; min-height:0; overflow-y:auto;}   /* 이력은 전부 들어오고 여기만 굴러간다(2026-09-19) */
+.pn-row{display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-radius:6px; font-size:12px; cursor:pointer; color:var(--color-n-800);}
+.pn-row:hover{background:rgba(0,0,0,.04);} .pn-row.on{background:var(--color-lnb-selected,#eef2ff);}
+.pn-row .pr-s{font-size:11px; color:var(--gray-500);} .pn-row .pr-s.fail{color:#dc2626;} .pn-row .pr-s.live{color:#16a34a; font-weight:600;}
+.pn-row.live .pr-d{color:#16a34a; font-weight:600;}
+/* .pn-more(「모두 보기」)는 2026-09-19 에 없앴습니다 — 이력이 목록에 전부 들어오고 .pn-list 가 스스로 굴러갑니다 */
+.pn-empty{font-size:11px; color:var(--gray-400); padding:6px 8px;}
+/* 조작 버튼 셋 — 2026-09-20 결정 4004. 자리는 **자동화 이름 바로 아래**다(사용자:
+   "민원 답변 작성 아래에 버튼 3개 세트가 들어가고 그 아래에 실행 이력이 들어가는 건?").
+   한 번 왼쪽 단 바닥에 두었다가 올렸다 — 이름 · 조작 · 이력이 위에서 아래로 한 흐름이 된다 */
+.pn-ctl{display:flex; flex-direction:column; gap:6px; margin:10px 0 4px;}
+.pn-ctl .b{width:100%; justify-content:center;}
+.pn-ctl:empty{display:none;}
+/* 오른쪽 */
+.p-right{padding:16px 24px 24px; min-width:0; font-size:13px; color:var(--color-n-800); overflow-y:auto; min-height:0; box-sizing:border-box;}
+/* 본문 폭 상한 960 — 결정 4004(LAB 상세홈 H-1). 「단계별 실행」 표에 준 값과 같게 맞춰 한 화면에 두 폭이 생기지 않게 한다.
+   스크롤 막대는 오른쪽 끝에 그대로 두려고 칸을 좁히지 않고 안의 것만 묶는다. 사용자: "카드가 좀 멀어 보인달까" */
+.p-right > *{max-width:960px;}
+.b{height:28px; padding:0 10px; font-size:12px; border:1px solid var(--border-default); border-radius:6px; background:#fff; color:var(--color-n-800); cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:inherit;}
+.b:hover{background:rgba(0,0,0,.03);} .b.primary{background:var(--brand-primary); border-color:var(--brand-primary); color:#fff;} .b.danger{color:#dc2626; border-color:#fecaca;}
+.sp{flex:1;} .muted{color:var(--gray-500); font-size:12px;} .lnk{color:var(--brand-primary); cursor:pointer;}   /* 2026-09-21 — 하드코딩 #235edf 를 라이브러리 토큰으로 */
+.bh-name{font-size:18px; font-weight:600; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+.bh-name .tpl-badge{font-size:10px; color:var(--gray-600); background:#fff; border:1px solid var(--border-default); padding:1px 6px; border-radius:4px;}
+.bh-desc{font-size:13px; color:var(--gray-600); margin-top:4px;}
+.bh-st{display:flex; gap:8px; align-items:center; margin:12px 0 18px; font-size:12px; flex-wrap:wrap;}
+.bh-st .dot{width:6px; height:6px; border-radius:50%; background:#22c55e;} .bh-st .dot.off{background:#a8afbc;} .bh-st .dot.fail{background:#ef4444;} .bh-st .dot.draft{background:#fff; border:1px solid #a8afbc; box-sizing:border-box;} .bh-st .dot.run{animation:p-blink .85s ease-in-out infinite alternate;}
+/* 위 18 — 결정 4004 로 상태 줄(.bh-st · margin 12/18)을 없애면서 설명과 카드가 딱 붙어 버렸다. 그 줄이 맡던 아래 여백을 여기로 옮긴다 */
+.sum{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:18px 0 22px;}
+.sum-i{border:1px solid var(--border-default); border-radius:8px; padding:10px 14px;} .sum-k{font-size:11px; color:var(--gray-500);} .sum-v{font-size:16px; font-weight:600; margin-top:2px;} .sum-v small{font-size:11px; font-weight:400; color:var(--gray-500); margin-left:3px;} .sum-v.ok{font-size:13px; color:#16a34a;} .sum-v.bad{font-size:13px; color:#dc2626;}
+.sec-hd{display:flex; align-items:center; gap:10px; margin:0 0 10px;} .sec-t{font-size:14px; font-weight:600;}
+/* 2026-09-20 · 결정 4005(LAB 하는일 **K-1 채택**) — 하는 일이 다섯 개가 아닐 수 있다(사용자).
+   전에는 `repeat(5, …)` 로 못 박혀 3개면 오른쪽이 비고 7·9개면 둘째 줄이 어정쩡했다.
+   **180** 은 다섯 칸의 지금 폭(920÷5≈184)보다 조금 낮은 값이라 5개일 때는 지금과 똑같이 한 줄로 떨어지고,
+   3개면 빈 트랙이 접혀 셋이 넓어진다. 화면① 템플릿 격자(`.gal`)가 이미 쓰는 방식이다 */
+.steps5{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:22px;}
+.s5{display:flex; gap:8px; align-items:flex-start; border:1px solid var(--border-subtle); border-radius:8px; padding:10px; min-width:0;}
+.s5 .rs-n{font-size:12px; font-weight:600;} .s5 .rs-d{font-size:11px; color:var(--gray-500); margin-top:2px; line-height:1.5; word-break:break-all;} .s5.fail .rs-d{color:#dc2626;} .s5.todo .rs-d{color:var(--gray-400);}
+.rs-i{flex:0 0 18px; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; border:1px solid var(--border-default); color:var(--gray-500); background:#fff;}
+.rs-i svg{width:11px; height:11px;} .rs-i.ok{background:#ecfdf5; border-color:#16a34a; color:#16a34a;} .rs-i.fail{background:#fee2e2; border-color:#ef4444; color:#dc2626; font-weight:700;} .rs-i.skip{color:var(--gray-400);} .rs-i.todo{background:var(--color-n-800); border-color:var(--color-n-800); color:#fff;} .rs-i.run{border-color:#22c55e;} .rs-i.idle{color:var(--gray-400);} .rs-i.num{color:var(--gray-500);}   /* num = 평소의 단계 번호(결정 4005) */
+.spin{display:inline-block; width:10px; height:10px; border:1.5px solid #22c55e; border-top-color:transparent; border-radius:50%; animation:p-rot 1s linear infinite;}
+@keyframes p-rot{to{transform:rotate(360deg)}}
+/* 실행 하나 */
+/* 실행 하나의 제목 줄 — 2026-09-20. 전에는 클래스 이름이 `.hd` 라 **공용 `.hd`(제품 상단 바)** 의
+   `height:45px · padding:0 20px · border-bottom` 을 그대로 물려받아 제목만 왼쪽으로 20px 밀려 있었다(이름 충돌).
+   `.run-hd` 로 가르고, 아래 가로줄도 없앴다(사용자). 제목은 「26.09.12 09:00 완료」처럼 시각이 앞에 온다 */
+.run-hd{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+.run-hd .t-when{font-size:15px; font-weight:600; color:var(--color-n-800); font-variant-numeric:tabular-nums;}
+.run-hd .t{font-size:15px; font-weight:600;} .run-hd .t.fail{color:#dc2626;} .run-hd .t.live{color:#16a34a;}
+.dim{color:var(--gray-500); font-size:12px; font-weight:400;}
+/* [요약 | 자세히] 세그먼트(.seg-row/.seg/.seg-b)는 2026-09-19 에 걷었습니다 — 실행 하나는 한 장뿐입니다 */
+/* 무엇을 했나 한 줄 — 결과 상자 바로 위 */
+/* 결과 상자 머리 — 상자 **안** 맨 위에 놓이고 옅은 선으로 본문과 갈린다(2026-09-21) */
+.rc-what{font-size:12px; color:var(--gray-600); padding-bottom:10px; margin-bottom:12px; border-bottom:1px solid var(--border-default);}
+.rc-what b{font-weight:600; color:var(--color-n-800);}
+.rc-body{font-size:13px; line-height:1.8;}
+.lb{font-size:11px; font-weight:600; color:var(--gray-500); margin:14px 0 6px;} .lb-first{margin-top:4px;} .lb-gap{margin-top:26px;}
+.tl{position:relative;} .tl-row{display:grid; grid-template-columns:18px minmax(0,1fr); gap:0 10px; padding:6px 0; position:relative;}
+.tl-row:not(:last-child):before{content:""; position:absolute; left:9px; top:26px; bottom:-6px; width:1px; background:var(--border-default);}
+.rs-n{font-size:12px; font-weight:600;} .tl-row.skip .rs-n,.tl-row.idle .rs-n{color:var(--gray-400); font-weight:500;} .rs-d{font-size:11px; color:var(--gray-500); line-height:1.5; margin-top:2px;} .tl-row.fail .rs-d{color:#dc2626;} .tl-act{margin-top:8px;}
+/* 결과 본문 — 2026-09-20 결정 4004 로 **폭을 좌우로 채운다**(전에는 max-width:760). 본문 자체가 960 상한 안에 있다(사용자) */
+.rc-doc{font-size:13px; line-height:1.8; background:#fbfbfb; border:1px solid var(--border-subtle); border-radius:6px; padding:12px 14px;} .rc-doc.muted{color:var(--gray-500); text-align:center; font-size:12px;}
+.run-more{margin-top:12px;}   /* 「자세히」는 결과 아래 맨 끝(결정 4004) */
+/* .rc-link(「# 민원-검토 에서 보기」)는 결정 4004 로 없앴습니다 */
+.box{border:1px solid var(--border-default); border-radius:8px; padding:4px 10px 6px; background:#fff;}
+.tbl{width:100%; border-collapse:collapse; font-size:12px;} .tbl th{font-size:11px; color:var(--gray-500); font-weight:600; text-align:left; padding:6px 8px 2px;} .tbl td{padding:9px 8px; border-bottom:1px solid var(--border-subtle); vertical-align:top;} .box tr:last-child td{border-bottom:0;}
+.tbl td.num{color:var(--gray-400); width:20px;} .tbl td.nm{font-weight:600; white-space:nowrap;} .tbl td.ts{white-space:nowrap; color:var(--gray-600); font-variant-numeric:tabular-nums;} .tbl td.res{width:46%;}
+.tbl tr.fail td.nm,.tbl tr.fail td.res,.tbl tr.fail td.ts{color:#dc2626;} .tbl tr.skip td,.tbl tr.idle td{color:var(--gray-400);} .tbl tr.fail .lnk{color:var(--brand-primary); margin-left:4px;}
+.tbl-kv{max-width:760px;} .tbl-kv td.k{color:var(--gray-500); width:110px; white-space:nowrap;}
+
+/* ── 「단계별 실행」 표 — LAB 실행표 E-2 채택(결정 4003 · 2026-09-19) ──────────────────
+   표 규격은 컴포넌트 34-tbl `.tbl-table` 실측값 그대로(머리글 Gray/100 · 11/600 · 5px 10px ·
+   칸은 border-top 만). 세부 정보 표(.tbl-kv)는 건드리지 않으려고 .t-step 으로 가둔다 */
+.boxcap{max-width:960px; margin-right:auto;}   /* "좌우로 너무 넓다" — 2026-09-17 LAB R-2 와 같은 값 */
+.t-step{table-layout:fixed;}
+.t-step th{background:var(--color-primitive-gray-100,#f3f4f6); color:#222; font-size:11px; font-weight:600;
+  padding:5px 10px; border-top:1px solid var(--border-default); border-bottom:1px solid var(--border-default);}
+.t-step td{background:#fff; padding:11px 9px; border-top:1px solid var(--border-default); border-bottom:0;
+  vertical-align:middle;}                       /* 세로 가운데 — 결과가 두 줄이어도 단계·상태가 가운데에 선다 */
+.t-step tbody tr:first-child td{border-top:0;}
+.t-step th:nth-child(3), .t-step td.stt{padding-right:20px;}   /* 상태 ↔ 결과 사이를 벌린다 */
+.t-step td.res{width:auto; white-space:normal; word-break:keep-all;}
+.t-step td.nm{white-space:normal;}
+.t-step tr.fail td{background:#fff;}            /* 실패 줄에 배경은 깔지 않는다 — 글자 색만(사용자) */
+.box:has(.t-step){padding:0;}
+.none{color:var(--gray-400);}
+
+/* 상태 뱃지 — 라이브러리 `.state-badge` 규격(11/500 · 3px 8px · radius 5).
+   is-active(성공)·is-inactive(건너뜀)·is-draft(대기)는 라이브러리 값 그대로.
+   **is-fail·is-run 은 라이브러리에 없어 여기서 만든 변형입니다 — 디자인 단계에서 컴포넌트로 올릴 것**
+   (as-is 에서는 `컴포넌트/` 를 고치지 않는다 · 작업 규칙 5.2). 라이브러리 주석대로 색만이 아니라
+   채움/테두리로도 갈리게 두어 색각 이상에서도 구분됩니다 */
+.state-badge{font-size:11px; font-weight:500; letter-spacing:-0.5px; padding:3px 8px; border-radius:5px;
+  border:1px solid transparent; display:inline-block; white-space:nowrap;}
+.state-badge.is-active{background:#dcfce7; color:#15803d;}
+.state-badge.is-inactive{background:var(--color-primitive-gray-100,#f3f4f6); color:var(--gray-600);}
+.state-badge.is-draft{background:transparent; color:var(--gray-600); border-color:var(--border-default);}
+.state-badge.is-fail{background:#fee2e2; color:#dc2626;}
+.state-badge.is-run{background:transparent; color:#15803d; border-color:#86c9a8;}
+.st-empty{border:1px dashed var(--border-default); border-radius:8px; padding:28px; text-align:center; margin:18px 0 22px;}   /* 위 18 — .sum 과 같은 값(설정 중 상태에서 설명 줄 다음에 오는 것) */ .em-t{font-size:14px; font-weight:600; margin-bottom:6px;} .em-d{font-size:12px; color:var(--gray-600); margin-bottom:14px; line-height:1.6;}
+/* 알림 띠 — 실패든 직접 끔이든 **회색 한 가지**다(2026-09-20 사용자). 노란 경고는 쓰지 않는다 */
+.warn{background:#f8fafc; border:1px solid var(--border-default); color:var(--gray-600); border-radius:8px; padding:10px 14px; font-size:12px; margin:18px 0 16px; line-height:1.6;}   /* 위 18 — .sum 과 같은 값(실패 상태에서 설명 줄 다음에 오는 것) */
+/* 시안 조작(상태 바꿔 보기) */
+.demo{position:fixed; right:16px; bottom:16px; display:flex; gap:4px; align-items:center; background:#fff; border:1px solid var(--border-default); border-radius:8px; padding:6px 8px; font-size:11px; color:var(--gray-500); box-shadow:0 2px 8px rgba(0,0,0,.08); z-index:50;}
+.demo button{height:22px; padding:0 8px; border:0; border-radius:4px; background:transparent; font-size:11px; cursor:pointer; color:var(--gray-600); font-family:inherit;} .demo button.on{background:var(--color-n-800); color:#fff;}
+</style></head><body>
+<div class="app">
+<div class="gnb"><div class="g-item"><img src="assets/ico-gnb-aiChat.svg" alt=""><span>AI 채팅</span></div><div class="g-item"><img src="assets/ico-gnb-cowork.svg" alt=""><span>협업</span></div><div class="g-item"><img src="assets/ico-gnb-document.svg" alt=""><span>지식/문서</span></div><div class="g-item"><img src="assets/ico-gnb-mail.svg" alt=""><span>이메일</span></div><div class="g-item on"><img src="assets/ico-workflow-active.svg" alt=""><span>자동화</span><!-- 라이브러리엔 ico-gnb-workflow-active 가 없음. 이름 규칙 정리는 디자인 단계에서 --></div><div class="g-item"><img src="assets/ico-gnb-dashboard.svg" alt=""><span>프로젝트</span></div><div class="g-item"><img src="assets/ico-gnb-office.svg" alt=""><span>데이터 분석</span></div><div class="g-item"><img src="assets/ico-gnb-system.svg" alt=""><span>관리</span></div><div class="g-item"><img src="assets/ico-gnb-system02-active.svg" alt=""><span>시스템</span></div></div>
+<div class="main">
+  <div class="hd"><span class="logo">Prixm AI:CREW</span><span class="sp"></span><img src="assets/ico-bell.svg" style="width:18px"><span style="font-size:12px;">박준형</span></div>
+  <div class="body">
+    <div class="lnb-panel">
+      <div class="lnb-top-util"><span class="lnb-top-search"><img alt="검색" src="assets/ico-search.svg"/></span><div class="arrow-double-demo"><img alt="접기" src="assets/ico-arrow-double-left.svg"/></div></div>
+      <div class="lnb-wrap">
+        <div class="lnb-group"><div class="label-toggle"><span>자동화 메뉴</span></div>
+          <div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;">
+            <div class="channel-text-demo"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-add.svg"></span><span class="ch-label">새 자동화</span></div></div>
+            <div class="channel-text-demo js-all-menu"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-view-list.svg"></span><span class="ch-label">전체 목록</span></div></div>
+          </div></div>
+        <!-- 실행 방식 2묶음(2026-09-17 저녁) — 참고 화면(AI 채팅)의 `고정 채팅`·`채팅 내역`과 같은 묶음 머리(12px + ▾) 아래 항목을 바로 붙임.
+             `내 자동화` 머리·아이콘·ㄴ자·들여쓰기는 뺌(사용자 결정). 공유 자동화가 오면 같은 층에 묶음 머리 하나 더  LNB 항목은 카드 8장과 같게(2026-09-17 13시 40분 · 데모 일치): 자동 6 · 수동 2. 점 = 동작 중 스피너 / 대기 초록 / 꺼짐·실패 회색 / 설정 중 빈 원 -->
+        <div class="lnb-group wf-list lnb-kind"><div class="label-toggle js-lnbfold"><div class="lt-inner" style="display:flex;align-items:center;gap:4px;cursor:pointer;"><svg class="lnb-caret" width="8" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>자동 실행</span></div></div><div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;"><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot run"></span><span class="ch-label">정기 지식 보고</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot wait"></span><span class="ch-label">데일리 뉴스 검색</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot wait"></span><span class="ch-label">계약서 검토 요청</span></div></div><div class="channel-text-demo active js-lnb-me"><div class="ch-inner"><span class="lnb-dot fail js-lnb-me-dot"></span><span class="ch-label">민원 답변 작성</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot off"></span><span class="ch-label">월요일 업무 안내</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot draft"></span><span class="ch-label">분기별 매출 정리</span></div></div></div></div>
+        <div class="lnb-group wf-list lnb-kind"><div class="label-toggle js-lnbfold"><div class="lt-inner" style="display:flex;align-items:center;gap:4px;cursor:pointer;"><svg class="lnb-caret" width="8" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg><span>수동 실행</span></div></div><div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;"><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot run"></span><span class="ch-label">회의록 정리</span></div></div><div class="channel-text-demo"><div class="ch-inner"><span class="lnb-dot draft"></span><span class="ch-label">주간 보고 초안 생성</span></div></div></div></div>
+      </div>
+    </div>
+    
+<div class="main">
+<div class="js-head"></div><script>PRIXM_HEAD({ crumb: [{t:'전체 목록', cls:'js-crumb-list'}, {t:'민원 답변 작성', cur:true, cls:'js-crumb'}], search: '자동화 검색' });</script>
+<div class="content"><div class="p-page">
+  <div class="pn">
+    <div class="pn-back js-back"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg>전체 목록</div>
+    <div class="pn-home on js-nav" data-v="home"><span class="dot js-home-dot"></span><span class="js-home-name">민원 답변 작성</span></div>
+    <div class="pn-ctl js-foot"></div><!-- 조작 버튼 셋 — 자동화 이름 바로 아래(2026-09-20 · 결정 4004 갱신) -->
+    <div class="pn-lb">실행 이력 <span class="pn-cnt js-run-cnt">128</span></div>
+    <div class="pn-list js-run-list"></div>
+  </div>
+  <div class="p-right js-right"></div>
+</div></div>
+</div>
+</div></div>
+<div class="demo">시안 <button data-s="wait">대기</button><button data-s="run">실행 중</button><button data-s="off">꺼짐</button><button data-s="fail">실패</button><button data-s="setup">설정 중</button></div>
+
+<script>
+// ── 데이터(시연용) ───────────────────────────────────────────────────────
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const CHK='<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg>';
+const SPIN='<span class="spin"></span>';
+const AUTO={name:'민원 답변 작성', tpl:'민원 답변 작성', tags:['이메일','보고'],
+  desc:'시설 이용 관련 민원 메일이 오면 근거 문서를 찾아 답변 초안을 쓰고 채널에 공유합니다.',
+  steps:[['이메일 수신','criss_it@naver.com'],['민원 관련성 판별','시설 이용 관련 민원'],['근거 검색','지식함 / 민원 / 처리 기준'],['답변 작성','최재원 · 영업 매니저'],['채널 공유','# 민원-검토']]};
+// 실행 하나 = {id, date(26.09.09), st(ok|fail|live), dur, start, end, why, steps:[[name, detail, kind, start, end, dur]], result}
+// 2026-09-19 — 결과는 **자르지 않고 그대로** 보여 준다(사용자: "저 화면이 저렇게 넓은데 요약되어서 나올 필요가 있냐").
+// 그래서 데모 답변도 말줄임 없이 초안 한 통을 다 채운다. 「전체 보기」 링크는 이것으로 쓸모가 없어져 뺐다
+function ANSWER(subject){ return '안녕하세요, '+subject+'에 답변드립니다.<br><br>'
+  + '문의하신 내용은 아래와 같이 안내드립니다.<br>'
+  + '1. 이용 시간: 평일 09:00~18:00, 주말·공휴일은 09:00~17:00 입니다.<br>'
+  + '2. 사전 신청: 야간(18:00 이후) 이용은 이용일 3일 전까지 시설 관리 부서로 신청해 주셔야 합니다.<br>'
+  + '3. 이용료: 구민은 50% 감면되며, 신청하실 때 주민등록등본을 함께 내 주시기 바랍니다.<br><br>'
+  + '신청 서식은 구청 누리집 「시설 이용 안내」 게시판에서 내려받으실 수 있습니다.<br>'
+  + '그 밖에 궁금하신 점은 시설 관리 부서(02-000-0000)로 문의해 주시기 바랍니다.<br><br>'
+  + '감사합니다.'; }
+function okRun(id,date,hm,dur,tok,subject,doc){ const s=date+' '+hm+':00';
+  return {id, date, st:'ok', dur, start:s, end:date+' '+hm+':0'+Math.min(9,Math.round(dur)), why:'새 메일 도착 (criss_it@naver.com · 제목 "'+subject+'" · 보낸 사람 kim@example.com',
+    steps:[['이메일 수신','criss_it@naver.com · 제목 "'+subject+'"','ok',hm+':00',hm+':00','0.1초'],['민원 관련성 판별','시설 이용 민원으로 판단','ok',hm+':00',hm+':00','0.4초'],['근거 검색','근거 3건 찾음','ok',hm+':00',hm+':01','0.6초'],['답변 작성','최재원 · 영업 매니저 · 초안 612자','ok',hm+':01',hm+':02','1.0초'],['채널 공유','# 민원-검토 에 게시','ok',hm+':02',hm+':02','0.2초']], result:doc}; }
+const RUNS=[
+  okRun('r6','26.09.12','09:00',2.3,1408,'시설 이용 문의(강남구)',ANSWER('강남구 시설 이용 문의')),
+  okRun('r5','26.09.11','14:22',3.1,1972,'체육관 대관 문의',ANSWER('체육관 대관 문의')),
+  okRun('r4','26.09.11','09:00',2.0,1310,'주차장 이용 문의',ANSWER('주차장 이용 문의')),
+  {id:'r3', date:'26.09.09', st:'fail', dur:'1.1초', start:'26.09.09 09:00:00', end:'26.09.09 09:00:01', why:'새 메일 도착 (criss_it@naver.com · 제목 "시설 이용 문의(강남구)" · 보낸 사람 kim@example.com', stop:'3단계 근거 검색',
+   steps:[['이메일 수신','criss_it@naver.com · 제목 "시설 이용 문의(강남구)"','ok','09:00:00','09:00:00','0.1초'],['민원 관련성 판별','시설 이용 민원으로 판단','ok','09:00:00','09:00:00','0.4초'],['근거 검색','지식함 폴더 "민원 / 처리 기준"에 접근할 수 없습니다. 폴더가 지워졌거나 권한이 바뀌었습니다.','fail','09:00:01','09:00:01','0.3초'],['답변 작성','실행되지 않음','skip','','',''],['채널 공유','실행되지 않음','skip','','','']], result:''},
+  okRun('r2','26.09.08','09:00',2.2,1388,'수영장 강습 문의',ANSWER('수영장 강습 문의')),
+  okRun('r1','26.09.07','09:00',2.4,1502,'도서관 열람실 문의',ANSWER('도서관 열람실 문의'))
+];
+// 2026-09-19 — 한때 데모 이력을 128건까지 채웠다가 **되돌렸습니다.** 왼쪽 단 스크롤을 보이게 하려던 것인데,
+// 그것 때문에 스크롤바가 늘 떠 있어 눈에 걸렸습니다. 스크롤 구조 자체는 그대로고(제품 이메일 화면과 같은
+// `min-h-0 flex-1 overflow-y-auto` · 왼쪽 240), 데모 값만 손으로 쓴 6건으로 둡니다
+const LIVE={id:'live', date:'26.09.18', st:'live', dur:'', start:'26.09.18 14:32:10', end:'', why:'새 메일 도착 (criss_it@naver.com · 제목 "시설 이용 문의(서초구)" · 보낸 사람 lee@example.com',
+  steps:[['이메일 수신','criss_it@naver.com · 제목 "시설 이용 문의(서초구)"','ok','14:32:10','14:32:10','0.1초'],['민원 관련성 판별','시설 이용 민원으로 판단','ok','14:32:10','14:32:11','0.4초'],['근거 검색','지식함 / 민원 / 처리 기준 에서 찾는 중…','run','14:32:11','',''],['답변 작성','','idle','','',''],['채널 공유','','idle','','','']], result:''};
+
+// ── 상태(시안) — ?state=wait|run|fail|setup ─────────────────────────────
+const q=new URLSearchParams(location.search);
+let state=q.get('state')||'wait';   // wait 대기(감시 중) · run 실행 중 · off 직접 끔 · fail 실패로 꺼짐 · setup 설정 중
+let view=q.get('view')||'home';   // 실행 하나는 2026-09-19 부터 한 장(자세히)뿐이라 요약/자세히 기억할 것이 없다.
+// 2026-09-20 — 주소로도 연다(`?view=run:r6`). 화면별 모아보기(`_기획서.html`)에서 실행 하나를 바로 걸기 위한 것
+// 2026-09-20 — 실패 상태의 데모 값이 어긋나 있던 것을 맞춤. 경고 띠는 「…실패해 꺼졌습니다」인데
+// 목록 맨 위(= 마지막 실행)는 26.09.12 완료 건이라 실패 날짜보다 나중이었다. 실행 중이 LIVE 를 앞에 붙이듯,
+// **실패 상태에는 FAILED(맨 최근 실패) 를 앞에 붙인다** — 그래야 「마지막 실행」이 실패한 그 건이 된다
+const FAILED = {id:'rf', date:'26.09.13', st:'fail', dur:'1.1초', start:'26.09.13 09:00:00', end:'26.09.13 09:00:01',
+  why:'새 메일 도착 (criss_it@naver.com · 제목 "시설 이용 문의(관악구)" · 보낸 사람 park@example.com)', stop:'3단계 근거 검색',
+  steps:[['이메일 수신','criss_it@naver.com · 제목 "시설 이용 문의(관악구)"','ok','09:00:00','09:00:00','0.1초'],['민원 관련성 판별','시설 이용 민원으로 판단','ok','09:00:00','09:00:00','0.4초'],['근거 검색','지식함 폴더 "민원 / 처리 기준"에 접근할 수 없습니다. 폴더가 지워졌거나 권한이 바뀌었습니다.','fail','09:00:01','09:00:01','0.3초'],['답변 작성','실행되지 않음','skip','','',''],['채널 공유','실행되지 않음','skip','','','']], result:''};
+function runs(){ return state==='setup' ? [] : state==='run' ? [LIVE].concat(RUNS) : state==='fail' ? [FAILED].concat(RUNS) : RUNS; }
+function lastRun(){ const r=runs(); return r.find(x=>x.st!=='live') || null; }
+// 2026-09-20 · 결정 4004 — **조작은 전부 왼쪽 단 바닥에 버튼으로** 모은다(사용자: "그냥 LNB 맨 아래에
+//   켜기 끄기, 지금 실행, 설정 이렇게 다 버튼으로 하자 여기는"). 오른쪽 상태 줄(「자동 · 감시 중」)은 없앴다 —
+//   상태는 홈 항목 왼쪽의 점이 이미 말하고 있어 같은 말을 두 번 하던 자리였다(사용자: "자동 감시 중은 없어도 될 것 같음").
+//   ctl 은 상태마다 다르고, 마지막에 늘 「설정」이 붙는다(설정 중일 때는 그것 하나로 갈음)
+function stateInfo(){ return {
+  wait:{dot:'', txt:'자동 · 감시 중', sub:'다음: 새 메일이 오면 시작합니다', ctl:'<button class="b js-off">끄기</button><button class="b js-runnow">지금 실행</button>'},
+  run: {dot:'run', txt:'실행 중', sub:'26.09.18 14:32 시작', ctl:'<button class="b danger js-stop">중지</button>'},
+  off: {dot:'off', txt:'자동 · 꺼짐', sub:'직접 껐습니다 — 새 메일이 와도 돌지 않습니다', ctl:'<button class="b primary js-on">켜기</button><button class="b js-runnow">지금 실행</button>'},
+  fail:{dot:'fail', txt:'실패로 꺼짐', sub:'근거 폴더에 접근할 수 없음', ctl:'<button class="b primary js-on">켜기</button><button class="b js-runnow">지금 실행</button>'},
+  setup:{dot:'draft', txt:'설정 중', sub:'채워야 할 것 2개 — 아직 돌지 않습니다', ctl:''} }[state]; }
+// 왼쪽 단 바닥 — 상태별 조작 + 설정. 설정 중이면 「설정 이어서 하기」 하나뿐이다
+function footCtl(){ const si=stateInfo();
+  // 설정 중에도 **왼쪽은 그냥 「설정」**이다(2026-09-20 사용자). 「설정 이어서 하기」는 오른쪽 빈 상태 상자가 맡는다 —
+  //   왼쪽 버튼은 늘 같은 자리에 같은 이름으로 있어야 어디서든 찾을 수 있다
+  return state==='setup' ? '<button class="b js-settings">설정</button>'
+                         : si.ctl + '<button class="b js-settings">설정</button>'; }
+
+// ── 왼쪽 단 ─────────────────────────────────────────────────────────────
+function renderNav(){
+  const si=stateInfo();
+  $('.js-home-dot').className='dot js-home-dot '+si.dot;
+  const ld=$('.js-lnb-me-dot'); if(ld) ld.className='lnb-dot js-lnb-me-dot '+({wait:'wait',run:'run',off:'off',fail:'fail',setup:'draft'}[state]);
+  $('.js-nav[data-v=home]').classList.toggle('on', view==='home');
+  $('.js-foot').innerHTML = footCtl();   // 조작은 전부 여기 — 결정 4004
+  const list=$('.js-run-list'); const rs=runs();
+  $('.js-run-cnt').textContent = rs.length;   // 목록에 전부 넣으므로 머리 숫자도 실제 줄 수다(2026-09-19)
+  if(!rs.length){ list.innerHTML='<div class="pn-empty">아직 없음</div>'; return; }
+  // 2026-09-19 — 자르지 않고 **전부** 넣는다. 「모두 보기」는 없앴다(사용자: "리스트에는 모두 나오고 있으면 된다").
+  // 많아지면 .pn-list 가 자기 스크롤로 받는다 — 위의 홈과 아래 「설정」은 제자리에 남는다
+  list.innerHTML = rs.map(r=>{
+    const live=r.st==='live';
+    return '<div class="pn-row js-nav'+(live?' live':'')+(view==='run:'+r.id?' on':'')+'" data-v="run:'+r.id+'"><span class="pr-d">'+(live?'26.09.18 14:32':r.date+' '+r.start.slice(9,14))+'</span><span class="pr-s '+(live?'live':r.st)+'">'+(live?'실행 중':r.st==='ok'?'완료':'실패')+'</span></div>';
+  }).join('');
+}
+
+// ── 오른쪽 — 홈 ───────────────────────────────────────────────────────────
+// 하는 일 칸의 표 — 2026-09-20 · 결정 4005(LAB 하는일 **J-4 채택**).
+//   사용자: "완료된 상태에서 체크 표시되어 있을 필요가 있나??" → 다 채워진 자동화는 다섯이 전부 같은 체크라
+//   아무것도 구분해 주지 않았고, 「하는 일 · **설정**」 자리인데 체크가 "실행이 잘 됐다"로도 읽혔다.
+//   그래서 **번호가 기본**이고, **체크는 「이번 실행에서 끝났다」는 뜻으로만** — 즉 실행 중일 때만 쓴다.
+function stepMarks(){
+  return AUTO.steps.map((s,i)=>{
+    let k='ok', v=s[1];
+    if(state==='fail' && i===2){ k='fail'; v=s[1]+' · 접근 불가'; }
+    if(state==='setup' && (i===0||i===3)){ k='todo'; v='아직 고르지 않음'; }
+    if(state==='run'){ k = i<2?'ok': i===2?'run':'idle'; }
+    let ico, cls=k;
+    if(k==='ok'){ if(state==='run'){ ico=CHK; } else { ico=String(i+1); cls='num'; } }   // 체크는 실행 중에만
+    else if(k==='fail') ico='!';
+    else if(k==='run')  ico=SPIN;
+    else ico=String(i+1);                                                                 // todo(진한 번호) · idle(흐린 번호)
+    return '<div class="s5 '+k+'"><span class="rs-i '+cls+'">'+ico+'</span><div><div class="rs-n">'+s[0]+'</div><div class="rs-d">'+v+'</div></div></div>';
+  }).join('');
+}
+function renderHome(){
+  const si=stateInfo(); const lr=lastRun();
+  // 상태 줄(.bh-st)은 결정 4004 로 없앴다 — 상태는 왼쪽 단 홈 항목의 점이 말하고, 조작은 그 단 바닥 버튼이 맡는다
+  let h='<div class="bh-name">'+AUTO.name+' '+AUTO.tags.map(t=>'<span class="tpl-badge">'+t+'</span>').join('')+'</div><div class="bh-desc">'+AUTO.desc+'</div>';
+  // 날짜는 마지막 실행에서 가져온다 — 손으로 적어 두면 데모 값과 어긋난다(2026-09-20에 실제로 어긋나 있었다)
+  if(state==='fail') h+='<div class="warn">'+lr.date+' '+lr.start.slice(9,14)+' 실행이 '+lr.stop+'에서 실패해 자동 실행이 꺼졌습니다. 원인을 고친 뒤 <b>켜기</b>를 누르면 다시 감시를 시작합니다.</div>';
+  if(state==='off') h+='<div class="warn off">자동 실행이 꺼져 있습니다. 새 메일이 와도 돌지 않습니다. <b>켜기</b>를 누르면 다시 감시를 시작합니다.</div>';
+  if(state==='setup'){
+    h+='<div class="st-empty"><div class="em-t">아직 설정이 끝나지 않았습니다</div><div class="em-d"><b>수신 이메일 계정</b>과 <b>AI 직원</b>을 아직 안 골랐습니다. 채우고 저장하면 바로 켜집니다.</div><button class="b primary js-settings">설정 이어서 하기</button></div>';
+    h+='<div class="sec-hd"><span class="sec-t">하는 일</span></div><div class="steps5">'+stepMarks()+'</div>';
+    $('.js-right').innerHTML=h; return;
+  }
+  h+='<div class="sum"><div class="sum-i"><div class="sum-k">누적 실행</div><div class="sum-v">128<small>회</small></div></div><div class="sum-i"><div class="sum-k">최근 30일</div><div class="sum-v">41<small>회 · 실패 2</small></div></div>'
+    +'<div class="sum-i"><div class="sum-k">'+(state==='run'?'지금':'마지막 실행')+'</div><div class="sum-v '+(state==='run'?'ok':lr.st==='ok'?'ok':'bad')+'">'+(state==='run'?'실행 중 · 14:32 시작':lr.date+' '+lr.start.slice(9,14)+' · '+(lr.st==='ok'?'완료':'실패'))+'</div></div></div>';
+  // 2026-09-20 · 결정 4004 — 머리의 「설정 고치기」는 뺐다. 설정은 왼쪽 단 바닥 버튼 하나로 간다(사용자)
+  h+='<div class="sec-hd"><span class="sec-t">하는 일</span></div><div class="steps5">'+stepMarks()+'</div>';
+  // 「자세히」는 머리 오른쪽이 아니라 **결과 아래 맨 끝**에 둔다(사용자). 「# 민원-검토 에서 보기」는 뺐다
+  // 2026-09-20 · 결정 4005(LAB 하는일 **L-1 채택**) — 사용자: "그럼 J-4가 있는데 뭐 하러
+  //   「하는 일 · 설정」하고 「지금 실행 중」이 나와?" 맞는 말이라, **과정뿐인 것은 여기 두지 않는다.**
+  //   결과가 있는 실행(완료)만 본문을 펴고, 과정뿐인 것(실행 중 · 실패)은 위 하는 일 칸이 이미 말하므로
+  //   「자세히」 버튼으로만 넘긴다 — 같은 다섯 단계를 두 번 그리지 않는다
+  const cur = state==='run' ? LIVE : lr, curV = state==='run' ? 'live' : lr.id;
+  if(cur.st==='ok') h+='<div class="sec-hd"><span class="sec-t">마지막 실행</span></div>'+runBody(cur);
+  h+='<div class="run-more"><button class="b js-nav" data-v="run:'+curV+'">자세히</button></div>';   // 상태와 무관하게 「자세히」 하나로(사용자)
+  $('.js-right').innerHTML=h;
+}
+
+// ── 오른쪽 — 실행 하나 (요약 ↔ 자세히 · LAB R-2g) ───────────────────────
+function ico(k){ return {ok:'<span class="rs-i ok">'+CHK+'</span>', fail:'<span class="rs-i fail">!</span>', skip:'<span class="rs-i skip">–</span>', run:'<span class="rs-i run">'+SPIN+'</span>', idle:'<span class="rs-i idle"></span>'}[k]; }
+function procHtml(r){   // 과정 — 단계 이름 · 내용. 시간은 자세히에서
+  return '<div class="tl">'+r.steps.map(s=>'<div class="tl-row '+s[2]+'">'+ico(s[2])+'<div><div class="rs-n">'+s[0]+'</div>'+(s[1]?'<div class="rs-d">'+s[1]+'</div>':'')+(s[2]==='fail'?'<div class="tl-act"><button class="b js-settings">설정 열기</button></div>':'')+'</div></div>').join('')+'</div>';
+}
+function detHtml(r, notFirst){    // 단계별 실행 표(단계 · 결과 · 소요 · 시작 · 종료) + 세부 정보 표. 날짜는 시작·종료 칸에 늘
+  const d=r.date;
+  // 표의 시각 표현(상태 표 · 소요 막대 …)은 **정본에 바로 넣지 않습니다** — `_lab/실행표_lab.html` 에서 견주는 중입니다(2026-09-19).
+  // 여기는 LAB R-2g 로 정해진 맨 표 그대로 둡니다
+  // 2026-09-19 · 결정 4003 — LAB `_lab/실행표_lab.html` **E-2 채택**(사용자 "e-2 나쁘지 않은 듯").
+  //   ① 「상태」 열을 따로 두고 성공/실패/건너뜀/진행 중/대기를 `.state-badge` 로 말한다(결과 칸은 내용만)
+  //   ② 표는 컴포넌트 34-tbl `.tbl-table` 규격(머리글 Gray/100 · 칸은 border-top 만)
+  //   ③ 세로 가운데 · 상태 칸 오른쪽 20px · 열 폭 colgroup 고정 · 표 폭 상한 960(2026-09-17 R-2 와 같은 값)
+  //   ④ 실패 줄에 배경은 깔지 않는다 — 글자 색만(사용자)
+  const rows=r.steps.map((s,i)=>{
+    const k=s[2], body=(s[1]||'') || (k==='skip'?'<span class="none">실행되지 않음</span>':k==='idle'?'<span class="none">–</span>':'');
+    return '<tr class="'+k+'"><td class="num">'+(i+1)+'</td><td class="nm">'+s[0]+'</td>'
+      +'<td class="stt">'+badge(k)+'</td>'
+      +'<td class="res">'+body+(k==='fail'?' <span class="lnk js-settings">설정 열기</span>':'')+'</td>'
+      +'<td class="ts">'+(s[5]||'–')+'</td><td class="ts">'+(s[3]?d+' '+s[3]:'–')+'</td><td class="ts">'+(s[4]?d+' '+s[4]:'–')+'</td></tr>';
+  }).join('');
+  const CG='<colgroup><col style="width:28px"><col style="width:132px"><col style="width:76px"><col><col style="width:66px"><col style="width:150px"><col style="width:150px"></colgroup>';
+  const info=[['왜 실행됐나',r.why],['실행 방식','자동 (이메일 수신이 시작함)'],['실행한 시간',r.start],['종료한 시간',r.end||'–'],['소요',r.dur||'–'],['실행 ID','run_'+r.id]].concat(r.stop?[['멈춘 곳',r.stop]]:[]);
+  return '<div class="lb '+(notFirst?'lb-gap':'lb-first')+'">단계별 실행</div><div class="box boxcap"><table class="tbl t-step">'+CG+'<thead><tr><th></th><th>단계</th><th>상태</th><th>결과</th><th>소요</th><th>시작</th><th>종료</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+       +'<div class="lb lb-gap">세부 정보</div><div class="box"><table class="tbl tbl-kv"><tbody>'+info.map(kv=>'<tr><td class="k">'+kv[0]+'</td><td>'+kv[1]+'</td></tr>').join('')+'</tbody></table></div>';
+}
+// 단계 상태 뱃지 — 라이브러리 `.state-badge` 규격(결정 4003). 「건너뜀」이라는 말은 아직 열려 있음(D-4004)
+const SWORD={ok:'성공', fail:'실패', skip:'건너뜀', run:'진행 중', idle:'대기'};
+const SVAR ={ok:'is-active', fail:'is-fail', skip:'is-inactive', run:'is-run', idle:'is-draft'};
+function badge(k){ return '<span class="state-badge '+SVAR[k]+'">'+SWORD[k]+'</span>'; }
+// 무엇을 했나 — 마지막으로 끝난 단계가 한 일을 문장으로. 홈의 「마지막 실행」과 실행 하나 맨 위에 쓴다
+// (사용자: "채널 공유한 건데 이런 문구로 했다 이런 식으로 해야 하는 거 아니야?")
+function didLine(r){ const done=r.steps.filter(s=>s[2]==='ok'); if(!done.length) return '';
+  const last=done[done.length-1];
+  return '<div class="rc-what"><b>'+last[0]+'</b> · '+(last[1]||'')+'</div>'; }
+// 결과 한 상자 — 머리(무엇을 했나) + 본문(그 문구)이 **한 덩이**다(2026-09-21 사용자:
+//   "결과 아래에 박스 안에 채널 공유했다 하고 그 내용 적혀 있고가 한 개로 묶여 있는 게 낫지 않나?").
+//   전에는 머리가 상자 밖에 떠 있어 둘이 따로 노는 것처럼 보였다
+function 결과상자(r){ return '<div class="rc-doc">'+didLine(r)+'<div class="rc-body">'+r.result+'</div></div>'; }
+// 홈의 「마지막 실행」·「지금 실행 중」 — 무엇을 했는지 한 줄, 그 다음 결과. 완료가 아니면 과정만
+// 2026-09-19 — 「# 민원-검토 에서 보기」는 **홈 전용**이다(LAB 상세3기둥 P-1 한 곳에만 있던 줄).
+//   전에는 이 함수를 실행 하나도 같이 쓰면서 inHome 을 안 봐서 저 줄이 실행 하나 요약에도 따라 나왔다
+// 2026-09-20 · 결정 4004 — 「# 민원-검토 에서 보기」는 뺐다(사용자). 어디에 게시했는지는 바로 위 didLine 이
+//   이미 말하고 있고(「채널 공유 — # 민원-검토 에 게시」), 시안에서 갈 곳도 없는 링크였다. 그래서 inHome 갈래도 사라졌다
+function runBody(r){
+  if(r.st==='ok') return 결과상자(r);
+  return procHtml(r);
+}
+// 실행 하나 — 2026-09-19 부터 [요약 | 자세히] 를 나누지 않고 **한 장(자세히)** 으로 본다(사용자:
+//   "요약, 자세히로 나누는 게 아니고 차라리 자세히로 하나 해놓고 표에서 좀 비주얼적인 표현을 가미").
+//   완료면 맨 위에 무엇을 했나 + 결과, 그 아래 단계 표 · 세부 정보. 실행 중·실패도 같은 표를 쓴다
+function renderRun(id){
+  // 2026-09-20 — `runs()` 에서 찾는다. RUNS 만 뒤지면 **실패 상태에서만 붙는 FAILED(rf) 를 못 찾아**
+  //   `?view=run:rf` 로 들어왔을 때 오른쪽이 빈 채로 남았다(설명서 대조에서 잡음)
+  const r = id==='live' ? LIVE : (runs().find(x=>x.id===id) || RUNS.find(x=>x.id===id)); if(!r) return;
+  // 제목 = 「언제 + 무엇」 — 시각이 앞에 온다(사용자: "26.09.12 09:00 완료 이런 식으로")
+  const title = '<span class="t-when">'+r.start.slice(0,14)+'</span>'
+    + (r.st==='ok' ? '<span class="t">완료</span>'
+     : r.st==='fail' ? '<span class="t fail">실패</span><span class="dim">'+r.stop+'에서 멈춤</span>'
+     : '<span class="t live">실행 중</span>');
+  const act = r.st==='live'?'<span class="sp"></span><button class="b danger js-stop">중지</button>':'';
+  const head = r.st==='ok' ? '<div class="lb lb-first">결과</div>'+결과상자(r) : '';
+  $('.js-right').innerHTML='<div class="run-hd">'+title+act+'</div>'
+    +'<div class="js-run-body">'+head+detHtml(r, !!head)+'</div>';
+}
+// 2026-09-20 — 상태·보기가 바뀌면 **주소에도 남긴다.** 전에는 끄기·지금 실행·이력 선택이 전부
+//   JS 변수만 바꿔서, 주소는 그대로였다 → 새로고침하면 처음으로 돌아가고,
+//   화면 설명서(`_설명서/`)의 왼쪽 목록도 따라오지 못했다
+function 주소갱신(){
+  // **`?state=…` 만 넘기면 안 된다** — 이 문서는 `<base href="../컴포넌트/">` 를 쓰므로
+  //   replaceState 가 상대 주소를 base 기준으로 풀어 `/컴포넌트/?state=off` 가 되어 버린다(2026-09-20에 실제로 그랬다).
+  //   그래서 지금 문서 경로를 붙여 절대 경로로 넘긴다. 404 와 같은 함정이다
+  const q = location.pathname + '?state=' + state + (view==='home' ? '' : '&view='+view);
+  try{ history.replaceState(null, '', q); }catch(e){}
+}
+function render(){ renderNav(); if(view==='home') renderHome(); else renderRun(view.slice(4)); $$('.demo button').forEach(b=>b.classList.toggle('on', b.dataset.s===state)); 주소갱신(); }
+
+// ── 화면 이동 ─────────────────────────────────────────────────────────────
+// 이 문서들은 <base href="../컴포넌트/"> 를 써서 상대 주소가 컴포넌트 폴더로 간다 → 그냥 두면 404.
+// 화면①·②와 같은 방식으로, 지금 문서가 있는 폴더를 붙여 절대 경로로 만든다(2026-09-19).
+const PDIR=location.pathname.replace(/[^/]*$/,'');
+function goPage(f,q){ location.href=PDIR+encodeURIComponent(f)+(q||''); }
+
+// ── 조작 ──────────────────────────────────────────────────────────────────
+document.addEventListener('click', e=>{
+  const nav=e.target.closest('.js-nav'); if(nav){ view=nav.dataset.v; render(); return; }
+  if(e.target.closest('.js-settings')){ goPage('화면02_자동화생성.html','?tpl=drone&edit=1'); return; }   // 설정 = 작성 화면이 이 자동화 값으로 열린다(P-5)
+  if(e.target.closest('.js-back')||e.target.closest('.js-crumb-list')||e.target.closest('.js-all-menu')){ goPage('화면01_전체목록.html'); return; }
+  // LNB — 「새 자동화」는 화면②로. 「전체 목록」(.js-all-menu)은 바로 위에서 맡는다
+  const ch=e.target.closest('.channel-text-demo');
+  if(ch && ((ch.querySelector('.ch-label')||{}).textContent||'').trim()==='새 자동화'){ goPage('화면02_자동화생성.html'); return; }
+  if(e.target.closest('.js-on')){ state='wait'; view='home'; render(); return; }
+  if(e.target.closest('.js-off')){ state='off'; view='home'; render(); return; }   // 끄기 = 직접 끔(실패와 다르다 · 2026-09-20)
+  if(e.target.closest('.js-runnow')){ state='run'; view='run:live'; render(); return; }
+  if(e.target.closest('.js-stop')){ state='wait'; view='home'; render(); return; }
+  const d=e.target.closest('.demo button'); if(d){ state=d.dataset.s; view='home'; render(); return; }
+});
+render();
+</script>
+
+</body></html>
