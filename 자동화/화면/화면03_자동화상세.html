@@ -166,7 +166,7 @@
 </div></div>
 </div>
 </div></div>
-<div class="demo">시안 <button data-s="wait">대기</button><button data-s="run">실행 중</button><button data-s="off">꺼짐</button><button data-s="fail">실패</button><button data-s="setup">설정 중</button></div>
+<div class="demo js-demo">시안 <button data-s="wait">대기</button><button data-s="run">실행 중</button><button data-s="off">꺼짐</button><button data-s="fail">실패</button><button data-s="setup">설정 중</button></div>
 
 <script>
 // ── 데이터(시연용) ───────────────────────────────────────────────────────
@@ -207,6 +207,15 @@ const LIVE={id:'live', date:'26.09.18', st:'live', dur:'', start:'26.09.18 14:32
 
 // ── 상태(시안) — ?state=wait|run|fail|setup ─────────────────────────────
 const q=new URLSearchParams(location.search);
+// 2026-09-21 — 「하는 일」이 다섯 개가 아닐 때를 **눈으로 볼 수 있게** `?steps=N` 을 받는다(사용자).
+//   결정 4005(K-1)로 칸 수를 고정하지 않기로 했는데, 시안 데이터가 늘 5개라 그게 실제로 되는지 보이지 않았다.
+//   줄이면 앞에서부터 자르고, 늘리면 뒤에 덧단계를 붙인다. 데모 값일 뿐 뜻은 없다
+(function(){ const n=parseInt(q.get('steps')||'',10); if(!n || n===AUTO.steps.length) return;
+  const 더=[['담당자 지정','박준형 · 민원팀'],['처리 기록','지식함 / 민원 / 처리 이력'],
+           ['만족도 조사','발송 후 3일'],['월간 집계','매월 1일 09:00']];
+  AUTO.steps = n<AUTO.steps.length ? AUTO.steps.slice(0,Math.max(1,n))
+                                   : AUTO.steps.concat(더).slice(0,Math.min(n,AUTO.steps.length+더.length));
+})();
 let state=q.get('state')||'wait';   // wait 대기(감시 중) · run 실행 중 · off 직접 끔 · fail 실패로 꺼짐 · setup 설정 중
 let view=q.get('view')||'home';   // 실행 하나는 2026-09-19 부터 한 장(자세히)뿐이라 요약/자세히 기억할 것이 없다.
 // 2026-09-20 — 주소로도 연다(`?view=run:r6`). 화면별 모아보기(`_기획서.html`)에서 실행 하나를 바로 걸기 위한 것
@@ -371,9 +380,14 @@ function 주소갱신(){
   // **`?state=…` 만 넘기면 안 된다** — 이 문서는 `<base href="../컴포넌트/">` 를 쓰므로
   //   replaceState 가 상대 주소를 base 기준으로 풀어 `/컴포넌트/?state=off` 가 되어 버린다(2026-09-20에 실제로 그랬다).
   //   그래서 지금 문서 경로를 붙여 절대 경로로 넘긴다. 404 와 같은 함정이다
-  const q = location.pathname + '?state=' + state + (view==='home' ? '' : '&view='+view);
-  try{ history.replaceState(null, '', q); }catch(e){}
+  // `steps` 는 상태가 아니라 **데모 값**이라 render 마다 지워지면 안 된다 — 주소에 그대로 붙여 둔다(2026-09-21)
+  const st = q.get('steps');
+  const 주소 = location.pathname + '?state=' + state + (view==='home' ? '' : '&view='+view) + (st ? '&steps='+st : '');
+  try{ history.replaceState(null, '', 주소); }catch(e){}
 }
+// 2026-09-21 — 시안 상태 버튼(오른쪽 아래)은 **단독으로 열었을 때만** 보인다.
+//   화면 설명서 안(iframe)에서는 왼쪽 목록이 이미 같은 상태들을 줄로 갖고 있어 같은 것이 두 번이다(사용자).
+(function(){ try{ if(window.self!==window.top){ const d=document.querySelector('.js-demo'); if(d) d.hidden=true; } }catch(e){} })();
 function render(){ renderNav(); if(view==='home') renderHome(); else renderRun(view.slice(4)); $$('.demo button').forEach(b=>b.classList.toggle('on', b.dataset.s===state)); 주소갱신(); }
 
 // ── 화면 이동 ─────────────────────────────────────────────────────────────
