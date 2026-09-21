@@ -142,7 +142,7 @@
       <div class="lnb-wrap">
         <div class="lnb-group"><div class="label-toggle"><span>자동화 메뉴</span></div>
           <div class="lnb-list" style="display:flex;flex-direction:column;gap:3px;">
-            <div class="channel-text-demo"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-add.svg"></span><span class="ch-label">새 자동화</span></div></div>
+            <div class="channel-text-demo"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-workflow.svg"></span><span class="ch-label">새 자동화</span></div></div>
             <div class="channel-text-demo js-all-menu"><div class="ch-inner"><span class="ch-ico"><img src="assets/ico-view-list.svg"></span><span class="ch-label">전체 목록</span></div></div>
           </div></div>
         <!-- 실행 방식 2묶음(2026-09-17 저녁) — 참고 화면(AI 채팅)의 `고정 채팅`·`채팅 내역`과 같은 묶음 머리(12px + ▾) 아래 항목을 바로 붙임.
@@ -366,7 +366,10 @@ function renderRun(id){
   // 제목 = 「언제 + 무엇」 — 시각이 앞에 온다(사용자: "26.09.12 09:00 완료 이런 식으로")
   const title = '<span class="t-when">'+r.start.slice(0,14)+'</span>'
     + (r.st==='ok' ? '<span class="t">완료</span>'
-     : r.st==='fail' ? '<span class="t fail">실패</span><span class="dim">'+r.stop+'에서 멈춤</span>'
+     // 2026-09-21 · 결정 4006 — 「3단계 근거 검색에서 멈춤」을 뺐다(사용자).
+     //   바로 아래 「단계별 실행」 표가 **어느 단계가 실패인지 그 줄에서** 말해 준다.
+     //   같은 말을 제목에서 한 번 더 하면 표를 안 읽게 된다. 「멈춘 곳」은 세부 정보에 남아 있다.
+     : r.st==='fail' ? '<span class="t fail">실패</span>'
      : '<span class="t live">실행 중</span>');
   const act = r.st==='live'?'<span class="sp"></span><button class="b danger js-stop">중지</button>':'';
   const head = r.st==='ok' ? '<div class="lb lb-first">결과</div>'+결과상자(r) : '';
