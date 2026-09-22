@@ -22,6 +22,7 @@ body{margin:0; height:100vh; display:flex; font-family:"Pretendard Variable","Pr
   border-radius:6px; background:#fff; color:#808897; cursor:pointer; font-size:11px; line-height:1;
   font-family:inherit; display:inline-flex; align-items:center; justify-content:center;}
 .s-fold:hover{background:#f8fafc; color:#2a3445;}
+.s-fold svg,.edge svg{display:block;}   /* 인라인 그림의 밑줄 여백을 없앤다 */
 /* 접으면 **아무것도 남기지 않는다**(2026-09-22 사용자). 자리에서 빼고(fixed) 화면 밖으로 밀어
    두었다가, 왼쪽 끝에 마우스를 가져가면 은은하게 떠오른다 */
 body.side-fold .side{position:fixed; left:0; top:0; bottom:0; z-index:40; border-right:0;
@@ -104,12 +105,12 @@ body.side-fold .side:hover{transform:none; opacity:1;}
 <body>
 
 <!-- 접혔을 때만 사는 반원 손잡이. 반드시 `.side` 바로 앞이어야 한다(CSS 가 바로 뒤 형제를 집는다) -->
-<button class="edge js-edge" type="button" title="왼쪽 목록 펴기" aria-label="왼쪽 목록 펴기">&#8250;</button>
+<button class="edge js-edge" type="button" title="왼쪽 목록 펴기" aria-label="왼쪽 목록 펴기"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
 
 <div class="side">
   <div class="s-hd"><h1 class="js-title">화면 설명서</h1>
     <div class="sub">화면을 고르면 오른쪽에 그 화면이 뜹니다.</div>
-    <button class="s-fold js-fold" type="button" title="왼쪽 목록 접기" aria-label="왼쪽 목록 접기">&#10094;&#10094;</button></div>
+    <button class="s-fold js-fold" type="button" title="왼쪽 목록 접기" aria-label="왼쪽 목록 접기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg></button></div>
   <div class="s-bar">
     <!-- 설명 패널은 **당분간 감춰 둡니다**(2026-09-20 사용자). 되살리려면 아래 hidden 만 지우면 됩니다 -->
     <button class="js-toggle" hidden>설명 보기</button>
@@ -138,10 +139,16 @@ const CFG = window.화면설명 || window.리뷰목록;
 // 시안을 넓게 보려고 왼쪽을 치우는 것(2026-09-22 사용자). 접은 상태는 이 브라우저에 기억해 둔다 —
 // 목록이 비어 있어도 동작해야 하므로 아래 `if (!CFG…)` 밖에 둔다
 const 접힘키 = 'prixm.설명서.왼쪽접힘';
+// 그림은 **Lucide 원본**(v1.47.0 `panel-left-close` · `panel-left-open`)을 그대로 박았다 — 기억으로 그리지 않는다.
+// 15px 로 그리므로 획은 24÷15≒1.6 (화면에서 1px 안팎 — `_스타일규칙.md` 아이콘 절)
+const 룩 = 속 => '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + 속 + '</svg>';
+const 패널닫기 = 룩('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/>');
+const 패널열기 = 룩('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/>');
 function 접기(접나) {
   document.body.classList.toggle('side-fold', !!접나);
   const b = $('.js-fold');
-  b.innerHTML = 접나 ? '&#10095;&#10095;' : '&#10094;&#10094;';
+  b.innerHTML = 접나 ? 패널열기 : 패널닫기;
   const 말 = 접나 ? '왼쪽 목록 고정' : '왼쪽 목록 접기';
   b.title = 말; b.setAttribute('aria-label', 말);
   try { localStorage.setItem(접힘키, 접나 ? '1' : '0'); } catch (e) { /* 저장이 막힌 브라우저 — 이번만 접힌다 */ }
