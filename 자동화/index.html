@@ -14,7 +14,31 @@ body{margin:0; height:100vh; display:flex; font-family:"Pretendard Variable","Pr
   letter-spacing:-0.5px; color:#2a3445; font-size:13px; background:#f4f6fc;}
 /* 왼쪽 목록 */
 .side{width:250px; flex:0 0 250px; background:#fff; border-right:1px solid #e5e7eb; display:flex; flex-direction:column;}
-.s-hd{padding:16px 16px 12px;}
+.s-hd{padding:16px 16px 12px; position:relative;}
+/* 접기 단추 — 시안을 넓게 볼 때 왼쪽 목록을 치운다(2026-09-22 사용자).
+   `.s-hd` 는 굽기 스크립트가 「‹ 전체 목록」 링크를 첫 자식으로 꽂는 자리라서,
+   flex 로 줄을 만들지 않고 **떠 있게**(absolute) 두었다 — 꽂히는 것이 깨지지 않게 */
+.s-fold{position:absolute; top:12px; right:12px; width:24px; height:24px; padding:0; border:1px solid #e5e7eb;
+  border-radius:6px; background:#fff; color:#808897; cursor:pointer; font-size:11px; line-height:1;
+  font-family:inherit; display:inline-flex; align-items:center; justify-content:center;}
+.s-fold:hover{background:#f8fafc; color:#2a3445;}
+/* 접으면 **아무것도 남기지 않는다**(2026-09-22 사용자). 자리에서 빼고(fixed) 화면 밖으로 밀어
+   두었다가, 왼쪽 끝에 마우스를 가져가면 은은하게 떠오른다 */
+body.side-fold .side{position:fixed; left:0; top:0; bottom:0; z-index:40; border-right:0;
+  box-shadow:0 0 28px rgba(20,28,45,.13); transform:translateX(-100%); opacity:0;
+  transition:transform .2s cubic-bezier(.4,0,.2,1), opacity .2s ease;}
+/* 왼쪽 끝 가운데의 **반원 손잡이** — 접혔을 때 이것만 남는다. 평소에는 옅게 있다가 닿으면
+   또렷해지고 목록이 떠오른다. 떠오른 목록이 손잡이를 덮으므로 `.side:hover` 로 그대로 머문다
+   (마우스가 목록을 벗어나면 다시 사라진다). 눌러서 제자리에 고정할 수도 있다 */
+.edge{display:none; position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:39;
+  width:15px; height:46px; padding:0; border:1px solid #e5e7eb; border-left:0; border-radius:0 24px 24px 0;
+  background:#fff; color:#a8afbc; font-size:10px; line-height:1; font-family:inherit; cursor:pointer;
+  opacity:.45; box-shadow:0 1px 6px rgba(20,28,45,.10);
+  align-items:center; justify-content:center; transition:opacity .18s ease, color .18s ease;}
+body.side-fold .edge{display:flex;}
+.edge:hover{opacity:1; color:#2a3445;}
+body.side-fold .edge:hover + .side,
+body.side-fold .side:hover{transform:none; opacity:1;}
 .s-hd h1{margin:0 0 3px; font-size:15px; font-weight:700;}
 .s-hd .sub{font-size:11px; color:#808897; line-height:1.6;}
 /* 조작은 전부 왼쪽에 모은다 — 가운데 위 바는 없앴다(2026-09-20) */
@@ -79,9 +103,13 @@ body{margin:0; height:100vh; display:flex; font-family:"Pretendard Variable","Pr
 </style></head>
 <body>
 
+<!-- 접혔을 때만 사는 반원 손잡이. 반드시 `.side` 바로 앞이어야 한다(CSS 가 바로 뒤 형제를 집는다) -->
+<button class="edge js-edge" type="button" title="왼쪽 목록 펴기" aria-label="왼쪽 목록 펴기">&#8250;</button>
+
 <div class="side">
   <div class="s-hd"><h1 class="js-title">화면 설명서</h1>
-    <div class="sub">화면을 고르면 오른쪽에 그 화면이 뜹니다.</div></div>
+    <div class="sub">화면을 고르면 오른쪽에 그 화면이 뜹니다.</div>
+    <button class="s-fold js-fold" type="button" title="왼쪽 목록 접기" aria-label="왼쪽 목록 접기">&#10094;&#10094;</button></div>
   <div class="s-bar">
     <!-- 설명 패널은 **당분간 감춰 둡니다**(2026-09-20 사용자). 되살리려면 아래 hidden 만 지우면 됩니다 -->
     <button class="js-toggle" hidden>설명 보기</button>
@@ -105,6 +133,24 @@ body{margin:0; height:100vh; display:flex; font-family:"Pretendard Variable","Pr
 <script>
 const $ = s => document.querySelector(s);
 const CFG = window.화면설명 || window.리뷰목록;
+
+// ── 왼쪽 목록 접기 ───────────────────────────────────────────────────
+// 시안을 넓게 보려고 왼쪽을 치우는 것(2026-09-22 사용자). 접은 상태는 이 브라우저에 기억해 둔다 —
+// 목록이 비어 있어도 동작해야 하므로 아래 `if (!CFG…)` 밖에 둔다
+const 접힘키 = 'prixm.설명서.왼쪽접힘';
+function 접기(접나) {
+  document.body.classList.toggle('side-fold', !!접나);
+  const b = $('.js-fold');
+  b.innerHTML = 접나 ? '&#10095;&#10095;' : '&#10094;&#10094;';
+  const 말 = 접나 ? '왼쪽 목록 고정' : '왼쪽 목록 접기';
+  b.title = 말; b.setAttribute('aria-label', 말);
+  try { localStorage.setItem(접힘키, 접나 ? '1' : '0'); } catch (e) { /* 저장이 막힌 브라우저 — 이번만 접힌다 */ }
+}
+$('.js-fold').addEventListener('click', () => 접기(!document.body.classList.contains('side-fold')));
+$('.js-edge').addEventListener('click', () => 접기(false));   // 손잡이를 누르면 제자리에 고정된다
+let 접힌채 = '0';
+try { 접힌채 = localStorage.getItem(접힘키) || '0'; } catch (e) {}
+접기(접힌채 === '1');
 
 if (!CFG || !Array.isArray(CFG.항목) || !CFG.항목.length) {
   $('.js-mid').innerHTML = '<div><b>목록이 비어 있습니다.</b><br>같은 폴더의 <code>목록.js</code> 를 채워 주십시오.<br>쓰는 법은 <code>README.md</code>.</div>';

@@ -15,13 +15,13 @@
    왼쪽은 실행 이력 목록만, 오른쪽은 본문이 굴러간다. 「‹ 전체 목록」·홈·바닥 「설정」은 늘 제자리 */
 .content{display:block; min-height:0; overflow:hidden; flex:1;}
 .p-page{display:grid; grid-template-columns:240px minmax(0,1fr); height:100%; min-height:0; position:relative;}
-.p-page:before{content:""; position:absolute; left:0; top:0; bottom:0; width:240px; background:#fbfbfb; border-right:1px solid var(--border-default);}
+.p-page:before{content:""; position:absolute; left:0; top:0; bottom:0; width:240px; background:var(--color-gnb-panel-bg); border-right:1px solid var(--border-default);}
 /* 왼쪽 단 */
 .pn{position:relative; padding:16px 12px 20px; display:flex; flex-direction:column; min-height:0; box-sizing:border-box;}
 .pn-back{font-size:12px; color:var(--gray-500); padding:0 8px 16px; cursor:pointer; display:flex; align-items:center; gap:4px;}
 .pn-back:hover{color:var(--black-900);}
 .pn-home{display:flex; align-items:center; gap:6px; padding:8px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:var(--color-n-800);}
-.pn-home.on{background:var(--color-lnb-selected,#eef2ff);} .pn-home:hover:not(.on){background:rgba(0,0,0,.04);}
+.pn-home.on{background:var(--color-lnb-selected,var(--color-lnb-selected));} .pn-home:hover:not(.on){background:rgba(0,0,0,.05);}
 .pn-home .dot{width:6px; height:6px; border-radius:50%; flex:0 0 auto; background:#22c55e;}
 .pn-home .dot.off{background:#a8afbc;} .pn-home .dot.fail{background:#ef4444;} .pn-home .dot.draft{background:#fff; border:1px solid #a8afbc; box-sizing:border-box;}
 .pn-home .dot.run{background:#22c55e; animation:p-blink .85s ease-in-out infinite alternate;}
@@ -29,9 +29,9 @@
 .pn-lb{font-size:11px; font-weight:600; color:var(--gray-500); margin:20px 8px 6px; display:flex; gap:6px; align-items:center;} .pn-cnt{font-weight:400;}
 .pn-list{display:flex; flex-direction:column; gap:2px; flex:1 1 auto; min-height:0; overflow-y:auto;}   /* 이력은 전부 들어오고 여기만 굴러간다(2026-09-19) */
 .pn-row{display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-radius:6px; font-size:12px; cursor:pointer; color:var(--color-n-800);}
-.pn-row:hover{background:rgba(0,0,0,.04);} .pn-row.on{background:var(--color-lnb-selected,#eef2ff);}
-.pn-row .pr-s{font-size:11px; color:var(--gray-500);} .pn-row .pr-s.fail{color:#dc2626;} .pn-row .pr-s.live{color:#16a34a; font-weight:600;}
-.pn-row.live .pr-d{color:#16a34a; font-weight:600;}
+.pn-row:hover{background:rgba(0,0,0,.05);} .pn-row.on{background:var(--color-lnb-selected,var(--color-lnb-selected));}
+.pn-row .pr-s{font-size:11px; color:var(--gray-500);} .pn-row .pr-s.fail{color:var(--color-danger);} .pn-row .pr-s.live{color:var(--color-success); font-weight:600;}
+.pn-row.live .pr-d{color:var(--color-success); font-weight:600;}
 /* .pn-more(「모두 보기」)는 2026-09-19 에 없앴습니다 — 이력이 목록에 전부 들어오고 .pn-list 가 스스로 굴러갑니다 */
 .pn-empty{font-size:11px; color:var(--gray-400); padding:6px 8px;}
 /* 조작 버튼 셋 — 2026-09-20 결정 4004. 자리는 **자동화 이름 바로 아래**다(사용자:
@@ -46,7 +46,7 @@
    스크롤 막대는 오른쪽 끝에 그대로 두려고 칸을 좁히지 않고 안의 것만 묶는다. 사용자: "카드가 좀 멀어 보인달까" */
 .p-right > *{max-width:960px;}
 .b{height:28px; padding:0 10px; font-size:12px; border:1px solid var(--border-default); border-radius:6px; background:#fff; color:var(--color-n-800); cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:inherit;}
-.b:hover{background:rgba(0,0,0,.03);} .b.primary{background:var(--brand-primary); border-color:var(--brand-primary); color:#fff;} .b.danger{color:#dc2626; border-color:#fecaca;}
+.b:hover{background:rgba(0,0,0,.05);} .b.primary{background:var(--brand-primary); border-color:var(--brand-primary); color:#fff;} .b.danger{color:var(--color-danger); border-color:var(--color-danger-soft);}
 .sp{flex:1;} .muted{color:var(--gray-500); font-size:12px;} .lnk{color:var(--brand-primary); cursor:pointer;}   /* 2026-09-21 — 하드코딩 #235edf 를 라이브러리 토큰으로 */
 .bh-name{font-size:18px; font-weight:600; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 .bh-name .tpl-badge{font-size:10px; color:var(--gray-600); background:#fff; border:1px solid var(--border-default); padding:1px 6px; border-radius:4px;}
@@ -55,7 +55,7 @@
 .bh-st .dot{width:6px; height:6px; border-radius:50%; background:#22c55e;} .bh-st .dot.off{background:#a8afbc;} .bh-st .dot.fail{background:#ef4444;} .bh-st .dot.draft{background:#fff; border:1px solid #a8afbc; box-sizing:border-box;} .bh-st .dot.run{animation:p-blink .85s ease-in-out infinite alternate;}
 /* 위 18 — 결정 4004 로 상태 줄(.bh-st · margin 12/18)을 없애면서 설명과 카드가 딱 붙어 버렸다. 그 줄이 맡던 아래 여백을 여기로 옮긴다 */
 .sum{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:18px 0 22px;}
-.sum-i{border:1px solid var(--border-default); border-radius:8px; padding:10px 14px;} .sum-k{font-size:11px; color:var(--gray-500);} .sum-v{font-size:16px; font-weight:600; margin-top:2px;} .sum-v small{font-size:11px; font-weight:400; color:var(--gray-500); margin-left:3px;} .sum-v.ok{font-size:13px; color:#16a34a;} .sum-v.bad{font-size:13px; color:#dc2626;}
+.sum-i{border:1px solid var(--border-default); border-radius:8px; padding:10px 14px;} .sum-k{font-size:11px; color:var(--gray-500);} .sum-v{font-size:16px; font-weight:600; margin-top:2px;} .sum-v small{font-size:11px; font-weight:400; color:var(--gray-500); margin-left:3px;} .sum-v.ok{font-size:13px; color:var(--color-success);} .sum-v.bad{font-size:13px; color:var(--color-danger);}
 .sec-hd{display:flex; align-items:center; gap:10px; margin:0 0 10px;} .sec-t{font-size:14px; font-weight:600;}
 /* 2026-09-20 · 결정 4005(LAB 하는일 **K-1 채택**) — 하는 일이 다섯 개가 아닐 수 있다(사용자).
    전에는 `repeat(5, …)` 로 못 박혀 3개면 오른쪽이 비고 7·9개면 둘째 줄이 어정쩡했다.
@@ -63,10 +63,10 @@
    3개면 빈 트랙이 접혀 셋이 넓어진다. 화면① 템플릿 격자(`.gal`)가 이미 쓰는 방식이다 */
 .steps5{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:22px;}
 .s5{display:flex; gap:8px; align-items:flex-start; border:1px solid var(--border-subtle); border-radius:8px; padding:10px; min-width:0;}
-.s5 .rs-n{font-size:12px; font-weight:600;} .s5 .rs-d{font-size:11px; color:var(--gray-500); margin-top:2px; line-height:1.5; word-break:break-all;} .s5.fail .rs-d{color:#dc2626;} .s5.todo .rs-d{color:var(--gray-400);}
+.s5 .rs-n{font-size:12px; font-weight:600;} .s5 .rs-d{font-size:11px; color:var(--gray-500); margin-top:2px; line-height:1.5; word-break:break-all;} .s5.fail .rs-d{color:var(--color-danger);} .s5.todo .rs-d{color:var(--gray-400);}
 .rs-i{flex:0 0 18px; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; border:1px solid var(--border-default); color:var(--gray-500); background:#fff;}
-.rs-i svg{width:11px; height:11px;} .rs-i.ok{background:#ecfdf5; border-color:#16a34a; color:#16a34a;} .rs-i.fail{background:#fee2e2; border-color:#ef4444; color:#dc2626; font-weight:700;} .rs-i.skip{color:var(--gray-400);} .rs-i.todo{background:var(--color-n-800); border-color:var(--color-n-800); color:#fff;} .rs-i.run{border-color:#22c55e;} .rs-i.idle{color:var(--gray-400);} .rs-i.num{color:var(--gray-500);}   /* num = 평소의 단계 번호(결정 4005) */
-.spin{display:inline-block; width:10px; height:10px; border:1.5px solid #22c55e; border-top-color:transparent; border-radius:50%; animation:p-rot 1s linear infinite;}
+.rs-i svg{width:11px; height:11px;} .rs-i.ok{background:var(--color-success-soft); border-color:var(--color-success); color:var(--color-success);} .rs-i.fail{background:var(--color-danger-soft); border-color:#ef4444; color:var(--color-danger); font-weight:700;} .rs-i.skip{color:var(--gray-400);} .rs-i.todo{background:var(--color-n-800); border-color:var(--color-n-800); color:#fff;} .rs-i.run{border-color:#22c55e;} .rs-i.idle{color:var(--gray-400);} .rs-i.num{color:var(--gray-500);}   /* num = 평소의 단계 번호(결정 4005) */
+.spin{display:inline-block; width:10px; height:10px; border:1px solid #22c55e; border-top-color:transparent; border-radius:50%; animation:p-rot 1s linear infinite;}
 @keyframes p-rot{to{transform:rotate(360deg)}}
 /* 실행 하나 */
 /* 실행 하나의 제목 줄 — 2026-09-20. 전에는 클래스 이름이 `.hd` 라 **공용 `.hd`(제품 상단 바)** 의
@@ -74,7 +74,7 @@
    `.run-hd` 로 가르고, 아래 가로줄도 없앴다(사용자). 제목은 「26.09.12 09:00 완료」처럼 시각이 앞에 온다 */
 .run-hd{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
 .run-hd .t-when{font-size:15px; font-weight:600; color:var(--color-n-800); font-variant-numeric:tabular-nums;}
-.run-hd .t{font-size:15px; font-weight:600;} .run-hd .t.fail{color:#dc2626;} .run-hd .t.live{color:#16a34a;}
+.run-hd .t{font-size:15px; font-weight:600;} .run-hd .t.fail{color:var(--color-danger);} .run-hd .t.live{color:var(--color-success);}
 .dim{color:var(--gray-500); font-size:12px; font-weight:400;}
 /* [요약 | 자세히] 세그먼트(.seg-row/.seg/.seg-b)는 2026-09-19 에 걷었습니다 — 실행 하나는 한 장뿐입니다 */
 /* 무엇을 했나 한 줄 — 결과 상자 바로 위 */
@@ -85,15 +85,15 @@
 .lb{font-size:11px; font-weight:600; color:var(--gray-500); margin:14px 0 6px;} .lb-first{margin-top:4px;} .lb-gap{margin-top:26px;}
 .tl{position:relative;} .tl-row{display:grid; grid-template-columns:18px minmax(0,1fr); gap:0 10px; padding:6px 0; position:relative;}
 .tl-row:not(:last-child):before{content:""; position:absolute; left:9px; top:26px; bottom:-6px; width:1px; background:var(--border-default);}
-.rs-n{font-size:12px; font-weight:600;} .tl-row.skip .rs-n,.tl-row.idle .rs-n{color:var(--gray-400); font-weight:500;} .rs-d{font-size:11px; color:var(--gray-500); line-height:1.5; margin-top:2px;} .tl-row.fail .rs-d{color:#dc2626;} .tl-act{margin-top:8px;}
+.rs-n{font-size:12px; font-weight:600;} .tl-row.skip .rs-n,.tl-row.idle .rs-n{color:var(--gray-400); font-weight:500;} .rs-d{font-size:11px; color:var(--gray-500); line-height:1.5; margin-top:2px;} .tl-row.fail .rs-d{color:var(--color-danger);} .tl-act{margin-top:8px;}
 /* 결과 본문 — 2026-09-20 결정 4004 로 **폭을 좌우로 채운다**(전에는 max-width:760). 본문 자체가 960 상한 안에 있다(사용자) */
-.rc-doc{font-size:13px; line-height:1.8; background:#fbfbfb; border:1px solid var(--border-subtle); border-radius:6px; padding:12px 14px;} .rc-doc.muted{color:var(--gray-500); text-align:center; font-size:12px;}
+.rc-doc{font-size:13px; line-height:1.8; background:var(--color-gnb-panel-bg); border:1px solid var(--border-subtle); border-radius:6px; padding:12px 14px;} .rc-doc.muted{color:var(--gray-500); text-align:center; font-size:12px;}
 .run-more{margin-top:12px;}   /* 「자세히」는 결과 아래 맨 끝(결정 4004) */
 /* .rc-link(「# 민원-검토 에서 보기」)는 결정 4004 로 없앴습니다 */
 .box{border:1px solid var(--border-default); border-radius:8px; padding:4px 10px 6px; background:#fff;}
 .tbl{width:100%; border-collapse:collapse; font-size:12px;} .tbl th{font-size:11px; color:var(--gray-500); font-weight:600; text-align:left; padding:6px 8px 2px;} .tbl td{padding:9px 8px; border-bottom:1px solid var(--border-subtle); vertical-align:top;} .box tr:last-child td{border-bottom:0;}
 .tbl td.num{color:var(--gray-400); width:20px;} .tbl td.nm{font-weight:600; white-space:nowrap;} .tbl td.ts{white-space:nowrap; color:var(--gray-600); font-variant-numeric:tabular-nums;} .tbl td.res{width:46%;}
-.tbl tr.fail td.nm,.tbl tr.fail td.res,.tbl tr.fail td.ts{color:#dc2626;} .tbl tr.skip td,.tbl tr.idle td{color:var(--gray-400);} .tbl tr.fail .lnk{color:var(--brand-primary); margin-left:4px;}
+.tbl tr.fail td.nm,.tbl tr.fail td.res,.tbl tr.fail td.ts{color:var(--color-danger);} .tbl tr.skip td,.tbl tr.idle td{color:var(--gray-400);} .tbl tr.fail .lnk{color:var(--brand-primary); margin-left:4px;}
 .tbl-kv{max-width:760px;} .tbl-kv td.k{color:var(--gray-500); width:110px; white-space:nowrap;}
 
 /* ── 「단계별 실행」 표 — LAB 실행표 E-2 채택(결정 4003 · 2026-09-19) ──────────────────
@@ -118,13 +118,13 @@
    **is-fail·is-run 은 라이브러리에 없어 여기서 만든 변형입니다 — 디자인 단계에서 컴포넌트로 올릴 것**
    (as-is 에서는 `컴포넌트/` 를 고치지 않는다 · 작업 규칙 5.2). 라이브러리 주석대로 색만이 아니라
    채움/테두리로도 갈리게 두어 색각 이상에서도 구분됩니다 */
-.state-badge{font-size:11px; font-weight:500; letter-spacing:-0.5px; padding:3px 8px; border-radius:5px;
+.state-badge{font-size:11px; font-weight:500; letter-spacing:-0.5px; padding:3px 8px; border-radius:3px;
   border:1px solid transparent; display:inline-block; white-space:nowrap;}
-.state-badge.is-active{background:#dcfce7; color:#15803d;}
+.state-badge.is-active{background:var(--color-success-soft); color:#15803d;}
 .state-badge.is-inactive{background:var(--color-primitive-gray-100,#f3f4f6); color:var(--gray-600);}
 .state-badge.is-draft{background:transparent; color:var(--gray-600); border-color:var(--border-default);}
-.state-badge.is-fail{background:#fee2e2; color:#dc2626;}
-.state-badge.is-run{background:transparent; color:#15803d; border-color:#86c9a8;}
+.state-badge.is-fail{background:var(--color-danger-soft); color:var(--color-danger);}
+.state-badge.is-run{background:transparent; color:#15803d; border-color:var(--color-n-400);}
 .st-empty{border:1px dashed var(--border-default); border-radius:8px; padding:28px; text-align:center; margin:18px 0 22px;}   /* 위 18 — .sum 과 같은 값(설정 중 상태에서 설명 줄 다음에 오는 것) */ .em-t{font-size:14px; font-weight:600; margin-bottom:6px;} .em-d{font-size:12px; color:var(--gray-600); margin-bottom:14px; line-height:1.6;}
 /* 알림 띠 — 실패든 직접 끔이든 **회색 한 가지**다(2026-09-20 사용자). 노란 경고는 쓰지 않는다 */
 .warn{background:#f8fafc; border:1px solid var(--border-default); color:var(--gray-600); border-radius:8px; padding:10px 14px; font-size:12px; margin:18px 0 16px; line-height:1.6;}   /* 위 18 — .sum 과 같은 값(실패 상태에서 설명 줄 다음에 오는 것) */

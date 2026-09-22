@@ -1259,11 +1259,3 @@
 .card-demo.is-selected .btn-more-dot,
 .wf-table tbody tr:hover .btn-more-dot{opacity:1;}
 
-
-/* ============ 데이터 분석 LNB (2026-09-21) ============ */
-/* 전용 CSS 없음. 47-lnb-analysis 는 기존 LNB 부품(lnb-panel · lnb-top-util ·
-   label-toggle · channel-text-demo)만으로 만들어져 있다.
-   「분석 파일」 묶음(파일명 + 분석 횟수)과 내역 2줄 항목(방법 배지 + 시각)은
-   2026-09-21 사용자 결정으로 뺐다. 되살릴 때 필요한 것:
-     .lnb-panel .ana-file{justify-content:space-between;}   ← 횟수를 우측으로
-     .lnb-count (이미 있음, 11px) · .wf-badge (이미 있음, 10px) */

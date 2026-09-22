@@ -103,7 +103,7 @@ body.is-canvas #v-canvas{flex:1; min-height:0; display:flex;}
 .rail-cnt{color:var(--gray-500); font-weight:400;}
 .rail-item{display:flex; flex-direction:column; gap:2px; text-align:left; padding:8px 10px; border:0; border-radius:6px; background:none; cursor:pointer; font-family:inherit; letter-spacing:-0.5px; width:100%;}
 .rail-item:hover{background:var(--gray-50,#f8fafc);}
-.rail-item.is-on{background:var(--gnb-active,#f5f6fa);}
+.rail-item.is-on{background:var(--gnb-active,var(--color-n-50));}
 .rail-item.is-on .rail-name{font-weight:600;}
 /* 분류 필터가 hidden 을 걸므로 display 를 눌러 준다 — 없으면 flex 가 이겨서 안 숨는다 */
 .rail-item[hidden],.tpl-card[hidden]{display:none !important;}
@@ -177,7 +177,7 @@ body.is-canvas #v-canvas{flex:1; min-height:0; display:flex;}
 .step.is-on b{background:var(--black-900); border-color:var(--black-900); color:#fff;}
 .step.is-done b{background:var(--gray-100); color:var(--black-900);}
 .step-line{width:28px; height:1px; background:var(--border-default);}
-.warn-bar{font-size:12px; color:#92400e; background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:8px 12px; margin:-6px 0 14px; line-height:1.6;}
+.warn-bar{font-size:12px; color:var(--color-warning-strong); background:var(--color-warning-soft); border:1px solid var(--color-warning); border-radius:6px; padding:8px 12px; margin:-6px 0 14px; line-height:1.6;}
 .warn-bar[hidden]{display:none;}
 .flow{display:flex; align-items:center; flex-wrap:wrap; gap:4px 6px; font-size:11px;}
 .flow-step{padding:3px 8px; border-radius:100px; background:var(--gray-100); color:var(--black-900); white-space:nowrap;}
@@ -201,13 +201,13 @@ body.is-canvas #v-canvas{flex:1; min-height:0; display:flex;}
 .fld-row{display:flex; flex-direction:column; gap:6px;}
 .fld-row[hidden]{display:none;}
 .fld-lb{font-size:12px; font-weight:400; color:var(--gray-600);}
-.fld-lb.req::after{content:"*"; color:#dc2626; font-weight:600; margin-left:3px;}   /* 필수 — 화면③의 별표와 같은 표시(I-15 통일) · 점 하나는 너무 약했다(사용자 2026-09-18) */
+.fld-lb.req::after{content:"*"; color:var(--color-danger); font-weight:600; margin-left:3px;}   /* 필수 — 화면③의 별표와 같은 표시(I-15 통일) · 점 하나는 너무 약했다(사용자 2026-09-18) */
 .fld{height:38px; border:1px solid var(--border-default); border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit; letter-spacing:-0.5px; color:var(--black-900); background:#fff; width:100%; box-sizing:border-box;}
 .fld.ro{display:flex; align-items:center; background:var(--gray-50,#f8fafc); color:var(--gray-600);}
 textarea.fld{height:57px; padding:8px 10px; resize:vertical; line-height:1.5;}
 .fld:focus{outline:0; border-color:var(--black-900);}
 .fld::placeholder{color:var(--gray-500);}
-.fld.is-bad{border-color:#f59e0b; background:#fffbeb;}
+.fld.is-bad{border-color:#f59e0b; background:var(--color-warning-soft);}
 .sel-wrap{position:relative;}
 .sel-wrap select{appearance:none; padding-right:26px; cursor:pointer;}
 .sel-wrap select.is-empty{color:var(--gray-500);}
@@ -272,11 +272,11 @@ input:checked + .radio-dot::after{content:""; position:absolute; inset:4px; bord
 .nd::before{content:""; position:absolute; left:50%; top:-22px; width:1px; height:22px; background:var(--border-default);}
 .nd:first-child::before{display:none;}
 .nd-hd{display:flex; align-items:center; gap:8px;}
-.nd-ico{width:26px; height:26px; border-radius:7px; background:var(--color-primitive-blue-10,#eef2ff); flex:0 0 auto;}
+.nd-ico{width:26px; height:26px; border-radius:7px; background:var(--color-primitive-blue-10,var(--color-lnb-selected)); flex:0 0 auto;}
 .nd-t{display:flex; flex-direction:column; min-width:0;}
 .nd-cat{font-size:10px; color:var(--gray-500);}
 .nd-name{font-size:13px; font-weight:600;}
-.nd-nav{margin-left:auto; font-size:11px; color:var(--gray-500); letter-spacing:2px;}
+.nd-nav{margin-left:auto; font-size:11px; color:var(--gray-500); letter-spacing:-0.5px;}
 .nd-desc{font-size:11px; color:var(--gray-600); line-height:1.5; margin:8px 0 6px;}
 .nd-fld{font-size:11px; color:var(--gray-500); border:1px solid var(--border-subtle); border-radius:5px; padding:6px 8px; background:var(--gray-50,#f8fafc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .nd-handle{width:22px; height:3px; border-radius:100px; background:var(--border-default); margin:8px auto 0;}
@@ -284,7 +284,7 @@ input:checked + .radio-dot::after{content:""; position:absolute; inset:4px; bord
 .wf-zoom span{width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--gray-600); cursor:pointer;}
 .wf-zoom span + span{border-top:1px solid var(--border-subtle);}
 .wf-mini{position:absolute; right:16px; bottom:16px; width:180px; height:120px; border:1px solid var(--border-default); border-radius:6px; background:#fff; display:flex; align-items:center; justify-content:center;}
-.wf-mini span{width:14px; height:70px; border-radius:3px; background:var(--color-primitive-purple-100,#ede9fe);}
+.wf-mini span{width:14px; height:70px; border-radius:3px; background:var(--color-primitive-purple-100,var(--color-lnb-selected));}
 .canvas-note{position:absolute; left:16px; top:16px; max-width:420px; font-size:11px; color:var(--gray-500); background:#fff; border:1px solid var(--border-subtle); border-radius:6px; padding:8px 10px; line-height:1.6;}
 .canvas-note b{color:var(--black-900);}
 .wf-pal{border-top:1px solid var(--border-subtle); background:#fff; padding:10px 16px 14px; flex:0 0 auto;}
@@ -318,7 +318,7 @@ input:checked + .radio-dot::after{content:""; position:absolute; inset:4px; bord
 .sheet-body{display:flex; flex-direction:column; gap:14px;}
 .tpl-card.is-on{border-color:var(--black-900); box-shadow:0 3px 8px rgba(91,118,238,.18);}
 /* 미리보기(호버로 보고 있는 것)는 고정된 것보다 옅게 — 둘을 구분해야 지금 무엇이 남는지 안다 */
-.tpl-card.is-peek:not(.is-on){border-color:var(--gray-400,#9ca3af);}
+.tpl-card.is-peek:not(.is-on){border-color:var(--gray-400,var(--color-n-400));}
 .sheet .intro-lb{margin-bottom:8px;}
 .sheet .flow-step{font-size:11px;}
 /* 준비물 — 작성 화면 옆단(.side-flow)과 같은 줄 규격. 아이콘은 라이브러리 것을 그대로 쓴다 */
@@ -341,7 +341,7 @@ input:checked + .radio-dot::after{content:""; position:absolute; inset:4px; bord
 .sheet.is-fold .js-fold{display:none;}
 /* 접힘 = 고른 카드 없음 — 펼쳐도 빈 패널이라 버튼을 두지 않는다 */
 .mdl-hd{display:flex; align-items:center; padding:5px 0;}
-.mdl-ttl{font-size:14px; font-weight:600; color:#000;}
+.mdl-ttl{font-size:14px; font-weight:600; color:var(--color-text-basic);}
 .mdl-p{margin:0; font-size:13px; color:var(--gray-600); line-height:1.6;}
 .mdl-ft{display:flex; align-items:center; gap:6px; padding-top:6px; border-top:1px solid var(--border-subtle);}
 .toast{position:fixed; left:50%; bottom:28px; transform:translateX(-50%); background:var(--black-900); color:#fff; font-size:12px; padding:9px 14px; border-radius:8px; z-index:95; box-shadow:0 4px 16px rgba(0,0,0,.18); max-width:560px; line-height:1.5;}
@@ -508,7 +508,7 @@ body.is-setup:not(.has-rail) .stage-area{grid-column:1 / -1;}   /* 작성 화면
 .tc-dot{flex:0 0 19px; width:19px; height:19px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
   font-size:10px; font-weight:600; background:#fff; border:1px solid var(--border-default); color:var(--gray-500);}
 .g6-step.is-todo .tc-dot{background:var(--color-n-800); border-color:var(--color-n-800); color:#fff;}
-.g6-step.is-done .tc-dot{background:var(--color-success-soft,#ecfdf5); border-color:var(--color-success,#16a34a); color:var(--color-success,#16a34a);}
+.g6-step.is-done .tc-dot{background:var(--color-success-soft,var(--color-success-soft)); border-color:var(--color-success,var(--color-success)); color:var(--color-success,var(--color-success));}
 .g6-step.is-done .tc-dot svg{width:11px; height:11px;}
 .tc-name{font-size:12px; font-weight:600; color:var(--color-n-800); line-height:19px;}
 .tc-desc{font-size:11px; color:var(--gray-500); line-height:1.5; margin-top:2px;}

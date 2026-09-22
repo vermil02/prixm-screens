@@ -64,7 +64,7 @@ body.is-empty .grid{display:none;}
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px;}   /* 최소 폭 360→280 (2026-09-17 오후 · 사용자: 오른쪽 여백이 남음) — 1440 본문에서 4열. 6칸 노드 줄(225px)이 들어가는 폭 */
 .wf-card{position:relative; border:1px solid var(--border-default); border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px; background:#fff; cursor:pointer;}
 .wf-card:hover{border-color:var(--gray-500); background:var(--gray-50,#f8fafc);}
-.wf-card:has(.js-more:hover){background:#fff;}
+.wf-card:has(.js-more:hover){background:rgba(0,0,0,.05);}
 .c-row{display:flex; align-items:center; gap:5px;}
 
 /* 공유 칩이 없는 카드에서는 ⋯ 가 오른쪽 끝으로 밀려야 한다 */
@@ -141,12 +141,12 @@ body.is-empty .grid{display:none;}
 /* 드롭다운 화살표 — 메뉴가 열려 있으면 위를 향한다(180도 회전, 0.15초). 닫힘 = 아래 · 열림 = 위 */
 .run-menu{position:absolute; top:28px; right:0; z-index:20; min-width:130px;}
 .run-menu[hidden]{display:none !important;}
-.wf-card:has(.run-btn:hover),.wf-card:has(.js-more:hover){border-color:var(--border-default); background:#fff;}
+.wf-card:has(.run-btn:hover),.wf-card:has(.js-more:hover){border-color:var(--border-default); background:rgba(0,0,0,.05);}
 .run-chip{font-size:11px; color:var(--gray-600); background:var(--color-primitive-blue-10); padding:3px 7px; border-radius:5px;}
 /* 공유 표시도 키워드와 같은 테두리를 두른다 — 셋이 한 벌로 보이고, 채움만으로 갈린다.
    공유받음은 보라 배경이라 회색 테두리가 탁해 보여 보라 계열로 옅게 준다 */
 .share-chip{flex-shrink:0; font-size:10px; color:var(--gray-600); background:var(--color-primitive-gray-100);
-  border:1px solid var(--border-default); padding:1px 6px; border-radius:4px;}
+  border:1px solid var(--border-default); padding:1px 6px; border-radius:5px;}
 .mk{display:inline-flex; width:15px; height:15px; border-radius:100px; background:#ef4444; color:#fff; font-size:9px;
   align-items:center; justify-content:center; font-weight:700; margin-left:2px; flex-shrink:0;}
 /* LNB 항목 표시자 — 실행 방식(아이콘) + 도는지(색) + 작성 중(연필) */
@@ -164,15 +164,15 @@ body.is-empty .grid{display:none;}
 .state-badge.run,.state-badge.watch,.state-badge.wait,.state-badge.idle{background:var(--color-success-soft); color:var(--color-success-strong);}
 .state-badge.off{background:var(--color-n-100); color:var(--color-n-600);}
 .state-badge.draft{background:transparent; color:var(--color-n-600); border-color:var(--border-default); border-style:dashed;}
-.wf-card .c-tags{gap:6px; flex-wrap:nowrap; overflow:hidden; padding-right:30px; min-width:0; -webkit-mask:linear-gradient(90deg,#000 calc(100% - 46px),transparent calc(100% - 30px)); mask:linear-gradient(90deg,#000 calc(100% - 46px),transparent calc(100% - 30px));}
+.wf-card .c-tags{gap:6px; flex-wrap:nowrap; overflow:hidden; padding-right:30px; min-width:0; -webkit-mask:linear-gradient(90deg,var(--color-text-basic) calc(100% - 46px),transparent calc(100% - 30px)); mask:linear-gradient(90deg,var(--color-text-basic) calc(100% - 46px),transparent calc(100% - 30px));}
 .wf-card .c-tags .key-chip{flex:0 0 auto;}
-.wf-card .more{position:absolute; right:8px; top:8px; width:26px; height:26px; border:0; border-radius:5px; background:#fff; opacity:0; transition:opacity .12s, background-color .12s; z-index:2; flex:none;}
+.wf-card .more{position:absolute; right:8px; top:8px; width:26px; height:26px; border:0; border-radius:8px; background:#fff; opacity:0; transition:opacity .12s, background-color .12s; z-index:2; flex:none;}
 .wf-card:hover .more,.wf-card.menu-open .more{opacity:1;} .wf-card .more:hover{background:var(--color-n-100);}
 .card-menu{bottom:auto; top:36px; right:8px;}
 .nrow{display:flex; gap:9px; align-items:center; min-height:32px; padding-top:6px;}
 .n{position:relative; width:30px; height:30px; border-radius:5px; border:1px solid var(--color-n-300); background:#fff; color:var(--color-n-800); display:flex; align-items:center; justify-content:center; flex:0 0 auto; box-sizing:border-box; transition:border-color .12s;}
 .n .ico{display:flex;} .n .ico svg{width:17px; height:17px; display:block;}
-.n .bd{position:absolute; right:-5px; top:-5px; width:12px; height:12px; border-radius:100px; border:2px solid #fff; box-sizing:border-box; transition:transform .12s ease; transform-origin:center;}
+.n .bd{position:absolute; right:-5px; top:-5px; width:12px; height:12px; border-radius:100px; border:1px solid #fff; box-sizing:border-box; transition:transform .12s ease; transform-origin:center;}
 .n .bd svg{display:none;}
 .n.done{border-color:var(--color-success);} .n.done .bd{background:var(--color-success);}
 .n.waitc,.n.waitp{border-color:var(--color-warning);} .n.waitc .bd,.n.waitp .bd{background:var(--color-warning);}
@@ -188,7 +188,7 @@ body.is-empty .grid{display:none;}
 /* 호버 — 점만 1.2배, 테두리 색은 상태별 그대로 */
 .n:hover .bd{transform:scale(1.2);} .n:hover .donut{transform:scale(1.15);}
 .n:hover{border-color:var(--color-n-300);} .n.done:hover,.n.cur:hover{border-color:var(--color-success);} .n.retry:hover,.n.waitc:hover,.n.waitp:hover{border-color:var(--color-warning);} .n.fail:hover{border-color:var(--color-danger);} .n.skipc:hover{border-color:var(--color-n-300);} .n.dis:hover{border-color:var(--color-n-100);}
-.nrow .gap{font-size:12px; color:var(--color-n-400); letter-spacing:1px; flex:0 0 auto; padding:0 1px;}
+.nrow .gap{font-size:12px; color:var(--color-n-400); letter-spacing:-0.5px; flex:0 0 auto; padding:0 1px;}
 /* 아래 묶음(결정 138 · LAB G-12 + C-7) — 구분선 아래 노드 줄, 그 아래 진행 글(상자 없음) + 오른쪽 조작. 번호는 칩(동작 중 n/N)이 맡는다 */
 .wf-card .grp{border-top:1px solid var(--border-subtle); margin-top:2px; padding-top:8px; display:flex; flex-direction:column; gap:8px;}
 .wf-card .line{display:flex; align-items:center; gap:8px;} .wf-card .line .nrow{padding-top:0; min-height:0; flex:1 1 auto; min-width:0;}
@@ -211,7 +211,7 @@ body.is-empty .grid{display:none;}
 /* ===== 도구 줄 (결정 139~141) — 구분 기준 세그먼트 · 덩이 버튼 · 정렬 세그먼트. 라벨 없음 ===== */
 .seg{display:inline-flex; gap:4px; align-items:center; padding:2px; background:var(--color-n-100,#f3f4f6); border:1px solid var(--border-default); border-radius:5px; flex:0 0 auto;}   /* 라이브러리 segment-control-demo 규격 */
 .seg button{display:inline-flex; gap:3px; align-items:center; justify-content:center; border:1px solid transparent; background:transparent; padding:4px 8px; border-radius:3px; font-size:12px; font-weight:400; color:var(--color-n-600,#626b7a); cursor:pointer; white-space:nowrap;}
-.seg button:hover{background:rgba(0,0,0,0.04);} .seg button.on{background:#fff; border-color:var(--border-subtle); font-weight:500; color:#2a3445;} .seg button.on:hover{background:#fff;}
+.seg button:hover{background:rgba(0,0,0,.05);} .seg button.on{background:#fff; border-color:var(--border-subtle); font-weight:500; color:#2a3445;} .seg button.on:hover{background:rgba(0,0,0,.05);}
 .seg .arw{display:inline-flex; align-items:center; color:#2a3445;} .seg .arw:empty{display:none;} .seg .arw svg{width:12px; height:12px;}   /* 정렬 방향 — Lucide arrow-up/down 12px stroke 2(글자 ↑↓ 대신) */
 .tools .sep{width:1px; height:18px; background:var(--border-default); margin:0 4px; flex:0 0 auto;} .tools .sep:has(+ .subrow:empty){display:none;}
 
@@ -243,18 +243,18 @@ body.is-empty .grid{display:none;}
 .wf-card.sc .acts:has(.run-btn){grid-area:y; justify-self:end; align-self:center;}
 .wf-card.sc[data-kind="수동"] .acts:has(.switch-demo){display:none;}   /* 수동은 스위치가 없는 종류 — 알약이 그 자리 */
 .wf-card.sc .more{grid-area:m; position:static; transform:none; opacity:1; background:transparent; width:22px; height:22px; justify-self:end;}
-.wf-card.sc .more:hover{background:var(--gray-100,#f1f5f9);}
+.wf-card.sc .more:hover{background:var(--gray-100,var(--color-n-50));}
 .wf-card.sc .run-btn{height:24px; padding:0 8px; font-size:11px;}
 .acts-sw,.mode-mark{display:none;}   /* 요약 보기에서만 */
 .wf-card.sc .acts-sw{display:flex; grid-area:x; justify-self:start; align-self:center; cursor:pointer;}
-.wf-card.sc .mode-mark{grid-area:x; justify-self:start; align-self:center; height:18px; min-width:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 8px; border-radius:9px; font-size:10px; font-weight:500; color:#fff; letter-spacing:-0.3px; background:var(--gray-400,#9ca3af);}
+.wf-card.sc .mode-mark{grid-area:x; justify-self:start; align-self:center; height:18px; min-width:32px; display:inline-flex; align-items:center; justify-content:center; padding:0 8px; border-radius:8px; font-size:10px; font-weight:500; color:#fff; letter-spacing:-0.5px; background:var(--gray-400,var(--color-n-400));}
 /* 확인창 — 동작 중 자동의 스위치를 껐을 때 */
 .cf-wrap{position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center;}
 .cf-wrap[hidden]{display:none;}
 .cf-box{width:340px; border:1px solid var(--border-default); border-radius:10px; background:#fff; padding:18px; box-shadow:0 12px 32px rgba(0,0,0,.14);}
 .cf-t{font-size:14px; font-weight:600; color:var(--color-n-800); margin-bottom:6px;} .cf-d{font-size:12px; color:var(--gray-600); line-height:1.5;}
 .cf-a{display:flex; justify-content:flex-end; gap:6px; margin-top:14px;} .cf-a .run-btn{height:28px; padding:0 12px; font-size:12px;}
-.cf-danger{background:var(--color-danger-strong,#dc2626) !important; border-color:var(--color-danger-strong,#dc2626) !important; color:#fff !important;}
+.cf-danger{background:var(--color-danger-strong,var(--color-danger)) !important; border-color:var(--color-danger-strong,var(--color-danger)) !important; color:#fff !important;}
 
 /* 상단 바(결정 151) — 41px · 아래 선 · 스크롤 밖. 안쪽 여백은 본문과 같은 24px(결정 150).
    이 화면이 무슨 일을 하는 화면인지를 적는다. 허브(갈래 고르기)에는 두지 않는다 */
