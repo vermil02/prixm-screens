@@ -368,3 +368,11 @@ body{margin:0; padding:0; background:#fff; color:var(--color-text-basic); font-f
 .wf-edit{width:14px; height:14px; margin-left:auto; flex-shrink:0; color:var(--gray-500,#808897);}
 .back:hover{color:var(--black-900);}
 .back svg{width:14px; height:14px;}
+
+/* ── 스크롤 막대 — **전 화면 5px** (2026-09-28 사용자 「전체적으로 얇은 스크롤바」) ─────────────
+   라이브 전역 값 `::-webkit-scrollbar{width:5px;height:5px}` 그대로 `실측`
+   (AI 채팅 저장본 `test-crew…ai-chat…_20260928-1150.html`). 손잡이 색 `#c4c7cc`(= rgb 196,199,204) ·
+   둥근 끝 · 투명 바탕은 라이브러리 `common.css:54` 가 이미 같은 값이라 **두께만** 덮는다.
+   라이브러리는 7px 이고 `height` 가 없어 **가로 막대는 브라우저 기본 두께**였다.
+   ★ 화면마다 따로 쓰지 않는다 — `_디자인린트.py` 「스크롤바」 갈래가 잡는다 */
+::-webkit-scrollbar{width:5px; height:5px;}

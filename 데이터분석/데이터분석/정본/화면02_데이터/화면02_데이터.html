@@ -403,8 +403,8 @@
      **달라 보이고 다르게 구는** 것이라 괜찮다(JS 가 `많음` 을 붙인다) */
   .고르는틀.많음 .체크칸{max-height:150px; overflow-y:auto; box-sizing:border-box;
     border:1px solid var(--border-default); border-radius:8px; padding:8px 10px; width:520px; max-width:100%;}
-  .고르는틀.많음 .체크칸::-webkit-scrollbar{width:6px;}
-  .고르는틀.많음 .체크칸::-webkit-scrollbar-thumb{background:var(--border-default); border-radius:3px;}
+  /* 스크롤 막대는 따로 안 쓴다 — 전 화면 공통 5px(`화면/_공용.css` · 2026-09-28).
+     앞서 여기만 6px · `--border-default` 손잡이 · 둥글기 3 이었다 */
   .고르는틀.많음 .찾기칸{width:520px; max-width:100%;}
   .체크{display:inline-flex; align-items:center; gap:5px; font-size:12px; color:#222; cursor:pointer;}
   /* 진짜 체크박스는 숨기고 네모를 그린다 — 키보드로도 켜진다 */

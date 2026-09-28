@@ -5,46 +5,106 @@
 <base href="../컴포넌트/">
 <link rel="stylesheet" href="common/common.css">
 <link rel="stylesheet" href="../화면/_공용.css">
+<!-- 레이어 부품(모달)은 결정 4011 로 모달을 걷어 더 안 읽는다 -->
 <script src="../화면/_뼈대.js" defer></script>
 <script src="../화면/부품/상단바/_상단바.js"></script><!-- 상단 바 한 벌 — defer 를 쓰면 화면 인라인 스크립트가 먼저 돌아 못 찾는다 --><!-- 자동화 영역 공용 부품 — 컴포넌트 목록 50~58. 고치면 이 ?v= 를 올릴 것 -->
 <style>
-/* ── 화면③ 자동화 상세 — 3기둥(결정 6xxx 화면③ 구간 · LAB 상세3기둥 P-1~P-5 · 실행상세 R-2g · 상세상태 S-1~S-4) ──
-   왼쪽 단 240px = 이 자동화 안의 메뉴(홈 · 실행 이력 · 설정). 오른쪽 = 고른 것. 작성 화면(화면② 삼단)과 폭·바탕이 같다 */
+/* ── 화면③ 자동화 상세 — 2026-09-28 부터 **한 판**(결정 4007 · 4008 · 4009). 그 전은 3기둥(LAB 상세3기둥 P-1~P-5).
+   조작 · 실행 이력 = 경로 줄 오른쪽. 「⟲ N」을 켜면 이력 화면 = 실행 하나 + 오른쪽 출처창 꼴 카드(결정 4012 · 그 전 왼쪽 기둥 4011).
+   ⚠ 이 HTML 이 정본이다 — build_detail.py 로 다시 굽지 말 것(09-22 린트 반영과 이 변경이 사라진다) */
 .body > .main{flex:1; min-width:0; display:flex; flex-direction:column;}   /* 화면①과 같은 값 — 없으면 본문이 내용 폭으로 줄어든다 */
 /* 2026-09-19 — 왼쪽 단과 오른쪽이 **각자 스크롤**한다(사용자). 그래서 바깥은 안 굴리고(overflow:hidden)
    왼쪽은 실행 이력 목록만, 오른쪽은 본문이 굴러간다. 「‹ 전체 목록」·홈·바닥 「설정」은 늘 제자리 */
 .content{display:block; min-height:0; overflow:hidden; flex:1;}
-.p-page{display:grid; grid-template-columns:240px minmax(0,1fr); height:100%; min-height:0; position:relative;}
-.p-page:before{content:""; position:absolute; left:0; top:0; bottom:0; width:240px; background:var(--color-gnb-panel-bg); border-right:1px solid var(--border-default);}
-/* 왼쪽 단 */
-.pn{position:relative; padding:16px 12px 20px; display:flex; flex-direction:column; min-height:0; box-sizing:border-box;}
-.pn-back{font-size:12px; color:var(--gray-500); padding:0 8px 16px; cursor:pointer; display:flex; align-items:center; gap:4px;}
-.pn-back:hover{color:var(--black-900);}
-.pn-home{display:flex; align-items:center; gap:6px; padding:8px; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; color:var(--color-n-800);}
-.pn-home.on{background:var(--color-lnb-selected,var(--color-lnb-selected));} .pn-home:hover:not(.on){background:rgba(0,0,0,.05);}
-.pn-home .dot{width:6px; height:6px; border-radius:50%; flex:0 0 auto; background:#22c55e;}
-.pn-home .dot.off{background:#a8afbc;} .pn-home .dot.fail{background:#ef4444;} .pn-home .dot.draft{background:#fff; border:1px solid #a8afbc; box-sizing:border-box;}
-.pn-home .dot.run{background:#22c55e; animation:p-blink .85s ease-in-out infinite alternate;}
+/* 2026-09-28 · 결정 4008 — **가운데 기둥을 없앴다**(LAB 상세이력자리 U-1b). 한 판이다.
+   조작이 경로 줄로 나가자(결정 4007) 기둥에는 ‹ 전체 목록 · 이름 · 실행 이력만 남았고, 앞의 둘은 경로 줄과 타이틀이 이미 말한다.
+   실행 이력은 타이틀 오른쪽 「실행 이력 N」이 부른다. 상태는 경로 줄 토글 · 본문 알림 띠 · LNB 점이 말한다(기둥의 홈 점이 하던 일) */
+.p-page{height:100%; min-height:0; display:flex; flex-direction:column;}
 @keyframes p-blink{from{opacity:1}to{opacity:.3}}
-.pn-lb{font-size:11px; font-weight:600; color:var(--gray-500); margin:20px 8px 6px; display:flex; gap:6px; align-items:center;} .pn-cnt{font-weight:400;}
-.pn-list{display:flex; flex-direction:column; gap:2px; flex:1 1 auto; min-height:0; overflow-y:auto;}   /* 이력은 전부 들어오고 여기만 굴러간다(2026-09-19) */
+/* 이력 한 줄 — 펼치는 목록이 쓴다(옛 왼쪽 단 값 그대로) */
+.pn-list{display:flex; flex-direction:column; gap:2px; min-height:0;}
 .pn-row{display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-radius:6px; font-size:12px; cursor:pointer; color:var(--color-n-800);}
 .pn-row:hover{background:rgba(0,0,0,.05);} .pn-row.on{background:var(--color-lnb-selected,var(--color-lnb-selected));}
+.pn-row .pr-d{font-variant-numeric:tabular-nums;}
 .pn-row .pr-s{font-size:11px; color:var(--gray-500);} .pn-row .pr-s.fail{color:var(--color-danger);} .pn-row .pr-s.live{color:var(--color-success); font-weight:600;}
 .pn-row.live .pr-d{color:var(--color-success); font-weight:600;}
-/* .pn-more(「모두 보기」)는 2026-09-19 에 없앴습니다 — 이력이 목록에 전부 들어오고 .pn-list 가 스스로 굴러갑니다 */
 .pn-empty{font-size:11px; color:var(--gray-400); padding:6px 8px;}
-/* 조작 버튼 셋 — 2026-09-20 결정 4004. 자리는 **자동화 이름 바로 아래**다(사용자:
-   "민원 답변 작성 아래에 버튼 3개 세트가 들어가고 그 아래에 실행 이력이 들어가는 건?").
-   한 번 왼쪽 단 바닥에 두었다가 올렸다 — 이름 · 조작 · 이력이 위에서 아래로 한 흐름이 된다 */
-.pn-ctl{display:flex; flex-direction:column; gap:6px; margin:10px 0 4px;}
-.pn-ctl .b{width:100%; justify-content:center;}
-.pn-ctl:empty{display:none;}
-/* 오른쪽 */
-.p-right{padding:16px 24px 24px; min-width:0; font-size:13px; color:var(--color-n-800); overflow-y:auto; min-height:0; box-sizing:border-box;}
+
+/* 스크롤 막대 5px 는 `_공용.css` 가 전 화면에 준다(다른 작업 · 2026-09-28) — 여기서 따로 쓰지 않는다 */
+/* ── 경로 줄 조작 — 결정 4007(LAB 상세조작자리 T-4d) ──────────────────────────────
+   [자동 실행 토글] [1회 실행] [설정] [검색]. 토글은 화면① 카드의 `.switch-demo`(32×18) 그대로, 글자 없이.
+   아이콘은 옆 검색(`_상단바.js` ICO_SEARCH · 칸 26 · 16 · 선 1.5)과 같은 `.btn-ico`. 이름은 title 로 뜬다.
+   ⚠ `_공용.css` 의 `.crumb .btn-ico{margin-left:auto}` 가 무리 안 아이콘마다 걸리므로 여기서 0 으로 되돌린다 */
+.crumb .p-ctl{display:flex; align-items:center; gap:2px; margin-right:2px;}
+.crumb .p-ctl .btn-ico{margin:0;}
+.crumb .p-ctl .btn-ico.is-danger{color:var(--color-danger);}
+.p-sw{display:inline-flex; align-items:center; height:26px; padding:0 4px; cursor:pointer;}
+.p-sw:has(.is-disabled){cursor:default;}
+
+/* ── 실행 이력 — 결정 4011 → 4012(LAB 상세출처창 S-1) ───────────────────────────────
+   ① 부르개 = 경로 줄 무리 안 「⟲ N」(결정 4011) · 999 넘으면 999+. **켜고 끄는 버튼**이다 — 켜면 이력 화면, 다시 누르면 홈.
+   ② 이력 화면 = 실행 하나 + 오른쪽에 뜬 **카드**. 카드 값은 AI 채팅 「출처」 창 그대로 `실측`
+      (저장본 `test-crew…ai-chat…_1920w_20260928-1150 (1).html` CSS 규칙 — .px-source-panel · __head · .px-source-item).
+      자리 = 경로 줄 아래 20(top 106) · 오른쪽 24(라이브는 접기 레일이 있어 65).
+   ③ 이력 화면은 **가운데 두 칸**(결정 4016) — [내용 960 | 목록 358] 묶음을 가운데. 그 전: 4013 덮기(768 · 4014) · 4012 비키기.
+   ④ 이력 화면에서는 경로 줄의 토글 · 1회 실행을 걷는다(사용자) — crumbCtl() */
+.crumb .p-hist{width:auto; padding:0 6px; gap:4px; font-size:12px; font-family:inherit; margin:0 2px 0 0; font-variant-numeric:tabular-nums;}
+.crumb .p-hist.is-on{background:rgba(0,0,0,.05); color:var(--black-900);}
+/* 경로 줄 3단 — 결정 4015. 화면②와 같은 값(화면02 375 · 378). 조각은 보여 주기만 한다(결정 180) — 돌아가기는 제목 앞 ‹ */
+.crumb .cur{color:var(--color-n-800); font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;}
+.crumb .js-crumb-mid{flex:0 0 auto;}
+/* 접힌 레일(결정 4015)은 결정 4016 으로 걷었다 — 두 칸 짜임에서는 목록이 이력 화면의 한 칸이라 접을 일이 없다(사용자 「최소화 레일은 빼도 될듯」) */
+/* 실행 제목 앞 ‹ — 홈으로(결정 4015). 옆 제목(15/600)과 가운데를 맞춘다 */
+.run-hd .p-up{margin:0 2px 0 -6px;} .run-hd .p-up svg{width:18px; height:18px;}
+.h-pan{position:fixed; top:106px; right:24px; width:358px; max-height:calc(100vh - 130px); display:flex; flex-direction:column;
+  padding:0 15px 15px; border-radius:15px; background:#fff; box-shadow:0 0 5px rgba(0,0,0,.15); box-sizing:border-box; z-index:30;}
+.h-pan[hidden]{display:none;}
+.h-pan-hd{height:64px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
+.h-pan-hd h2{margin:0; font-size:14px; font-weight:600; letter-spacing:-0.5px; color:var(--color-text-basic);} .h-pan-hd h2 .n{font-weight:400; color:var(--gray-500); margin-left:4px;}
+/* 목록 — 막대는 카드 끝에(결정 4009 X-1 방식) · 두께는 전역 5px */
+.h-pan-list{margin-top:6px; min-height:0; overflow-y:auto; overscroll-behavior:contain; margin-right:-15px; padding-right:15px;}
+/* 한 줄 = 출처 줄 꼴 — 머리(시각 굵게 · 오른쪽 상태) + 본문(한 일 · 멈춘 곳) · 줄 사이 옅은 선 */
+.h-it{position:relative; display:flex; flex-direction:column; padding:11px 10px 10px; border-radius:7px; cursor:pointer;}
+.h-it:hover{background:rgba(0,0,0,.05);} .h-it.on{background:var(--color-lnb-selected);}
+.h-it + .h-it::before{content:''; position:absolute; left:0; right:0; top:0; height:1px; background:var(--color-n-200,#e5e7eb);}
+.h-it.on::before,.h-it.on + .h-it::before{display:none;}
+.h-ih{display:flex; align-items:center; gap:5px; padding:0 2px;}
+.h-ih .t{font-size:14px; font-weight:600; letter-spacing:-0.5px; color:var(--color-text-basic); font-variant-numeric:tabular-nums; white-space:nowrap;}
+.h-ih .s{margin-left:auto; font-size:12px; color:var(--gray-500);} .h-ih .s.fail{color:var(--color-danger);} .h-ih .s.live{color:var(--color-success); font-weight:600;}
+.h-ib{margin-top:6px; padding:0 2px; font-size:13px; line-height:1.5; letter-spacing:-0.5px; color:var(--color-text-basic); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden;}
+.h-ib.fail{color:var(--color-danger);}
+/* 「더 보기」 — 목록 끝. 글자 버튼 · 30개 더 */
+.h-more{display:flex; align-items:center; justify-content:center; height:30px; margin:6px 0 0; border:0; border-radius:5px; background:none;
+  font:inherit; font-size:12px; color:var(--gray-600); cursor:pointer; width:100%;}
+.h-more:hover{background:rgba(0,0,0,.05); color:var(--black-900);} .h-more .n{color:var(--gray-500); margin-left:4px;}
+/* 결정 4013 — 카드는 본문 **위에 덮인다**(본문은 홈과 같은 가운데 960 그대로). AI 채팅 출처창과 같다 `실측`
+   (저장본 둘 비교: 출처창이 있든 없든 답변 740~1468 · 입력창 711~1457 그대로 — 출처창만 1497~ 에 뜬다).
+   치르는 값: 카드가 본문 오른쪽을 가린다(1920 창 161 · 1280 창 357 `실측`) — 그래서 ✕ 는 카드만 닫고 실행은 남긴다 */
+
+/* ── 토글 확인창 — 화면① 252~257 과 같은 값 · 같은 조건(실행 중에 끌 때 · 실패로 꺼진 것을 켤 때). 공용으로 올릴 것 ── */
+.cf-wrap{position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center;}
+.cf-wrap[hidden]{display:none;}
+.cf-box{width:340px; border:1px solid var(--border-default); border-radius:10px; background:#fff; padding:18px; box-shadow:0 12px 32px rgba(0,0,0,.14);}
+.cf-t{font-size:14px; font-weight:600; color:var(--color-n-800); margin-bottom:6px;} .cf-d{font-size:12px; color:var(--gray-600); line-height:1.5;}
+.cf-a{display:flex; justify-content:flex-end; gap:6px; margin-top:14px;} .cf-a .run-btn{height:28px; padding:0 12px; font-size:12px;}
+.cf-danger{background:var(--color-danger-strong,var(--color-danger)) !important; border-color:var(--color-danger-strong,var(--color-danger)) !important; color:#fff !important;}
+/* 오른쪽 — 위 여백 16 → 22(2026-09-28 사용자 「타이틀 위에 여백을 살짝」). 화면①② 타이틀 상자 `.page-ttl` padding-top 22 와 같은 값 `실측` */
+.p-right{padding:22px 24px 24px; min-width:0; font-size:13px; color:var(--color-n-800); overflow-y:auto; min-height:0; box-sizing:border-box;}
 /* 본문 폭 상한 960 — 결정 4004(LAB 상세홈 H-1). 「단계별 실행」 표에 준 값과 같게 맞춰 한 화면에 두 폭이 생기지 않게 한다.
    스크롤 막대는 오른쪽 끝에 그대로 두려고 칸을 좁히지 않고 안의 것만 묶는다. 사용자: "카드가 좀 멀어 보인달까" */
-.p-right > *{max-width:960px;}
+.p-right > *{max-width:960px;}   /* 결정 4016 — 다시 **960**(4014 의 768 을 되돌림 · 사용자 「이전 넓이로」) */
+/* 2026-09-28 · 결정 4010(LAB 상세폭 Y-1) — **960 을 가운데에.** 기둥이 빠지자(결정 4008) 본문이 왼쪽에 붙은 채 1920 창에서 오른쪽 600 넘게 비었다.
+   칸(.p-right)의 좌우 안쪽 여백을 「(폭 − 960) ÷ 2」로 준다 — 칸 자체는 창 끝까지라 **스크롤 막대는 오른끝에 남는다**. 좁은 창에서는 24 로 떨어진다.
+   데이터분석 화면⑤(960 가운데)와 같은 판. 사용자: "이것처럼 크게 제한하고 가운데 정렬하는건 어떤지?" → "ㄱㄱ y-1" */
+.p-right{padding-left:max(24px, calc((100% - 960px) / 2)); padding-right:max(24px, calc((100% - 960px) / 2));}   /* 결정 4010 가운데 · 폭 960(결정 4016) */
+/* ── 이력 화면 = **가운데 두 칸**(결정 4016 · LAB 상세두칸 C-1) ─────────────────────────────
+   [내용 960 | 사이 24 | 목록 358] = 1342 를 한 묶음으로 가운데. 좌우 여백 = max(24, (창 − 308 − 1342) ÷ 2) — 308 = GNB 68 + LNB 240.
+   목록(카드 · 레일)은 fixed 그대로(본문이 굴러도 제자리) · 자리만 묶음 오른쪽 여백에 붙인다. 최소화해도 이 짜임은 그대로라 본문이 안 움직인다 */
+.p-page.with-pan .p-right{padding-left:max(24px, calc((100vw - 308px - 1342px) / 2)); padding-right:calc(max(24px, calc((100vw - 308px - 1342px) / 2)) + 382px);}
+.p-page.with-pan .h-pan{right:max(24px, calc((100vw - 308px - 1342px) / 2));}
+/* 좁은 창(1280)에서 묶음이 안 들어가면 내용 칸이 540 으로 준다 — 표가 상자 폭에 맞춰 줄면 「결과」 칸이 0 이 되어 글자가 겹쳤다 `실측`.
+   760 밑으로는 안 줄이고 **표 상자 안에서 가로로** 굴린다 */
+.p-page.with-pan .box{overflow-x:auto;} .p-page.with-pan .t-step{min-width:760px;}
 .b{height:28px; padding:0 10px; font-size:12px; border:1px solid var(--border-default); border-radius:6px; background:#fff; color:var(--color-n-800); cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:inherit;}
 .b:hover{background:rgba(0,0,0,.05);} .b.primary{background:var(--brand-primary); border-color:var(--brand-primary); color:#fff;} .b.danger{color:var(--color-danger); border-color:var(--color-danger-soft);}
 .sp{flex:1;} .muted{color:var(--gray-500); font-size:12px;} .lnk{color:var(--brand-primary); cursor:pointer;}   /* 2026-09-21 — 하드코딩 #235edf 를 라이브러리 토큰으로 */
@@ -61,9 +121,9 @@
    전에는 `repeat(5, …)` 로 못 박혀 3개면 오른쪽이 비고 7·9개면 둘째 줄이 어정쩡했다.
    **180** 은 다섯 칸의 지금 폭(920÷5≈184)보다 조금 낮은 값이라 5개일 때는 지금과 똑같이 한 줄로 떨어지고,
    3개면 빈 트랙이 접혀 셋이 넓어진다. 화면① 템플릿 격자(`.gal`)가 이미 쓰는 방식이다 */
-.steps5{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:22px;}
+.steps5{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:22px;}   /* 결정 4016 — 180 으로 되돌림(4014 의 140 은 768 폭용). 960 에서 140 이면 일곱이 6 + 1 로 넘어갔다 `실측` */
 .s5{display:flex; gap:8px; align-items:flex-start; border:1px solid var(--border-subtle); border-radius:8px; padding:10px; min-width:0;}
-.s5 .rs-n{font-size:12px; font-weight:600;} .s5 .rs-d{font-size:11px; color:var(--gray-500); margin-top:2px; line-height:1.5; word-break:break-all;} .s5.fail .rs-d{color:var(--color-danger);} .s5.todo .rs-d{color:var(--gray-400);}
+.s5 .rs-n{font-size:12px; font-weight:600;} .s5 .rs-d{font-size:11px; color:var(--gray-500); margin-top:2px; line-height:1.5; word-break:keep-all; overflow-wrap:anywhere;}   /* 결정 4014 — break-all 이 「처리 기준」을 「기/준」으로 끊었다. 한글은 낱말로, 긴 메일 주소만 아무 데서나 */ .s5.fail .rs-d{color:var(--color-danger);} .s5.todo .rs-d{color:var(--gray-400);}
 .rs-i{flex:0 0 18px; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; border:1px solid var(--border-default); color:var(--gray-500); background:#fff;}
 .rs-i svg{width:11px; height:11px;} .rs-i.ok{background:var(--color-success-soft); border-color:var(--color-success); color:var(--color-success);} .rs-i.fail{background:var(--color-danger-soft); border-color:#ef4444; color:var(--color-danger); font-weight:700;} .rs-i.skip{color:var(--gray-400);} .rs-i.todo{background:var(--color-n-800); border-color:var(--color-n-800); color:#fff;} .rs-i.run{border-color:#22c55e;} .rs-i.idle{color:var(--gray-400);} .rs-i.num{color:var(--gray-500);}   /* num = 평소의 단계 번호(결정 4005) */
 .spin{display:inline-block; width:10px; height:10px; border:1px solid #22c55e; border-top-color:transparent; border-radius:50%; animation:p-rot 1s linear infinite;}
@@ -99,7 +159,7 @@
 /* ── 「단계별 실행」 표 — LAB 실행표 E-2 채택(결정 4003 · 2026-09-19) ──────────────────
    표 규격은 컴포넌트 34-tbl `.tbl-table` 실측값 그대로(머리글 Gray/100 · 11/600 · 5px 10px ·
    칸은 border-top 만). 세부 정보 표(.tbl-kv)는 건드리지 않으려고 .t-step 으로 가둔다 */
-.boxcap{max-width:960px; margin-right:auto;}   /* "좌우로 너무 넓다" — 2026-09-17 LAB R-2 와 같은 값 */
+.boxcap{max-width:960px; margin-right:auto;}   /* 결정 4016 — 본문 상한과 같게 960 */   /* "좌우로 너무 넓다" — 2026-09-17 LAB R-2 와 같은 값 */
 .t-step{table-layout:fixed;}
 .t-step th{background:var(--color-primitive-gray-100,#f3f4f6); color:#222; font-size:11px; font-weight:600;
   padding:5px 10px; border-top:1px solid var(--border-default); border-bottom:1px solid var(--border-default);}
@@ -153,15 +213,10 @@
     </div>
     
 <div class="main">
-<div class="js-head"></div><script>PRIXM_HEAD({ crumb: [{t:'전체 목록', cls:'js-crumb-list'}, {t:'민원 답변 작성', cur:true, cls:'js-crumb'}], search: '자동화 검색' });</script>
+<div class="js-head"></div><script>PRIXM_HEAD({ crumb: [{t:'전체 목록', cls:'js-crumb-list'}, {mid:true}, {t:'민원 답변 작성', cur:true, cls:'js-crumb'}], search: '자동화 검색' });</script>
 <div class="content"><div class="p-page">
-  <div class="pn">
-    <div class="pn-back js-back"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg>전체 목록</div>
-    <div class="pn-home on js-nav" data-v="home"><span class="dot js-home-dot"></span><span class="js-home-name">민원 답변 작성</span></div>
-    <div class="pn-ctl js-foot"></div><!-- 조작 버튼 셋 — 자동화 이름 바로 아래(2026-09-20 · 결정 4004 갱신) -->
-    <div class="pn-lb">실행 이력 <span class="pn-cnt js-run-cnt">128</span></div>
-    <div class="pn-list js-run-list"></div>
-  </div>
+  <!-- 가운데 기둥(‹ 전체 목록 · 이름 · 조작 · 실행 이력)은 2026-09-28 결정 4007 · 4008 로 걷었다. 이전 본: _구버전/20260928_조작이력전/ -->
+  <section class="h-pan js-hpan" hidden aria-label="실행 이력"></section><!-- 이력 화면의 카드(결정 4012 · 출처창 꼴) -->
   <div class="p-right js-right"></div>
 </div></div>
 </div>
@@ -199,9 +254,29 @@ const RUNS=[
   okRun('r2','26.09.08','09:00',2.2,1388,'수영장 강습 문의',ANSWER('수영장 강습 문의')),
   okRun('r1','26.09.07','09:00',2.4,1502,'도서관 열람실 문의',ANSWER('도서관 열람실 문의'))
 ];
-// 2026-09-19 — 한때 데모 이력을 128건까지 채웠다가 **되돌렸습니다.** 왼쪽 단 스크롤을 보이게 하려던 것인데,
-// 그것 때문에 스크롤바가 늘 떠 있어 눈에 걸렸습니다. 스크롤 구조 자체는 그대로고(제품 이메일 화면과 같은
-// `min-h-0 flex-1 overflow-y-auto` · 왼쪽 240), 데모 값만 손으로 쓴 6건으로 둡니다
+// 2026-09-19 — 한때 데모 이력을 128건까지 채웠다가 되돌렸다(왼쪽 단에 스크롤바가 늘 떠 있어서).
+// 2026-09-28 · 결정 4008 · 4009 — 기둥이 없어졌으니 그 까닭도 없다. **128건으로 다시 채운다** —
+//   요약 카드 「누적 128회 · 최근 30일 41회 · 실패 2」와 맞춘다. 맨 위 6건은 손으로 쓴 것, 그 아래 122건은 아래서 짓는다
+//   (최근 30일 = 26.08.14~09.12 안에 35건 더 · 그중 실패 1 / 그 앞 87건 · 실패 3). 값은 늘 같게 나온다(씨앗 고정)
+(function(){
+  const 제목=['시설 이용 문의(서초구)','체육관 대관 문의','주차장 이용 문의','수영장 강습 문의','도서관 열람실 문의','공원 행사 문의','문화센터 수강 문의','주민센터 서류 문의'];
+  let 씨=11; const 난=()=>{ 씨=(씨*9301+49297)%233280; return 씨/233280; };
+  const 두=n=>('0'+n).slice(-2);
+  const 날=d=>두(d.getFullYear()%100)+'.'+두(d.getMonth()+1)+'.'+두(d.getDate());
+  function 짓기(몇, 시작, 끝, 실패들){   // 시작 > 끝(거꾸로 간다) · 실패들 = 몇 번째를 실패로
+    const 사이=(시작-끝)/몇;
+    for(let i=0;i<몇;i++){
+      const d=new Date(시작 - 사이*(i+0.3+난()*0.5)); const hm=두(d.getHours())+':'+두(d.getMinutes());
+      const id='g'+(RUNS.length+1), 제=제목[(RUNS.length)%제목.length];
+      if(실패들.indexOf(i)>=0){
+        const f=JSON.parse(JSON.stringify(RUNS.find(x=>x.id==='r3'))); f.id=id; f.date=날(d); f.start=f.date+' '+hm+':00'; f.end=f.date+' '+hm+':01';
+        f.steps.forEach(s=>{ if(s[3]) s[3]=hm+':0'+(s[2]==='fail'?1:0); if(s[4]) s[4]=hm+':0'+(s[2]==='fail'?1:0); }); RUNS.push(f);
+      } else RUNS.push(okRun(id, 날(d), hm, +(1.8+난()*1.6).toFixed(1), 0, 제, ANSWER(제)));
+    }
+  }
+  짓기(35, new Date('2026-09-06T22:00:00').getTime(), new Date('2026-08-14T08:00:00').getTime(), [17]);
+  짓기(87, new Date('2026-08-13T22:00:00').getTime(), new Date('2026-04-20T08:00:00').getTime(), [12, 40, 71]);
+})();
 const LIVE={id:'live', date:'26.09.18', st:'live', dur:'', start:'26.09.18 14:32:10', end:'', why:'새 메일 도착 (criss_it@naver.com · 제목 "시설 이용 문의(서초구)" · 보낸 사람 lee@example.com',
   steps:[['이메일 수신','criss_it@naver.com · 제목 "시설 이용 문의(서초구)"','ok','14:32:10','14:32:10','0.1초'],['민원 관련성 판별','시설 이용 민원으로 판단','ok','14:32:10','14:32:11','0.4초'],['근거 검색','지식함 / 민원 / 처리 기준 에서 찾는 중…','run','14:32:11','',''],['답변 작성','','idle','','',''],['채널 공유','','idle','','','']], result:''};
 
@@ -227,39 +302,86 @@ const FAILED = {id:'rf', date:'26.09.13', st:'fail', dur:'1.1초', start:'26.09.
   steps:[['이메일 수신','criss_it@naver.com · 제목 "시설 이용 문의(관악구)"','ok','09:00:00','09:00:00','0.1초'],['민원 관련성 판별','시설 이용 민원으로 판단','ok','09:00:00','09:00:00','0.4초'],['근거 검색','지식함 폴더 "민원 / 처리 기준"에 접근할 수 없습니다. 폴더가 지워졌거나 권한이 바뀌었습니다.','fail','09:00:01','09:00:01','0.3초'],['답변 작성','실행되지 않음','skip','','',''],['채널 공유','실행되지 않음','skip','','','']], result:''};
 function runs(){ return state==='setup' ? [] : state==='run' ? [LIVE].concat(RUNS) : state==='fail' ? [FAILED].concat(RUNS) : RUNS; }
 function lastRun(){ const r=runs(); return r.find(x=>x.st!=='live') || null; }
-// 2026-09-20 · 결정 4004 — **조작은 전부 왼쪽 단 바닥에 버튼으로** 모은다(사용자: "그냥 LNB 맨 아래에
-//   켜기 끄기, 지금 실행, 설정 이렇게 다 버튼으로 하자 여기는"). 오른쪽 상태 줄(「자동 · 감시 중」)은 없앴다 —
-//   상태는 홈 항목 왼쪽의 점이 이미 말하고 있어 같은 말을 두 번 하던 자리였다(사용자: "자동 감시 중은 없어도 될 것 같음").
-//   ctl 은 상태마다 다르고, 마지막에 늘 「설정」이 붙는다(설정 중일 때는 그것 하나로 갈음)
+// 2026-09-28 · 결정 4007 — 조작은 **경로 줄 오른쪽**이다(LAB 상세조작자리 T-4d · 사용자 "t-4d로 일단 ㄱㄱ").
+//   결정 4004 의 왼쪽 단 버튼 셋을 걷었다. 자동 실행 = 화면① 카드의 토글 그대로(사용자: "토글버튼 … 리스트에서 사용하던거 쓰고"),
+//   1회 실행 = 재생 + 「1」(사용자: "동영상플레이어처럼 … 1번이란걸 표시") — Lucide 에 없어 이 화면에서 지은 아이콘, 설정 = 톱니.
+//   상태 글자(stateInfo 의 txt · sub)는 결정 4004 때부터 화면에 안 쓴다 — 기록으로 남겨 둔다
 function stateInfo(){ return {
-  wait:{dot:'', txt:'자동 · 감시 중', sub:'다음: 새 메일이 오면 시작합니다', ctl:'<button class="b js-off">끄기</button><button class="b js-runnow">지금 실행</button>'},
-  run: {dot:'run', txt:'실행 중', sub:'26.09.18 14:32 시작', ctl:'<button class="b danger js-stop">중지</button>'},
-  off: {dot:'off', txt:'자동 · 꺼짐', sub:'직접 껐습니다 — 새 메일이 와도 돌지 않습니다', ctl:'<button class="b primary js-on">켜기</button><button class="b js-runnow">지금 실행</button>'},
-  fail:{dot:'fail', txt:'실패로 꺼짐', sub:'근거 폴더에 접근할 수 없음', ctl:'<button class="b primary js-on">켜기</button><button class="b js-runnow">지금 실행</button>'},
-  setup:{dot:'draft', txt:'설정 중', sub:'채워야 할 것 2개 — 아직 돌지 않습니다', ctl:''} }[state]; }
-// 왼쪽 단 바닥 — 상태별 조작 + 설정. 설정 중이면 「설정 이어서 하기」 하나뿐이다
-function footCtl(){ const si=stateInfo();
-  // 설정 중에도 **왼쪽은 그냥 「설정」**이다(2026-09-20 사용자). 「설정 이어서 하기」는 오른쪽 빈 상태 상자가 맡는다 —
-  //   왼쪽 버튼은 늘 같은 자리에 같은 이름으로 있어야 어디서든 찾을 수 있다
-  return state==='setup' ? '<button class="b js-settings">설정</button>'
-                         : si.ctl + '<button class="b js-settings">설정</button>'; }
+  wait:{dot:'', txt:'자동 · 감시 중', sub:'다음: 새 메일이 오면 시작합니다'},
+  run: {dot:'run', txt:'실행 중', sub:'26.09.18 14:32 시작'},
+  off: {dot:'off', txt:'자동 · 꺼짐', sub:'직접 껐습니다 — 새 메일이 와도 돌지 않습니다'},
+  fail:{dot:'fail', txt:'실패로 꺼짐', sub:'근거 폴더에 접근할 수 없음'},
+  setup:{dot:'draft', txt:'설정 중', sub:'채워야 할 것 2개 — 아직 돌지 않습니다'} }[state]; }
+// 아이콘 — Lucide 1.47.0(ISC) 모양 그대로(재생에 1 만 이 화면에서 지음) · 16 · 선 1.5(옆 검색과 같게)
+const 그림=속=>'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+속+'</svg>';
+const ICO={
+  play1:그림('<path d="M3 3.6a1.6 1.6 0 0 1 2.4-1.38l9.6 5.6a1.6 1.6 0 0 1 0 2.77l-9.6 5.6A1.6 1.6 0 0 1 3 14.8z"/><path d="M17.5 15.5 19.5 14v8"/><path d="M17.5 22h4"/>'),
+  gear: 그림('<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>'),
+  stop: 그림('<rect width="18" height="18" x="3" y="3" rx="2"/>'),
+  hist: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>',
+  x:    그림('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+  // 돌아가기 — Lucide chevron-left(‹). 결정 4015
+  back: 그림('<path d="m15 18-6-6 6-6"/>')
+};
+function 아이콘(cls, 말, 속){ return '<button class="btn-ico '+cls+'" title="'+말+'" aria-label="'+말+'">'+속+'</button>'; }
+// 경로 줄 무리 — 상태마다. 켜짐(wait · run) = 토글 켜짐 · 꺼짐(off · fail) = 토글 꺼짐 · 설정 중 = 흐린 토글(못 누름)
+//   실행 중에는 「1회 실행」 자리에 빨간 네모 「중지」가 선다(이번 실행만 멈춤 · 확인 없음 — 화면①과 같다)
+function crumbCtl(){
+  // 결정 4012 — 이력 화면(실행 하나)에서는 톱니만(사용자: "실행 이력 눌린 상태에서는 실행, 자동시작 켜끔 버튼은 없어야할듯")
+  if(view!=='home') return 아이콘('js-settings','설정',ICO.gear);
+  const 켜짐 = state==='wait' || state==='run', 꺼짐 = state==='off' || state==='fail';
+  const sw = '<span class="p-sw '+(켜짐?'js-off':꺼짐?'js-on':'')+'" title="'+(켜짐?'자동 실행 끄기':꺼짐?'자동 실행 켜기':'설정을 마치면 켤 수 있습니다')+'">'
+           + '<span class="switch-demo'+(켜짐?' is-on':'')+(!켜짐&&!꺼짐?' is-disabled':'')+'"></span></span>';
+  const 가운데 = state==='setup' ? '' : state==='run' ? 아이콘('js-stop is-danger','중지',ICO.stop) : 아이콘('js-runnow','1회 실행',ICO.play1);
+  return sw + 가운데 + 아이콘('js-settings','설정',ICO.gear);
+}
 
-// ── 왼쪽 단 ─────────────────────────────────────────────────────────────
+// ── 경로 줄 · 실행 이력 기둥(결정 4007 · 4011) ─────────────────────────────
+const 한번=30;
+let 보임=한번;
+const 짧은=r=>r.st==='live' ? '26.09.18 14:32' : r.date+' '+r.start.slice(9,14);
+const 상태말=r=>r.st==='live' ? '실행 중' : r.st==='ok' ? '완료' : '실패';
+const 수글=n=>n>999 ? '999+' : String(n);   // 부르개 숫자 상한(사용자: "최대 999+ 식으로")
+// 경로 줄 부르개 — 이력이 없으면(설정 중) 안 둔다
+function 부르개(){ const n=runs().length; if(!n) return '';
+  return '<button class="btn-ico p-hist js-hist'+(view!=='home'?' is-on':'')+'" title="실행 이력 '+n+'" aria-label="실행 이력 '+n+'">'+ICO.hist.replace('<svg ','<svg width="16" height="16" ')+'<span>'+수글(n)+'</span></button>'; }
+// 이력 카드 — 이력 화면(실행 하나)일 때만. 30개씩, 「더 보기」로 30개 더(결정 4011 과 같음)
+function 한일(r){
+  if(r.st==='live') return '진행 중 · '+((r.steps.find(s=>s[2]==='run')||['',''])[0]);
+  if(r.st==='fail') return r.stop+'에서 멈춤';
+  const 끝=r.steps.filter(s=>s[2]==='ok').slice(-1)[0]||['',''];
+  return 끝[0]+' · '+끝[1];
+}
+// 경로 줄 3단 — 이력 화면이면 「전체 목록 › 이름 › 26.09.12 09:00 완료」(화면②와 같은 쌓이는 자리 · 결정 4015)
+function 경로맞추기(){
+  const mid=$('.js-crumb-mid'), arw=$('.js-crumb-arw'), cur=$('.js-crumb'); if(!mid||!arw||!cur) return;
+  const on=view!=='home'; mid.hidden=!on; arw.hidden=!on;
+  if(!on){ cur.textContent=AUTO.name; return; }
+  const id=view.slice(4), r=id==='live'?LIVE:(runs().find(x=>x.id===id)||RUNS.find(x=>x.id===id));
+  mid.textContent=AUTO.name; cur.textContent=r ? 짧은(r)+' '+상태말(r) : '';
+}
+function 카드그리기(){
+  const 이력=view!=='home' && runs().length>0, pan=$('.js-hpan'), 켬=이력;   // 결정 4016 — 최소화 없음: 이력 화면이면 목록이 늘 선다
+  경로맞추기();
+  $('.p-page').classList.toggle('with-pan', 이력); pan.hidden=!켬;   // 결정 4016 — 두 칸 짜임은 이력 화면 내내(최소화해도 본문이 안 움직인다)
+  if(!켬){ if(!이력) 보임=한번; return; }
+  const rs=runs(), 지금=rs.findIndex(r=>view==='run:'+r.id);
+  if(지금>=보임) 보임=Math.ceil((지금+1)/한번)*한번;   // 목록 밖의 실행을 열었으면 거기까지 편다
+  const 스크롤=(pan.querySelector('.h-pan-list')||{}).scrollTop||0;
+  pan.innerHTML='<div class="h-pan-hd"><h2>실행 이력<span class="n">'+rs.length+'</span></h2></div>'
+    +'<div class="h-pan-list">'+rs.slice(0,보임).map(r=>'<div class="h-it js-nav'+(view==='run:'+r.id?' on':'')+'" data-v="run:'+r.id+'">'
+      +'<div class="h-ih"><span class="t">'+짧은(r)+'</span><span class="s '+r.st+'">'+상태말(r)+'</span></div>'
+      +'<div class="h-ib'+(r.st==='fail'?' fail':'')+'">'+한일(r)+'</div></div>').join('')
+    +(rs.length>보임?'<button type="button" class="h-more js-more">더 보기<span class="n">'+(rs.length-보임)+'</span></button>':'')+'</div>';
+  const l=pan.querySelector('.h-pan-list'); l.scrollTop=스크롤;
+  const on=pan.querySelector('.h-it.on'); if(on && (on.offsetTop<l.scrollTop || on.offsetTop>l.scrollTop+l.clientHeight-40)) on.scrollIntoView({block:'nearest'});
+}
 function renderNav(){
-  const si=stateInfo();
-  $('.js-home-dot').className='dot js-home-dot '+si.dot;
   const ld=$('.js-lnb-me-dot'); if(ld) ld.className='lnb-dot js-lnb-me-dot '+({wait:'wait',run:'run',off:'off',fail:'fail',setup:'draft'}[state]);
-  $('.js-nav[data-v=home]').classList.toggle('on', view==='home');
-  $('.js-foot').innerHTML = footCtl();   // 조작은 전부 여기 — 결정 4004
-  const list=$('.js-run-list'); const rs=runs();
-  $('.js-run-cnt').textContent = rs.length;   // 목록에 전부 넣으므로 머리 숫자도 실제 줄 수다(2026-09-19)
-  if(!rs.length){ list.innerHTML='<div class="pn-empty">아직 없음</div>'; return; }
-  // 2026-09-19 — 자르지 않고 **전부** 넣는다. 「모두 보기」는 없앴다(사용자: "리스트에는 모두 나오고 있으면 된다").
-  // 많아지면 .pn-list 가 자기 스크롤로 받는다 — 위의 홈과 아래 「설정」은 제자리에 남는다
-  list.innerHTML = rs.map(r=>{
-    const live=r.st==='live';
-    return '<div class="pn-row js-nav'+(live?' live':'')+(view==='run:'+r.id?' on':'')+'" data-v="run:'+r.id+'"><span class="pr-d">'+(live?'26.09.18 14:32':r.date+' '+r.start.slice(9,14))+'</span><span class="pr-s '+(live?'live':r.st)+'">'+(live?'실행 중':r.st==='ok'?'완료':'실패')+'</span></div>';
-  }).join('');
+  const c=$('.page-hd .crumb');
+  if(c){ let box=c.querySelector('.p-ctl'); if(!box){ box=document.createElement('span'); box.className='p-ctl'; c.insertBefore(box, c.querySelector('.js-search')); }
+    box.innerHTML=crumbCtl()+부르개(); }
+  카드그리기();
 }
 
 // ── 오른쪽 — 홈 ───────────────────────────────────────────────────────────
@@ -283,11 +405,11 @@ function stepMarks(){
 }
 function renderHome(){
   const si=stateInfo(); const lr=lastRun();
-  // 상태 줄(.bh-st)은 결정 4004 로 없앴다 — 상태는 왼쪽 단 홈 항목의 점이 말하고, 조작은 그 단 바닥 버튼이 맡는다
+  // 상태 줄(.bh-st)은 결정 4004 로 없앴다. 타이틀 오른쪽 「실행 이력」(결정 4008)은 결정 4011 로 경로 줄로 옮겼다
   let h='<div class="bh-name">'+AUTO.name+' '+AUTO.tags.map(t=>'<span class="tpl-badge">'+t+'</span>').join('')+'</div><div class="bh-desc">'+AUTO.desc+'</div>';
   // 날짜는 마지막 실행에서 가져온다 — 손으로 적어 두면 데모 값과 어긋난다(2026-09-20에 실제로 어긋나 있었다)
-  if(state==='fail') h+='<div class="warn">'+lr.date+' '+lr.start.slice(9,14)+' 실행이 '+lr.stop+'에서 실패해 자동 실행이 꺼졌습니다. 원인을 고친 뒤 <b>켜기</b>를 누르면 다시 감시를 시작합니다.</div>';
-  if(state==='off') h+='<div class="warn off">자동 실행이 꺼져 있습니다. 새 메일이 와도 돌지 않습니다. <b>켜기</b>를 누르면 다시 감시를 시작합니다.</div>';
+  if(state==='fail') h+='<div class="warn">'+lr.date+' '+lr.start.slice(9,14)+' 실행이 '+lr.stop+'에서 실패해 자동 실행이 꺼졌습니다. 원인을 고친 뒤 오른쪽 위 <b>자동 실행</b>을 켜면 다시 감시를 시작합니다.</div>';
+  if(state==='off') h+='<div class="warn off">자동 실행이 꺼져 있습니다. 새 메일이 와도 돌지 않습니다. 오른쪽 위 <b>자동 실행</b>을 켜면 다시 감시를 시작합니다.</div>';
   if(state==='setup'){
     h+='<div class="st-empty"><div class="em-t">아직 설정이 끝나지 않았습니다</div><div class="em-d"><b>수신 이메일 계정</b>과 <b>AI 직원</b>을 아직 안 골랐습니다. 채우고 저장하면 바로 켜집니다.</div><button class="b primary js-settings">설정 이어서 하기</button></div>';
     h+='<div class="sec-hd"><span class="sec-t">하는 일</span></div><div class="steps5">'+stepMarks()+'</div>';
@@ -330,7 +452,7 @@ function detHtml(r, notFirst){    // 단계별 실행 표(단계 · 결과 · �
       +'<td class="ts">'+(s[5]||'–')+'</td><td class="ts">'+(s[3]?d+' '+s[3]:'–')+'</td><td class="ts">'+(s[4]?d+' '+s[4]:'–')+'</td></tr>';
   }).join('');
   const CG='<colgroup><col style="width:28px"><col style="width:132px"><col style="width:76px"><col><col style="width:66px"><col style="width:150px"><col style="width:150px"></colgroup>';
-  const info=[['왜 실행됐나',r.why],['실행 방식','자동 (이메일 수신이 시작함)'],['실행한 시간',r.start],['종료한 시간',r.end||'–'],['소요',r.dur||'–'],['실행 ID','run_'+r.id]].concat(r.stop?[['멈춘 곳',r.stop]]:[]);
+  const info=[['왜 실행됐나',r.why],['실행 방식','자동 (이메일 수신이 시작함)'],['실행한 시간',r.start],['종료한 시간',r.end||'–'],['소요',typeof r.dur==='number'?r.dur+'초':(r.dur||'–')],['실행 ID','run_'+r.id]].concat(r.stop?[['멈춘 곳',r.stop]]:[]);
   return '<div class="lb '+(notFirst?'lb-gap':'lb-first')+'">단계별 실행</div><div class="box boxcap"><table class="tbl t-step">'+CG+'<thead><tr><th></th><th>단계</th><th>상태</th><th>결과</th><th>소요</th><th>시작</th><th>종료</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
        +'<div class="lb lb-gap">세부 정보</div><div class="box"><table class="tbl tbl-kv"><tbody>'+info.map(kv=>'<tr><td class="k">'+kv[0]+'</td><td>'+kv[1]+'</td></tr>').join('')+'</tbody></table></div>';
 }
@@ -364,16 +486,19 @@ function renderRun(id){
   //   `?view=run:rf` 로 들어왔을 때 오른쪽이 빈 채로 남았다(설명서 대조에서 잡음)
   const r = id==='live' ? LIVE : (runs().find(x=>x.id===id) || RUNS.find(x=>x.id===id)); if(!r) return;
   // 제목 = 「언제 + 무엇」 — 시각이 앞에 온다(사용자: "26.09.12 09:00 완료 이런 식으로")
-  const title = '<span class="t-when">'+r.start.slice(0,14)+'</span>'
+  // 결정 4015 — 제목 앞 ‹ = 홈(이전으로). 사용자: "타이틀 쪽에도 이전으로 돌아가기 버튼 같은 게 있어야 할 듯"
+  const title = '<button class="btn-ico p-up js-nav" data-v="home" title="'+AUTO.name+'(으)로 돌아가기" aria-label="돌아가기">'+ICO.back+'</button>'
+    + '<span class="t-when">'+r.start.slice(0,14)+'</span>'
     + (r.st==='ok' ? '<span class="t">완료</span>'
      // 2026-09-21 · 결정 4006 — 「3단계 근거 검색에서 멈춤」을 뺐다(사용자).
      //   바로 아래 「단계별 실행」 표가 **어느 단계가 실패인지 그 줄에서** 말해 준다.
      //   같은 말을 제목에서 한 번 더 하면 표를 안 읽게 된다. 「멈춘 곳」은 세부 정보에 남아 있다.
      : r.st==='fail' ? '<span class="t fail">실패</span>'
      : '<span class="t live">실행 중</span>');
+  // 중지는 경로 줄(결정 4007)과 여기 둘이다. 머리의 「실행 이력」은 결정 4011 로 걷었다 — 기둥이 늘 보인다
   const act = r.st==='live'?'<span class="sp"></span><button class="b danger js-stop">중지</button>':'';
   const head = r.st==='ok' ? '<div class="lb lb-first">결과</div>'+결과상자(r) : '';
-  $('.js-right').innerHTML='<div class="run-hd">'+title+act+'</div>'
+  $('.js-right').innerHTML='<div class="run-hd">'+title+act+'</div>'   // 홈으로는 기둥 맨 위 「‹ 이름」(결정 4011)
     +'<div class="js-run-body">'+head+detHtml(r, !!head)+'</div>';
 }
 // 2026-09-20 — 상태·보기가 바뀌면 **주소에도 남긴다.** 전에는 끄기·지금 실행·이력 선택이 전부
@@ -399,19 +524,46 @@ function render(){ renderNav(); if(view==='home') renderHome(); else renderRun(v
 const PDIR=location.pathname.replace(/[^/]*$/,'');
 function goPage(f,q){ location.href=PDIR+encodeURIComponent(f)+(q||''); }
 
+// ── 토글 확인창 — 화면①과 같다(결정 4007) ─────────────────────────────────
+//   ① 실행 중에 끌 때 — 자동 실행을 끄면 지금 도는 것도 멈추기 때문(「중지」는 확인 없이 이번 실행만)
+//   ② 실패로 꺼진 것을 켤 때 — 원인이 그대로면 다음 실행도 실패할 수 있다
+const cf1=document.createElement('div'); cf1.className='cf-wrap'; cf1.hidden=true;
+cf1.innerHTML='<div class="cf-box" role="dialog" aria-modal="true"><div class="cf-t">자동 실행을 끌까요?</div><div class="cf-d">지금 진행 중인 자동화가 도중에 중지됩니다.</div><div class="cf-a"><button class="run-btn js-cf1-no">취소</button><button class="run-btn cf-danger js-cf1-yes">끄기</button></div></div>';
+const cf2=document.createElement('div'); cf2.className='cf-wrap'; cf2.hidden=true;
+cf2.innerHTML='<div class="cf-box" role="dialog" aria-modal="true"><div class="cf-t">다시 켤까요?</div><div class="cf-d js-cf2-d"></div><div class="cf-a"><button class="run-btn js-cf2-no">취소</button><button class="run-btn js-cf2-yes">켜기</button></div></div>';
+document.body.appendChild(cf1); document.body.appendChild(cf2);
+
 // ── 조작 ──────────────────────────────────────────────────────────────────
 document.addEventListener('click', e=>{
   const nav=e.target.closest('.js-nav'); if(nav){ view=nav.dataset.v; render(); return; }
   if(e.target.closest('.js-settings')){ goPage('화면02_자동화생성.html','?tpl=drone&edit=1'); return; }   // 설정 = 작성 화면이 이 자동화 값으로 열린다(P-5)
-  if(e.target.closest('.js-back')||e.target.closest('.js-crumb-list')||e.target.closest('.js-all-menu')){ goPage('화면01_전체목록.html'); return; }
+  if(e.target.closest('.js-crumb-list')||e.target.closest('.js-all-menu')){ goPage('화면01_전체목록.html'); return; }   // 기둥의 ‹ 전체 목록(js-back)은 결정 4008 로 걷었다 — 경로 줄 「전체 목록」이 같은 일
   // LNB — 「새 자동화」는 화면②로. 「전체 목록」(.js-all-menu)은 바로 위에서 맡는다
   const ch=e.target.closest('.channel-text-demo');
   if(ch && ((ch.querySelector('.ch-label')||{}).textContent||'').trim()==='새 자동화'){ goPage('화면02_자동화생성.html'); return; }
-  if(e.target.closest('.js-on')){ state='wait'; view='home'; render(); return; }
-  if(e.target.closest('.js-off')){ state='off'; view='home'; render(); return; }   // 끄기 = 직접 끔(실패와 다르다 · 2026-09-20)
+  // 실행 이력(결정 4011) — 부르개는 **바로** 가장 최근 실행을 기둥과 함께 연다 · 「더 보기」는 30개 더
+  // 결정 4012 — 「⟲ N」은 켜고 끈다: 켜면 가장 최근 실행 + 카드, 이미 켜져 있으면 홈으로. 카드 ✕ 도 끄기
+  // 「⟲」: 이력 화면이면 나가기(홈) · 홈이면 가장 최근 실행 + 목록(결정 4015 · 4016)
+  if(e.target.closest('.js-hist')){ if(view!=='home'){ view='home'; render(); return; } const r=runs()[0]; if(r){ view='run:'+r.id; render(); } return; }
+  if(e.target.closest('.js-more')){ 보임+=한번; 카드그리기(); return; }
+  // 토글(결정 4007) — 실행 중에 끄거나 실패로 꺼진 것을 켤 때만 확인창(화면①과 같다)
+  if(e.target.closest('.js-cf1-no')||e.target===cf1){ cf1.hidden=true; return; }
+  if(e.target.closest('.js-cf1-yes')){ cf1.hidden=true; state='off'; view='home'; render(); return; }
+  if(e.target.closest('.js-cf2-no')||e.target===cf2){ cf2.hidden=true; return; }
+  if(e.target.closest('.js-cf2-yes')){ cf2.hidden=true; state='wait'; view='home'; render(); return; }
+  if(e.target.closest('.js-on')){
+    if(state==='fail'){ $('.js-cf2-d').textContent='실패 원인이 그대로면 다음 실행도 실패할 수 있습니다. 원인: '+stateInfo().sub; cf2.hidden=false; return; }
+    state='wait'; view='home'; render(); return; }
+  if(e.target.closest('.js-off')){   // 끄기 = 직접 끔(실패와 다르다 · 2026-09-20)
+    if(state==='run'){ cf1.hidden=false; return; }
+    state='off'; view='home'; render(); return; }
   if(e.target.closest('.js-runnow')){ state='run'; view='run:live'; render(); return; }
   if(e.target.closest('.js-stop')){ state='wait'; view='home'; render(); return; }
   const d=e.target.closest('.demo button'); if(d){ state=d.dataset.s; view='home'; render(); return; }
+});
+document.addEventListener('keydown', e=>{ if(e.key!=='Escape') return;
+  if(!cf1.hidden){ cf1.hidden=true; return; } if(!cf2.hidden){ cf2.hidden=true; return; }
+  if(view!=='home'){ view='home'; render(); return; }   // 이력 화면 나가기(결정 4016 — 최소화가 없어졌다)
 });
 render();
 </script>
