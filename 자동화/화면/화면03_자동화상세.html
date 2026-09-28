@@ -44,7 +44,7 @@
 
 /* ── 실행 이력 — 결정 4011 → 4012(LAB 상세출처창 S-1) ───────────────────────────────
    ① 부르개 = 경로 줄 무리 안 「⟲ N」(결정 4011) · 999 넘으면 999+. **켜고 끄는 버튼**이다 — 켜면 이력 화면, 다시 누르면 홈.
-   ② 이력 화면 = 실행 하나 + 오른쪽에 뜬 **카드**. 카드 값은 AI 채팅 「출처」 창 그대로 `실측`
+   ② 이력 화면 = 실행 하나 + 오른쪽에 뜬 **카드**. 카드 껍데기(폭 · 둥글기 · 그림자)는 AI 채팅 「출처」 창 그대로 `실측` · 글자와 줄 바탕은 결정 4017
       (저장본 `test-crew…ai-chat…_1920w_20260928-1150 (1).html` CSS 규칙 — .px-source-panel · __head · .px-source-item).
       자리 = 경로 줄 아래 20(top 106) · 오른쪽 24(라이브는 접기 레일이 있어 65).
    ③ 이력 화면은 **가운데 두 칸**(결정 4016) — [내용 960 | 목록 358] 묶음을 가운데. 그 전: 4013 덮기(768 · 4014) · 4012 비키기.
@@ -60,19 +60,21 @@
 .h-pan{position:fixed; top:106px; right:24px; width:358px; max-height:calc(100vh - 130px); display:flex; flex-direction:column;
   padding:0 15px 15px; border-radius:15px; background:#fff; box-shadow:0 0 5px rgba(0,0,0,.15); box-sizing:border-box; z-index:30;}
 .h-pan[hidden]{display:none;}
-.h-pan-hd{height:64px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
-.h-pan-hd h2{margin:0; font-size:14px; font-weight:600; letter-spacing:-0.5px; color:var(--color-text-basic);} .h-pan-hd h2 .n{font-weight:400; color:var(--gray-500); margin-left:4px;}
+.h-pan-hd{height:52px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
+.h-pan-hd h2{margin:0; font-size:13px; font-weight:600; letter-spacing:-0.5px; color:var(--color-text-basic);} .h-pan-hd h2 .n{font-weight:400; color:var(--gray-500); margin-left:4px;}
 /* 목록 — 막대는 카드 끝에(결정 4009 X-1 방식) · 두께는 전역 5px */
 .h-pan-list{margin-top:6px; min-height:0; overflow-y:auto; overscroll-behavior:contain; margin-right:-15px; padding-right:15px;}
 /* 한 줄 = 출처 줄 꼴 — 머리(시각 굵게 · 오른쪽 상태) + 본문(한 일 · 멈춘 곳) · 줄 사이 옅은 선 */
-.h-it{position:relative; display:flex; flex-direction:column; padding:11px 10px 10px; border-radius:7px; cursor:pointer;}
+/* 결정 4017 — 글자를 이 화면 본문 눈금(표 12 · 라벨 11)에 맞춘다(LAB 상세카드반응 G-1) · 호버 · 선택 바탕은 **각지게**, 폭은 가로선만큼(LAB 상세카드줄모양 I-2).
+   그 전은 AI 채팅 출처창 값(머리 14 · 시각 14/600 · 본문 13 · 줄 63 · 둥글기 7) — 채팅 본문 14 에 맞춘 값이라 이 화면(본문 12)에서 곁 목록이 본문보다 컸다 `실측` */
+.h-it{position:relative; display:flex; flex-direction:column; padding:8px 10px; border-radius:0; cursor:pointer;}
 .h-it:hover{background:rgba(0,0,0,.05);} .h-it.on{background:var(--color-lnb-selected);}
 .h-it + .h-it::before{content:''; position:absolute; left:0; right:0; top:0; height:1px; background:var(--color-n-200,#e5e7eb);}
 .h-it.on::before,.h-it.on + .h-it::before{display:none;}
 .h-ih{display:flex; align-items:center; gap:5px; padding:0 2px;}
-.h-ih .t{font-size:14px; font-weight:600; letter-spacing:-0.5px; color:var(--color-text-basic); font-variant-numeric:tabular-nums; white-space:nowrap;}
-.h-ih .s{margin-left:auto; font-size:12px; color:var(--gray-500);} .h-ih .s.fail{color:var(--color-danger);} .h-ih .s.live{color:var(--color-success); font-weight:600;}
-.h-ib{margin-top:6px; padding:0 2px; font-size:13px; line-height:1.5; letter-spacing:-0.5px; color:var(--color-text-basic); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden;}
+.h-ih .t{font-size:12px; font-weight:600; letter-spacing:-0.5px; color:var(--color-text-basic); font-variant-numeric:tabular-nums; white-space:nowrap;}
+.h-ih .s{margin-left:auto; font-size:11px; color:var(--gray-500);} .h-ih .s.fail{color:var(--color-danger);} .h-ih .s.live{color:var(--color-success); font-weight:600;}
+.h-ib{margin-top:3px; padding:0 2px; font-size:12px; line-height:1.5; letter-spacing:-0.5px; color:var(--gray-600); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden;}
 .h-ib.fail{color:var(--color-danger);}
 /* 「더 보기」 — 목록 끝. 글자 버튼 · 30개 더 */
 .h-more{display:flex; align-items:center; justify-content:center; height:30px; margin:6px 0 0; border:0; border-radius:5px; background:none;
@@ -106,9 +108,29 @@
 /* 좁은 창(1280)에서 묶음이 안 들어가면 내용 칸이 540 으로 준다 — 표가 상자 폭에 맞춰 줄면 「결과」 칸이 0 이 되어 글자가 겹쳤다 `실측`.
    760 밑으로는 안 줄이고 **표 상자 안에서 가로로** 굴린다 */
 .p-page.with-pan .box{overflow-x:auto;} .p-page.with-pan .t-step{min-width:760px;}
+/* ── 창 폭 대응 — 결정 4018 ───────────────────────────────────────────────────────────
+   **1500 이상** = 두 칸(결정 4016). **1500 미만** = 「목록 → 상세」 차례(LAB 상세이력차례 J-2) — 카드를 걷고 내용은 960 가운데.
+   1500 = 308(GNB + LNB) + 24 + 표 최소 760 + 24 + 카드 358 + 24 — 표를 안 굴리고 두 칸이 다 들어가는 가장 좁은 폭.
+   사용자: "일정 크기 전까지는 j-0 · 일정 크기 이하로 줄어들면 j-2" · 모바일은 결국 이 차례가 된다 · 오른쪽은 AI 패널 자리 */
+@media (max-width:1499px){
+  .p-page.with-pan .p-right{padding-left:max(24px, calc((100% - 960px) / 2)); padding-right:max(24px, calc((100% - 960px) / 2));}
+  .p-page.with-pan .h-pan{display:none;}
+  .p-page.with-pan .t-step{min-width:0;}
+}
+/* 목록 화면(좁은 창 · 결정 4018) — 본문 960 가운데에 이력만. 줄 꼴은 카드 줄(결정 4017)을 본문 폭으로 */
+.l-hd{display:flex; align-items:center; gap:8px; margin-bottom:14px;} .l-hd .t{font-size:15px; font-weight:600; color:var(--color-n-800);} .l-hd .n{font-size:13px; color:var(--gray-500); font-weight:400;}
+.l-hd .p-up{margin:0 2px 0 -6px;} .l-hd .p-up svg{width:18px; height:18px;}
+.l-box{border:1px solid var(--border-default); border-radius:8px; background:#fff; padding:4px 0;}
+.l-box .h-it{padding:10px 16px;} .l-box .h-ih .t{font-size:13px;}
+.l-box .h-it + .h-it::before{left:16px; right:16px;}
+.l-box .h-more{margin:4px 0;}
 .b{height:28px; padding:0 10px; font-size:12px; border:1px solid var(--border-default); border-radius:6px; background:#fff; color:var(--color-n-800); cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:inherit;}
 .b:hover{background:rgba(0,0,0,.05);} .b.primary{background:var(--brand-primary); border-color:var(--brand-primary); color:#fff;} .b.danger{color:var(--color-danger); border-color:var(--color-danger-soft);}
 .sp{flex:1;} .muted{color:var(--gray-500); font-size:12px;} .lnk{color:var(--brand-primary); cursor:pointer;}   /* 2026-09-21 — 하드코딩 #235edf 를 라이브러리 토큰으로 */
+/* 홈 타이틀 줄 — 결정 4019. 데이터분석 화면⑤ `.제목줄` 과 같은 값 `실측`: 스크롤하면 위에 붙고(sticky top 0 · 흰 바탕) 아래 1px `--border-subtle`.
+   안쪽 위 10 만큼 margin 을 당겨 타이틀 자리는 그대로 둔다. top 은 **−22**(= .p-right 위 여백) — 0 이면 붙는 자리가 여백 안쪽(22)이라
+   스크롤 전부터 22 에 「붙은」 채 서서 당긴 margin 이 안 먹고, 스크롤하면 경로 줄에서 22 떨어져 붙었다 `실측`. 사용자: "여기도 데이터 분석처럼 가로선 넣어주고 스크롤하면 상단 고정되게" */
+.bh-head{position:sticky; top:-22px; z-index:3; background:#fff; padding:10px 0 11px; margin-top:-10px; border-bottom:1px solid var(--border-subtle);}
 .bh-name{font-size:18px; font-weight:600; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 .bh-name .tpl-badge{font-size:10px; color:var(--gray-600); background:#fff; border:1px solid var(--border-default); padding:1px 6px; border-radius:4px;}
 .bh-desc{font-size:13px; color:var(--gray-600); margin-top:4px;}
@@ -358,11 +380,12 @@ function 경로맞추기(){
   const mid=$('.js-crumb-mid'), arw=$('.js-crumb-arw'), cur=$('.js-crumb'); if(!mid||!arw||!cur) return;
   const on=view!=='home'; mid.hidden=!on; arw.hidden=!on;
   if(!on){ cur.textContent=AUTO.name; return; }
+  if(view==='list'){ mid.textContent=AUTO.name; cur.textContent='실행 이력'; return; }   // 결정 4018
   const id=view.slice(4), r=id==='live'?LIVE:(runs().find(x=>x.id===id)||RUNS.find(x=>x.id===id));
   mid.textContent=AUTO.name; cur.textContent=r ? 짧은(r)+' '+상태말(r) : '';
 }
 function 카드그리기(){
-  const 이력=view!=='home' && runs().length>0, pan=$('.js-hpan'), 켬=이력;   // 결정 4016 — 최소화 없음: 이력 화면이면 목록이 늘 선다
+  const 이력=view!=='home' && view!=='list' && runs().length>0, pan=$('.js-hpan'), 켬=이력;   // 결정 4016 — 최소화 없음: 이력 화면이면 목록이 늘 선다
   경로맞추기();
   $('.p-page').classList.toggle('with-pan', 이력); pan.hidden=!켬;   // 결정 4016 — 두 칸 짜임은 이력 화면 내내(최소화해도 본문이 안 움직인다)
   if(!켬){ if(!이력) 보임=한번; return; }
@@ -376,6 +399,18 @@ function 카드그리기(){
     +(rs.length>보임?'<button type="button" class="h-more js-more">더 보기<span class="n">'+(rs.length-보임)+'</span></button>':'')+'</div>';
   const l=pan.querySelector('.h-pan-list'); l.scrollTop=스크롤;
   const on=pan.querySelector('.h-it.on'); if(on && (on.offsetTop<l.scrollTop || on.offsetTop>l.scrollTop+l.clientHeight-40)) on.scrollIntoView({block:'nearest'});
+}
+// ── 창 폭 대응 — 결정 4018. 1500 미만이면 「목록 → 상세」 차례 ─────────────────────────
+const 좁음=()=>innerWidth<1500;
+let 보임L=한번, 목록스크롤=0;   // 목록 화면 — 30개씩 · 상세에 갔다 ‹ 로 돌아오면 보던 자리에서
+function renderList(){
+  const rs=runs(), r0=$('.js-right');
+  r0.innerHTML='<div class="l-hd"><button class="btn-ico p-up js-nav" data-v="home" title="'+AUTO.name+'(으)로 돌아가기" aria-label="돌아가기">'+ICO.back+'</button>'
+    +'<span class="t">실행 이력</span><span class="n">'+rs.length+'</span></div>'
+    +'<div class="l-box">'+rs.slice(0,보임L).map(r=>'<div class="h-it js-nav" data-v="run:'+r.id+'"><div class="h-ih"><span class="t">'+짧은(r)+'</span><span class="s '+r.st+'">'+상태말(r)+'</span></div>'
+      +'<div class="h-ib'+(r.st==='fail'?' fail':'')+'">'+한일(r)+'</div></div>').join('')
+    +(rs.length>보임L?'<button type="button" class="h-more js-more-l">더 보기<span class="n">'+(rs.length-보임L)+'</span></button>':'')+'</div>';
+  r0.scrollTop=목록스크롤;
 }
 function renderNav(){
   const ld=$('.js-lnb-me-dot'); if(ld) ld.className='lnb-dot js-lnb-me-dot '+({wait:'wait',run:'run',off:'off',fail:'fail',setup:'draft'}[state]);
@@ -407,7 +442,7 @@ function stepMarks(){
 function renderHome(){
   const si=stateInfo(); const lr=lastRun();
   // 상태 줄(.bh-st)은 결정 4004 로 없앴다. 타이틀 오른쪽 「실행 이력」(결정 4008)은 결정 4011 로 경로 줄로 옮겼다
-  let h='<div class="bh-name">'+AUTO.name+' '+AUTO.tags.map(t=>'<span class="tpl-badge">'+t+'</span>').join('')+'</div><div class="bh-desc">'+AUTO.desc+'</div>';
+  let h='<div class="bh-head"><div class="bh-name">'+AUTO.name+' '+AUTO.tags.map(t=>'<span class="tpl-badge">'+t+'</span>').join('')+'</div><div class="bh-desc">'+AUTO.desc+'</div></div>';   // 결정 4019 — 한 묶음으로 붙박이
   // 날짜는 마지막 실행에서 가져온다 — 손으로 적어 두면 데모 값과 어긋난다(2026-09-20에 실제로 어긋나 있었다)
   if(state==='fail') h+='<div class="warn">'+lr.date+' '+lr.start.slice(9,14)+' 실행이 '+lr.stop+'에서 실패해 자동 실행이 꺼졌습니다. 원인을 고친 뒤 오른쪽 위 <b>자동 실행</b>을 켜면 다시 감시를 시작합니다.</div>';
   if(state==='off') h+='<div class="warn off">자동 실행이 꺼져 있습니다. 새 메일이 와도 돌지 않습니다. 오른쪽 위 <b>자동 실행</b>을 켜면 다시 감시를 시작합니다.</div>';
@@ -488,7 +523,8 @@ function renderRun(id){
   const r = id==='live' ? LIVE : (runs().find(x=>x.id===id) || RUNS.find(x=>x.id===id)); if(!r) return;
   // 제목 = 「언제 + 무엇」 — 시각이 앞에 온다(사용자: "26.09.12 09:00 완료 이런 식으로")
   // 결정 4015 — 제목 앞 ‹ = 홈(이전으로). 사용자: "타이틀 쪽에도 이전으로 돌아가기 버튼 같은 게 있어야 할 듯"
-  const title = '<button class="btn-ico p-up js-nav" data-v="home" title="'+AUTO.name+'(으)로 돌아가기" aria-label="돌아가기">'+ICO.back+'</button>'
+  const 위=좁음()?'list':'home';   // 결정 4018 — 좁은 창에서는 ‹ = 목록으로
+  const title = '<button class="btn-ico p-up js-nav" data-v="'+위+'" title="'+(위==='list'?'실행 이력으로':AUTO.name+'(으)로 돌아가기')+'" aria-label="돌아가기">'+ICO.back+'</button>'
     + '<span class="t-when">'+r.start.slice(0,14)+'</span>'
     + (r.st==='ok' ? '<span class="t">완료</span>'
      // 2026-09-21 · 결정 4006 — 「3단계 근거 검색에서 멈춤」을 뺐다(사용자).
@@ -517,7 +553,7 @@ function 주소갱신(){
 // 2026-09-21 — 시안 상태 버튼(오른쪽 아래)은 **단독으로 열었을 때만** 보인다.
 //   화면 설명서 안(iframe)에서는 왼쪽 목록이 이미 같은 상태들을 줄로 갖고 있어 같은 것이 두 번이다(사용자).
 (function(){ try{ if(window.self!==window.top){ const d=document.querySelector('.js-demo'); if(d) d.hidden=true; } }catch(e){} })();
-function render(){ renderNav(); if(view==='home') renderHome(); else renderRun(view.slice(4)); $$('.demo button').forEach(b=>b.classList.toggle('on', b.dataset.s===state)); 주소갱신(); }
+function render(){ renderNav(); if(view==='home') renderHome(); else if(view==='list') renderList(); else renderRun(view.slice(4)); $$('.demo button').forEach(b=>b.classList.toggle('on', b.dataset.s===state)); 주소갱신(); }
 
 // ── 화면 이동 ─────────────────────────────────────────────────────────────
 // 이 문서들은 <base href="../컴포넌트/"> 를 써서 상대 주소가 컴포넌트 폴더로 간다 → 그냥 두면 404.
@@ -536,7 +572,7 @@ document.body.appendChild(cf1); document.body.appendChild(cf2);
 
 // ── 조작 ──────────────────────────────────────────────────────────────────
 document.addEventListener('click', e=>{
-  const nav=e.target.closest('.js-nav'); if(nav){ view=nav.dataset.v; render(); return; }
+  const nav=e.target.closest('.js-nav'); if(nav){ if(view==='list') 목록스크롤=$('.js-right').scrollTop; if(nav.dataset.v==='home'){ 보임L=한번; 목록스크롤=0; } view=nav.dataset.v; render(); return; }
   if(e.target.closest('.js-settings')){ goPage('화면02_자동화생성.html','?tpl=drone&edit=1'); return; }   // 설정 = 작성 화면이 이 자동화 값으로 열린다(P-5)
   if(e.target.closest('.js-crumb-list')||e.target.closest('.js-all-menu')){ goPage('화면01_전체목록.html'); return; }   // 기둥의 ‹ 전체 목록(js-back)은 결정 4008 로 걷었다 — 경로 줄 「전체 목록」이 같은 일
   // LNB — 「새 자동화」는 화면②로. 「전체 목록」(.js-all-menu)은 바로 위에서 맡는다
@@ -545,7 +581,9 @@ document.addEventListener('click', e=>{
   // 실행 이력(결정 4011) — 부르개는 **바로** 가장 최근 실행을 기둥과 함께 연다 · 「더 보기」는 30개 더
   // 결정 4012 — 「⟲ N」은 켜고 끈다: 켜면 가장 최근 실행 + 카드, 이미 켜져 있으면 홈으로. 카드 ✕ 도 끄기
   // 「⟲」: 이력 화면이면 나가기(홈) · 홈이면 가장 최근 실행 + 목록(결정 4015 · 4016)
-  if(e.target.closest('.js-hist')){ if(view!=='home'){ view='home'; render(); return; } const r=runs()[0]; if(r){ view='run:'+r.id; render(); } return; }
+  // 결정 4018 — 홈에서 「⟲」: 넓으면 가장 최근 실행 + 카드 · 좁으면 목록 화면. 이력 화면에서는 나가기(홈)
+  if(e.target.closest('.js-hist')){ if(view!=='home'){ view='home'; render(); return; } if(좁음()){ 목록스크롤=0; view='list'; render(); return; } const r=runs()[0]; if(r){ view='run:'+r.id; render(); } return; }
+  if(e.target.closest('.js-more-l')){ 목록스크롤=$('.js-right').scrollTop; 보임L+=한번; renderList(); return; }
   if(e.target.closest('.js-more')){ 보임+=한번; 카드그리기(); return; }
   // 토글(결정 4007) — 실행 중에 끄거나 실패로 꺼진 것을 켤 때만 확인창(화면①과 같다)
   if(e.target.closest('.js-cf1-no')||e.target===cf1){ cf1.hidden=true; return; }
@@ -566,6 +604,8 @@ document.addEventListener('keydown', e=>{ if(e.key!=='Escape') return;
   if(!cf1.hidden){ cf1.hidden=true; return; } if(!cf2.hidden){ cf2.hidden=true; return; }
   if(view!=='home'){ view='home'; render(); return; }   // 이력 화면 나가기(결정 4016 — 최소화가 없어졌다)
 });
+// 창 폭이 기준(1500)을 넘나들면 다시 그린다 — ‹ 의 갈 곳과 카드가 바뀐다(결정 4018)
+let 전좁음=좁음(); window.addEventListener('resize', ()=>{ const n=좁음(); if(n!==전좁음){ 전좁음=n; if(!n && view==='list'){ const r=runs()[0]; if(r) view='run:'+r.id; } render(); } });
 render();
 </script>
 

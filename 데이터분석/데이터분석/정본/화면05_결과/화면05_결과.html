@@ -126,8 +126,10 @@
   .제목줄{position:sticky; top:0; z-index:3; background:#fff; display:flex; align-items:flex-start;
     justify-content:space-between; gap:16px; min-height:62px; box-sizing:border-box;
     padding:10px 0 11px; border-bottom:1px solid var(--border-subtle);}
-  .제목{font-size:var(--font-size-15); font-weight:600; letter-spacing:-0.5px; color:#222;}
-  .메타{font-size:var(--font-size-11); color:var(--gray-500); margin-top:5px; line-height:1.6;}
+  /* 2026-09-28 — 자동화 화면③ 타이틀과 같은 크기로(사용자 「데이터 분석에서 상단 텍스트도 자동화 상단 텍스트처럼 폰트 크기 맞춰줘」).
+     자동화 `.bh-name` 18/600 · `.bh-desc` 13 · `--gray-600` `실측`. 그 전은 15/600 · 11 · `--gray-500` */
+  .제목{font-size:18px; font-weight:600; letter-spacing:-0.5px; color:#222;}
+  .메타{font-size:var(--font-size-13); color:var(--gray-600); margin-top:4px; line-height:1.6;}
   .머리버튼{display:flex; gap:8px; flex:0 0 auto;}
 
   .결과속{display:flex; flex-direction:column; gap:13px; padding-top:14px;}
