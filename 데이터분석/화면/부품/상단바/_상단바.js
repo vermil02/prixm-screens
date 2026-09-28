@@ -36,6 +36,9 @@
        {t:'…'}                     글자만
        {t:'…', refresh:'라벨'}      오른쪽에 새로고침 버튼(화면①)
        {cls, tcls}                 화면 JS 가 잡을 클래스(줄 / 글자)
+
+     up: true                      경로 줄 맨 앞에 ‹(한 단계 위로). 누르는 일은 화면 JS 가 `.js-crumb-up` 으로 맡는다.
+                                   돌아갈 곳이 없는 맨 위 화면(자동화① · 데이터분석①)은 넘기지 않는다(결정 6008)
    =========================================================================== */
 (function () {
   var ICO_SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
@@ -44,6 +47,10 @@
   var ICO_REFRESH = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" ' +
     'stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M16.5 8.3A6.8 6.8 0 1 0 16 13"/><path d="M16.5 3.6v4.7h-4.7"/></svg>';
+
+  // 경로 줄 맨 앞 ‹ — 2026-09-28 결정 6008(LAB 경로줄뒤로 K-1). Lucide chevron-left · 옆 검색과 같은 칸(26 · 16 · 선 1.5)
+  var ICO_UP = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
 
   function esc(s) { return String(s == null ? '' : s); }
 
@@ -74,7 +81,10 @@
         : '';
       var hd = document.createElement('div');
       hd.className = 'page-hd';
-      hd.innerHTML = '<div class="crumb">' + parts.join('') + srch + '</div>';
+      // up — **돌아갈 곳이 있는 화면만** true 로 넘긴다(맨 위 화면은 안 넘겨 ‹ 가 없다 · 사용자 「돌아갈 자리가 없을 때에는 없는 게 낫지 않을까」).
+      //   누르면 무엇을 할지는 화면 JS 가 `.js-crumb-up` 을 잡아 정한다 — 뜻은 **경로 줄 한 단계 위**(브라우저 뒤로 아님)
+      var up = o.up ? '<button type="button" class="btn-ico crumb-up js-crumb-up" title="한 단계 위로" aria-label="한 단계 위로">' + ICO_UP + '</button>' : '';
+      hd.innerHTML = '<div class="crumb">' + up + parts.join('') + srch + '</div>';
       slot.parentNode.replaceChild(hd, slot);
     }
 

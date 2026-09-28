@@ -34,7 +34,8 @@
      (`실측` 960 을 걸었는데 586 이 됐다). **폭을 못 박고 `align-self` 로** 가운데 세운다.
      랩에서 Z2-1 을 그릴 때도 같은 함정에 걸렸다 — 같은 고침이다. */
   .가운데{width:960px; max-width:100%; margin:0 auto; align-self:center;
-    padding:14px 0 28px;}   /* 960 = 자동화 .boxcap 과 같은 값 */
+    padding:0 0 28px;}   /* 960 = 자동화 .boxcap 과 같은 값
+       위 여백 14 는 붙박이 제목 줄 **안**으로 옮겼다(2026-09-28 · 아래 `.제목줄`) */
   .가운데[hidden]{display:none;}
   /* 탭 줄 — **모양은 부품이 맡는다**(`부품/탭줄/탭줄.css` · 규약 2 값은 한 곳에만).
      화면②(데이터 · 분석 기법)가 쓰는 그 부품이다 — Figma `prixm` node 93:32045 실측
@@ -122,10 +123,15 @@
   .덩이조작 button:hover{background:rgba(0,0,0,.05); color:var(--black-900);}
   .덩이조작 svg{display:block;}
 
-  /* P-2 — 제목 줄 붙박이 */
+  /* P-2 — 제목 줄 붙박이 (유지)
+     ★ 2026-09-28 사용자 「스틱키 되는 섹션 위에 여백이 사라진 뒤에 상단 고정되는 게 어색」.
+       `.가운데` 의 위 여백 14 가 **제목 줄 바깥**에 있어서, 스크롤하면 그 14 가 먼저 말려 올라간 뒤에야
+       붙었다 — 「끌려가다 멈추는」 꼴. 그 14 를 **제목 줄 안쪽**(padding-top 10 → 24)으로 옮겼다.
+       멈춰 있을 때 글자 자리는 그대로고, 제목 줄은 처음부터 맨 위라 **줄어들 여백이 없다.**
+       바탕이 흰색이라 붙은 뒤에도 위 24 가 그대로 여백으로 보인다. */
   .제목줄{position:sticky; top:0; z-index:3; background:#fff; display:flex; align-items:flex-start;
-    justify-content:space-between; gap:16px; min-height:62px; box-sizing:border-box;
-    padding:10px 0 11px; border-bottom:1px solid var(--border-subtle);}
+    justify-content:space-between; gap:16px; min-height:76px; box-sizing:border-box;
+    padding:24px 0 11px; border-bottom:1px solid var(--border-subtle);}
   /* 2026-09-28 — 자동화 화면③ 타이틀과 같은 크기로(사용자 「데이터 분석에서 상단 텍스트도 자동화 상단 텍스트처럼 폰트 크기 맞춰줘」).
      자동화 `.bh-name` 18/600 · `.bh-desc` 13 · `--gray-600` `실측`. 그 전은 15/600 · 11 · `--gray-500` */
   .제목{font-size:18px; font-weight:600; letter-spacing:-0.5px; color:#222;}
@@ -247,7 +253,7 @@
 <script>PRIXM_ANALYSIS_LNB({"내역": [{"t": "화학물질 안전 데이터 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 월별 추세", "on": true, "cls": "js-row-trend", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=trend"}, {"t": "측정 항목별 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 분포", "아직": "분포 결과 화면은 아직 없습니다"}, {"t": "부서별 그룹 비교", "아직": "그룹 비교 결과 화면은 아직 없습니다"}, {"t": "측정 항목 간 상관분석", "아직": "상관분석 결과 화면은 아직 없습니다"}, {"t": "부서 × 위험등급 교차표", "cls": "js-row-cross", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=cross"}], "새분석링크": "../데이터분석/정본/화면01_새분석/화면01_새분석.html"});</script>
     <div class="main">
       <div class="js-head"></div>
-<script>PRIXM_HEAD({ crumb: [{t:'데이터 분석', cls:'js-crumb-home'}, {t:'측정값 월별 추세', cur:true, cls:'js-crumb'}], search: '분석 검색' });</script>
+<script>PRIXM_HEAD({ crumb: [{t:'측정값 월별 추세', cur:true, cls:'js-crumb'}], search: '분석 검색' });</script>
       <div class="content">
 
 <div class="가운데" data-view="trend">

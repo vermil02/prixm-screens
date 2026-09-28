@@ -459,7 +459,7 @@
     <script>PRIXM_ANALYSIS_LNB({"내역": [{"t": "화학물질 안전 데이터 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 월별 추세", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=trend"}, {"t": "측정 항목별 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 분포", "아직": "분포 결과 화면은 아직 없습니다"}, {"t": "부서별 그룹 비교", "아직": "그룹 비교 결과 화면은 아직 없습니다"}, {"t": "측정 항목 간 상관분석", "아직": "상관분석 결과 화면은 아직 없습니다"}, {"t": "부서 × 위험등급 교차표", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=cross"}], "새분석링크": "../데이터분석/정본/화면01_새분석/화면01_새분석.html"});</script>
     <div class="main">
       <div class="js-head"></div>
-      <script>PRIXM_HEAD({ crumb:[{t:'데이터 분석'},{t:'안전점검_2026상반기', cur:true}], search:'분석 검색' });</script>
+      <script>PRIXM_HEAD({ crumb:[{t:'새 분석'},{t:'안전점검_2026상반기', cur:true}], up:true, search:'분석 검색' });</script>
       <div class="content">
 <!-- @조각 _틀.html -->
 <!-- 탭 줄 — 부품(부품/탭줄/탭줄.css)이 모양을 맡는다. 여기는 마크업만 -->
@@ -1186,6 +1186,13 @@ PX_ICO_채우기(document.querySelector(".js-방법"));
 
   탭보이기(/tab=method/.test(location.search) ? "method" : "data");
 })();
+/* @끝 _데이터.js */
+
+/* 경로 줄 맨 앞 ‹ — 자동화 결정 6008(공용 상단 바). 이 화면의 한 단계 위는 「새 분석」(화면①).
+   <base> 가 걸려 있어 주소는 지금 문서 기준으로 푼다 */
+document.addEventListener("click", function (e) {
+  if (e.target.closest(".js-crumb-up")) location.href = new URL("../화면01_새분석/화면01_새분석.html", location.href).href;
+});
 /* @끝 _데이터.js */
 </script>
 </body></html>

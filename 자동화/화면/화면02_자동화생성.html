@@ -536,6 +536,11 @@ body.is-setup:not(.has-rail) .stage-area{grid-column:1 / -1;}   /* 작성 화면
 .wst.is-done::before{content:"✓"; border-color:var(--border-default); color:var(--gray-500); font-size:11px;}
 .wst.is-done .wst-t{color:var(--gray-600);}
 /* @끝 _작성.css */
+/* 본문 왼쪽 위 「‹ 돌아가기」는 결정 6008 로 걷었다 — 경로 줄 맨 앞 ‹ 가 같은 일(같은 길)을 한다. 버튼은 그 길을 타려고 남겨 두고 **버튼만** 감춘다.
+   줄은 남긴다 — .g6 이 위로 16 당겨져 있어(margin -16) 이 줄이 그 자리를 메웠다. 줄째 감추면 첫 줄이 경로 줄 선에 붙었다 `실측`.
+   높이 38 → 다음 줄이 경로 줄 아래 22 에서 시작한다(화면①②③ 타이틀과 같은 자리) */
+.g6-back .back{display:none !important;}
+.g6-back .g6-l,.g6-back .g6-r{padding-top:38px !important; padding-bottom:0 !important;}
 </style></head><body>
 
 <div class="app">
@@ -560,6 +565,7 @@ body.is-setup:not(.has-rail) .stage-area{grid-column:1 / -1;}   /* 작성 화면
      도구 줄은 화면마다 달라 아래에 그대로 둔다 -->
 <div class="js-head"></div><div class="head-zone"><div class="js-ttl"></div><script>PRIXM_HEAD({
   crumb: [{t:'새 자동화'}, {mid:true}, {t:'템플릿 선택', cur:true, cls:'js-crumb'}],
+  up: true,   // 경로 줄 맨 앞 ‹ — 결정 6008
   search: '템플릿 검색',
   title:  {t:'템플릿 선택', cls:'js-ttlrow', tcls:'js-hd-ttl'}
 });</script><div class="tools"><div class="tl-in">
@@ -712,10 +718,13 @@ function show(id){ $$('.view').forEach(v=>v.hidden=true); $('#v-'+id).hidden=fal
   if(mid && arw){ const on = !!tplName;
     mid.hidden = !on; arw.hidden = !on;
     if(on) mid.textContent = isCopy ? '구성 복사' : '템플릿 선택'; }
+  // 경로 줄 ‹ — 결정 6008 갱신(2026-09-28 사용자 「새 분석이 상위가 맞음?」): **‹ 가 있으면 그 상위가 경로 줄 바로 앞 칸에 보여야 한다.**
+  //   템플릿 선택 · 구성 복사 목록은 「새 자동화」의 첫 화면이다 — 「새 자동화」는 화면이 아니라 입구라 상위가 없다 → ‹ 없음
+  const up=$('.js-crumb-up'); if(up) up.hidden = !tplName && !(typeof EDIT_FROM_DETAIL!=='undefined' && EDIT_FROM_DETAIL);
   // 2026-09-20 — 상세에서 「설정」으로 들어온 경우는 **새로 만드는 길이 아니다.**
   //   전에는 「새 자동화 › 템플릿 선택 › … · 설정」이라 거짓말을 했다. 화면③에서 왔으니 그 경로를 잇는다
   if(typeof EDIT_FROM_DETAIL!=='undefined' && EDIT_FROM_DETAIL){
-    const first=$('.crumb > span:first-child'); if(first) first.textContent='전체 목록';
+    const first=$('.crumb > span:first-of-type'); if(first) first.textContent='전체 목록';
     if(mid && arw){ mid.hidden=false; arw.hidden=false; mid.textContent=$('#st-form [name=name]') ? $('#st-form [name=name]').value : ''; }
     if(c0()) c0().textContent='설정';
     return;
@@ -939,6 +948,10 @@ document.addEventListener('click',e=>{
   if(e.target.closest('.js-to-entry')){ tryLeaveTo(function(){ railMode('template'); markRail(null); show('pick'); }); return; }   // 첫 화면 = 템플릿 목록(결정 133)
   if(e.target.closest('.js-back-list')){ toast('전체 목록으로 돌아갑니다 (시안: 화면①)'); return; }
   // 호버 안에서는 '닫기'가 아니라 '최소화' — 줄은 남고 호버는 잠시 꺼진다
+  // 경로 줄 ‹ — 결정 6008. 템플릿 고르는 단계면 전체 목록, 작성 · 설정 단계면 본문 「‹ 돌아가기」와 같은 길(저장 안 한 값 확인)
+  if(e.target.closest('.js-crumb-up')){ const 지금=(($('.js-crumb')||{}).textContent||'').trim();
+    if(!(typeof EDIT_FROM_DETAIL!=='undefined' && EDIT_FROM_DETAIL) && 지금==='템플릿 선택'){ goPage('화면01_전체목록.html'); return; }
+    const bk=$('.js-to-pick'); if(bk) bk.click(); return; }
   if(e.target.closest('.js-to-pick')){ if(typeof EDIT_FROM_DETAIL!=='undefined' && EDIT_FROM_DETAIL){ tryLeaveTo(function(){ goPage('화면03_자동화상세.html'); }); return; }
     tryLeaveTo(function(){ closeDetail(); railMode('template'); markRail(null); show('pick'); }); return; }
   // 여기부터는 작성 화면 — 화면02/_작성.js 의 작성클릭() 이 맡는다(결정 3001)
@@ -1013,7 +1026,7 @@ else if(TPL[q.get('tpl')]){ openSetup('template', q.get('tpl'));
     // 경로 줄 — 상세에서 「설정」으로 들어온 길이라 「전체 목록 › 이름 › 설정」이다(2026-09-20).
     //   setupCrumb 는 EDIT_FROM_DETAIL 이 켜지기 전에 이미 돌았으므로 여기서 한 번 더 맞춘다
     (function(){
-      const first=document.querySelector('.crumb > span:first-child'); if(first) first.textContent='전체 목록';
+      const first=document.querySelector('.crumb > span:first-of-type'); if(first) first.textContent='전체 목록';
       const mid=$('.js-crumb-mid'), arw=$('.js-crumb-arw');
       if(mid && arw){ mid.hidden=false; arw.hidden=false; mid.textContent='민원 답변 작성'; }
       const c=$('.js-crumb'); if(c) c.textContent='설정';

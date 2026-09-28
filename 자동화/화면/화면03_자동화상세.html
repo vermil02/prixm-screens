@@ -236,7 +236,7 @@
     </div>
     
 <div class="main">
-<div class="js-head"></div><script>PRIXM_HEAD({ crumb: [{t:'전체 목록', cls:'js-crumb-list'}, {mid:true}, {t:'민원 답변 작성', cur:true, cls:'js-crumb'}], search: '자동화 검색' });</script>
+<div class="js-head"></div><script>PRIXM_HEAD({ crumb: [{t:'전체 목록', cls:'js-crumb-list'}, {mid:true}, {t:'민원 답변 작성', cur:true, cls:'js-crumb'}], up: true, search: '자동화 검색' });</script>
 <div class="content"><div class="p-page">
   <!-- 가운데 기둥(‹ 전체 목록 · 이름 · 조작 · 실행 이력)은 2026-09-28 결정 4007 · 4008 로 걷었다. 이전 본: _구버전/20260928_조작이력전/ -->
   <section class="h-pan js-hpan" hidden aria-label="실행 이력"></section><!-- 이력 화면의 카드(결정 4012 · 출처창 꼴) -->
@@ -379,10 +379,16 @@ function 한일(r){
 function 경로맞추기(){
   const mid=$('.js-crumb-mid'), arw=$('.js-crumb-arw'), cur=$('.js-crumb'); if(!mid||!arw||!cur) return;
   const on=view!=='home'; mid.hidden=!on; arw.hidden=!on;
+  const m2h=$('.js-crumb-mid2'), a2h=$('.js-crumb-arw2'); if(m2h){ m2h.hidden=true; a2h.hidden=true; }   // 실행 하나(좁은 창)에서만 켠다
   if(!on){ cur.textContent=AUTO.name; return; }
   if(view==='list'){ mid.textContent=AUTO.name; cur.textContent='실행 이력'; return; }   // 결정 4018
   const id=view.slice(4), r=id==='live'?LIVE:(runs().find(x=>x.id===id)||RUNS.find(x=>x.id===id));
   mid.textContent=AUTO.name; cur.textContent=r ? 짧은(r)+' '+상태말(r) : '';
+  // 좁은 창(결정 4018)의 실행 하나는 ‹ 가 목록으로 간다 → 경로 줄에도 「실행 이력」 칸이 보여야 한다(결정 6008 갱신 — ‹ 의 상위는 바로 앞 칸)
+  const 좁은실행 = 좁음();
+  let m2=$('.js-crumb-mid2'), a2=$('.js-crumb-arw2');
+  if(좁은실행 && !m2){ a2=document.createElement('span'); a2.className='arw js-crumb-arw2'; a2.textContent='›'; m2=document.createElement('span'); m2.className='js-crumb-mid2'; m2.textContent='실행 이력'; cur.parentNode.insertBefore(m2, cur); cur.parentNode.insertBefore(a2, cur); }
+  if(m2){ m2.hidden=!좁은실행; a2.hidden=!좁은실행; }
 }
 function 카드그리기(){
   const 이력=view!=='home' && view!=='list' && runs().length>0, pan=$('.js-hpan'), 켬=이력;   // 결정 4016 — 최소화 없음: 이력 화면이면 목록이 늘 선다
@@ -405,7 +411,7 @@ const 좁음=()=>innerWidth<1500;
 let 보임L=한번, 목록스크롤=0;   // 목록 화면 — 30개씩 · 상세에 갔다 ‹ 로 돌아오면 보던 자리에서
 function renderList(){
   const rs=runs(), r0=$('.js-right');
-  r0.innerHTML='<div class="l-hd"><button class="btn-ico p-up js-nav" data-v="home" title="'+AUTO.name+'(으)로 돌아가기" aria-label="돌아가기">'+ICO.back+'</button>'
+  r0.innerHTML='<div class="l-hd">'   // 제목 앞 ‹ 는 결정 6008 로 걷음 — 경로 줄 ‹
     +'<span class="t">실행 이력</span><span class="n">'+rs.length+'</span></div>'
     +'<div class="l-box">'+rs.slice(0,보임L).map(r=>'<div class="h-it js-nav" data-v="run:'+r.id+'"><div class="h-ih"><span class="t">'+짧은(r)+'</span><span class="s '+r.st+'">'+상태말(r)+'</span></div>'
       +'<div class="h-ib'+(r.st==='fail'?' fail':'')+'">'+한일(r)+'</div></div>').join('')
@@ -523,9 +529,8 @@ function renderRun(id){
   const r = id==='live' ? LIVE : (runs().find(x=>x.id===id) || RUNS.find(x=>x.id===id)); if(!r) return;
   // 제목 = 「언제 + 무엇」 — 시각이 앞에 온다(사용자: "26.09.12 09:00 완료 이런 식으로")
   // 결정 4015 — 제목 앞 ‹ = 홈(이전으로). 사용자: "타이틀 쪽에도 이전으로 돌아가기 버튼 같은 게 있어야 할 듯"
-  const 위=좁음()?'list':'home';   // 결정 4018 — 좁은 창에서는 ‹ = 목록으로
-  const title = '<button class="btn-ico p-up js-nav" data-v="'+위+'" title="'+(위==='list'?'실행 이력으로':AUTO.name+'(으)로 돌아가기')+'" aria-label="돌아가기">'+ICO.back+'</button>'
-    + '<span class="t-when">'+r.start.slice(0,14)+'</span>'
+  // 제목 앞 ‹ 는 결정 6008 로 걷었다 — 경로 줄 맨 앞 ‹ 가 맡는다(좁은 창에서는 목록으로 · 결정 4018)
+  const title = '<span class="t-when">'+r.start.slice(0,14)+'</span>'
     + (r.st==='ok' ? '<span class="t">완료</span>'
      // 2026-09-21 · 결정 4006 — 「3단계 근거 검색에서 멈춤」을 뺐다(사용자).
      //   바로 아래 「단계별 실행」 표가 **어느 단계가 실패인지 그 줄에서** 말해 준다.
@@ -583,6 +588,9 @@ document.addEventListener('click', e=>{
   // 「⟲」: 이력 화면이면 나가기(홈) · 홈이면 가장 최근 실행 + 목록(결정 4015 · 4016)
   // 결정 4018 — 홈에서 「⟲」: 넓으면 가장 최근 실행 + 카드 · 좁으면 목록 화면. 이력 화면에서는 나가기(홈)
   if(e.target.closest('.js-hist')){ if(view!=='home'){ view='home'; render(); return; } if(좁음()){ 목록스크롤=0; view='list'; render(); return; } const r=runs()[0]; if(r){ view='run:'+r.id; render(); } return; }
+  // 경로 줄 ‹ — 결정 6008. 홈 → 전체 목록 · 목록 화면 → 홈 · 실행 하나 → 좁은 창이면 목록, 넓으면 홈
+  if(e.target.closest('.js-crumb-up')){ if(view==='home'){ goPage('화면01_전체목록.html'); return; }
+    if(view==='list'){ 보임L=한번; 목록스크롤=0; view='home'; } else view = 좁음() ? 'list' : 'home'; render(); return; }
   if(e.target.closest('.js-more-l')){ 목록스크롤=$('.js-right').scrollTop; 보임L+=한번; renderList(); return; }
   if(e.target.closest('.js-more')){ 보임+=한번; 카드그리기(); return; }
   // 토글(결정 4007) — 실행 중에 끄거나 실패로 꺼진 것을 켤 때만 확인창(화면①과 같다)
