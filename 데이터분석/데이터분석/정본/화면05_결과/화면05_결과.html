@@ -1,0 +1,440 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터 분석 ⑤ 결과 — as-is 시안</title>
+<base href="../../../컴포넌트/">
+<link rel="stylesheet" href="common/common.css">
+<!-- 지표판 — 라이브러리에 값 늘어놓는 부품이 없어 만든 것. 값의 정본은 그 파일(규약 2) -->
+<link rel="stylesheet" href="../데이터분석/부품/지표판/지표판.css">
+<link rel="stylesheet" href="../화면/_공용.css">
+<!-- 탭 줄 부품 — 화면②가 쓰는 그 부품이다(규약 2 · Figma node 93:32045). 값을 여기 베끼지 않는다 -->
+<!-- 제품 뼈대 — GNB 9칸·헤더(로고 svg·알림·아바타)·LNB 유틸을 제품 마크업으로 갈아 끼운다.
+     자동화 시안 세 장과 같은 한 벌이다. 마크업은 그대로 두고 스크립트만 읽으면 된다. -->
+<script src="../화면/_뼈대.js" defer></script>
+<!-- 좌측 목록 부품 — defer 없이(마크업 바로 뒤에서 부른다). 자동화 _상단바.js 와 같은 규칙 -->
+<script src="../데이터분석/부품/좌측목록/_좌측목록.js"></script>
+<script src="../화면/부품/상단바/_상단바.js"></script>
+<!-- 상단바 부품(_상단바.js)은 일부러 안 쓴다 — 이 화면의 제목 줄은 P-2(붙박이 62px)로
+     따로 정한 것이라 경로 줄 + 타이틀 줄 구조와 성격이 다르다. -->
+<style>
+/* @조각 _결과.css */
+  /* ── 본문 ─────────────────────────────────────────────── */
+  /* 내용 기둥 — 자동화 정본(화면01·03)과 **같은 규칙**을 그대로 쓴다.
+     · .body > .main 에 flex:1 이 없으면 본문이 내용 폭에서 멈춘다(2026-09-22 실측: 1920 창에서 649px)
+     · 좌우 24px 거터는 padding 이 아니라 **그리드 칸**으로 만든다 — .page-hd(경로 줄)가 같은 격자라
+       상단 바 글자와 본문 글자의 왼쪽이 자동으로 맞는다. 자식 배치는 _공용.css 의 `.content > *{grid-column:2}` */
+  .body > .main{flex:1; min-width:0; display:flex; flex-direction:column;}
+  .content{flex:1; min-width:0; min-height:0; overflow:auto;
+    display:grid; grid-template-columns:24px minmax(0,1fr) 24px; align-content:start;}
+  /* ★ 본문을 **가운데**로 (2026-09-25 사용자 「화면 가운데 쪽으로」).
+     앞서 가운데가 걸렸던 것은 **탭 줄 밑줄** 때문이었다 — 줄째 옮기면 밑줄이 짧아져 붕 뜨고,
+     안 옮기면 밑줄만 끝까지 가서 폭이 둘이 됐다(축 Z2). **보기 줄을 빼면서 그 문제가 없어졌다.**
+     위 여백 14 는 화면②의 `.자리{padding:14px …}` 와 같은 값이다(앞서는 탭 줄이 갖고 있었다). */
+  /* ⚠ `.content` 가 flex 라 `max-width + margin:0 auto` 만으로는 **폭이 내용만큼 줄어든다**
+     (`실측` 960 을 걸었는데 586 이 됐다). **폭을 못 박고 `align-self` 로** 가운데 세운다.
+     랩에서 Z2-1 을 그릴 때도 같은 함정에 걸렸다 — 같은 고침이다. */
+  .가운데{width:960px; max-width:100%; margin:0 auto; align-self:center;
+    padding:14px 0 28px;}   /* 960 = 자동화 .boxcap 과 같은 값 */
+  .가운데[hidden]{display:none;}
+  /* 탭 줄 — **모양은 부품이 맡는다**(`부품/탭줄/탭줄.css` · 규약 2 값은 한 곳에만).
+     화면②(데이터 · 분석 기법)가 쓰는 그 부품이다 — Figma `prixm` node 93:32045 실측
+     (높이 50 · 켠 탭 Bold + 아래 1.5px 파랑 · 안 켠 탭도 글자색 #222).
+     2026-09-23 사용자: 「화면②에서 작업한 탭 느낌으로」. 전에는 여기서 회색 알약을 따로 그렸다.
+     아래 선이 **본문 폭 끝까지** 가야 해서 좌우 거터 칸까지 걸치고 안쪽에 24 여백을 준다
+     (경로 줄과 같은 규칙). */
+  .content > .탭줄{grid-column:1 / -1; padding:0 24px;}
+  .덩이[hidden]{display:none;}
+  /* ★ 덩이 꼴 — 2026-09-25 사용자와 주고받으며 여기까지 왔다.
+
+     **둥글기 규칙은 라이브러리가 이미 적어 뒀다** `확인함` — `card-demo` 주석:
+       「모서리 8px — 라이브러리 관례(**작은 요소 5px / 모달 15px**)의 중간값」
+     그래서 **덩이 = 8**, 그 안의 작은 것 = 5 다.
+     ⚠ 다만 **왼쪽 띠가 있는 덩이는 각진다(0)** — 띠와 둥근 모서리는 서로 싸운다
+       (사용자: 「좌측에 직선 때문에 사각형으로 한다면, 나머지는 은은한 둥글기 줘도 되고」).
+
+     ⚠ **`#efefff` 는 토큰이 맞았다** — `--color-primitive-purple-100`(common.css:26).
+       2026-09-25 에 내가 「토큰이 아니다」라며 걷었는데 **틀렸다.**
+       문제는 **색이 아니라 하드코딩**이었다. 토큰으로 되살린다.
+
+     ⚠ **빨강은 안 쓴다** (사용자: 「빨간색은 AI 채팅에서 **오류**일 때 쓰는 거라」).
+       「이 결과를 읽을 때」는 오류가 아니라 **읽는 법**이다. 띠는 중립색(#475062).
+
+     무게 넷
+       데이터 (지표 · 차트)  흰 + 테두리 + r8
+       주의   (읽을 때)      gray-50 + 왼쪽 띠 + **각짐**
+       결론                  **purple-100** + 테두리 + r8   ← 이 화면의 답
+       참고   (코드 · 파일)  gray-50 + r8 */
+  .덩이 .판{padding:12px 14px; box-sizing:border-box; border:0; border-radius:8px; background:#fff;}
+  /* 지표판은 이제 **바깥 상자가 없다** — 지표마다 제 상자를 갖는다(부품 M3-2, 2026-09-25).
+     테두리 값은 차트틀과 같은 것을 쓰므로 새로 만드는 선이 아니다 */
+  .덩이 .차트틀{border:1px solid var(--border-default);}
+  /* 띠가 있는 것만 각진다 */
+  .덩이 .주의판{background:var(--gray-50); border-radius:0;
+    border-left:2px solid var(--component-icon-basic); padding-left:14px;}
+  .덩이 .결론판{background:var(--color-primitive-purple-100);
+    border:1px solid var(--color-primitive-blue-30);}
+  .덩이 .접힘줄,
+  .덩이 .파일판{background:var(--gray-50);}
+
+  /* ★ 실행한 코드 — **개발 코드 보는 느낌**으로 (2026-09-25 사용자).
+     라이브러리에 코드 어휘가 이미 있다 — `.tag-node`(인라인 코드 태그):
+     `--color-primitive-gray-100` 바탕 · `"Google Sans Code"` · 12px · radius 5.
+     그 글꼴과 바탕을 접힘 줄과 펼친 코드에 함께 쓴다 */
+  .덩이 .접힘줄{font-family:"Google Sans Code","Pretendard Variable",monospace;}
+  .덩이 .접힘줄 > span:first-child{font-family:inherit;}
+
+  /* ★ 2026-09-25 사용자 「실행한 코드 열면 **그 섹션 안에서** 있어야 할 듯」.
+     앞서는 접힘 줄(판)과 펼친 코드가 **따로 선 상자 둘**이었다 `확인함` —
+     펼치면 덩이가 둘로 쪼개져 보였다. 이제 `.코드판` 이 **상자 하나**고
+     접힘 줄과 코드가 둘 다 그 안에 든다. 코드는 한 겹 더 들어간 면으로 둔다
+     (`--color-primitive-gray-100` — 라이브러리 `.tag-node` 의 코드 바탕) */
+  .덩이 .코드판{background:var(--gray-50); border-radius:8px; overflow:hidden;}
+  .덩이 .코드판 .접힘줄{background:none; border-radius:0;}
+  .덩이 .코드판 .코드{margin:0 14px 14px; padding:12px 14px; border-radius:5px;
+    background:var(--color-primitive-gray-100); border:0;
+    font-family:"Google Sans Code","Pretendard Variable",monospace;
+    font-size:12px; line-height:1.8; color:var(--black-900); white-space:pre; overflow-x:auto;}
+  .코드[hidden]{display:none;}
+
+  /* ── 덩이 라벨 — 화면②와 **같은 값**을 쓴다
+       `화면02_데이터/조각/_데이터.css` : 11px · 500 · `--gray-500` · 묶음 gap 6.
+       앞서는 넷이 **상자 안**에 제목을 갖고 둘은 아예 없어 제각각이었다 — 밖으로 빼서 한 틀로 맞췄다.
+
+     ⚠ 이 자리에 **주석 여는 `/*` 가 빠져 있었다** `확인함 2026-09-25`.
+       CSS 파서는 거기서 말이 끊기면 **다음 규칙들을 통째로 버린다** — 그래서
+       바로 아래 `.덩이 > .라벨줄{display:flex}` 가 **브라우저에 아예 안 들어가** 있었고,
+       라벨 줄이 `display:block` 이라 `margin-left:auto` 도 함께 죽어 있었다.
+       「다시 작성」이 오른끝이 아니라 라벨에 붙어 보인 진짜 까닭이 이것이다. */
+  /* 라벨 줄 — 왼쪽은 이름, 오른쪽은 그 덩이의 조작(2026-09-25). 조작이 없으면 이름만 선다.
+     ★ 조작은 **줄 오른쪽 끝**이다(랩 C3-1). 앞서는 `margin-left:auto` 가 빠져 있어
+       버튼이 **라벨에 붙어** 있었다 `확인함` — 라벨 824→842, 버튼 842→897, 오른쪽 887px 이 빔.
+       라벨은 11px 회색 작은 글씨인데 그 옆에 파란 아이콘 버튼이 붙어 **라벨보다 먼저 읽혔다.**
+       오른끝에 두면 버튼이 하나든 둘이든 **자리가 안 움직이고**, 제목줄의
+       「다시 분석 · 결과 저장」도 이미 오른끝이라 화면 안에서 말이 이어진다.
+       ※ 랩 F2-2 의 「미리보기」도 이 자리를 쓴다 — 덩이 조작은 전부 이 규칙을 따른다. */
+  .덩이 > .라벨줄{display:flex; align-items:center; gap:10px; margin-bottom:6px; min-height:18px;}
+  .덩이 .라벨{font-size:11px; font-weight:500; color:var(--gray-500);}
+  .덩이 .덩이조작{margin-left:auto; display:inline-flex; gap:4px;}
+  /* 글자 버튼 — 전처리의 `.더하기버튼` 과 같은 값(테두리도 바탕도 없음 · 호버 바탕) */
+  .덩이조작 button{height:22px; padding:0 6px; border:0; background:none; border-radius:5px;
+    display:inline-flex; align-items:center; gap:3px; font-family:inherit; font-size:11px;
+    color:var(--gray-500); cursor:pointer; white-space:nowrap;}
+  .덩이조작 button:hover{background:rgba(0,0,0,.05); color:var(--black-900);}
+  .덩이조작 svg{display:block;}
+
+  /* P-2 — 제목 줄 붙박이 */
+  .제목줄{position:sticky; top:0; z-index:3; background:#fff; display:flex; align-items:flex-start;
+    justify-content:space-between; gap:16px; min-height:62px; box-sizing:border-box;
+    padding:10px 0 11px; border-bottom:1px solid var(--border-subtle);}
+  .제목{font-size:var(--font-size-15); font-weight:600; letter-spacing:-0.5px; color:#222;}
+  .메타{font-size:var(--font-size-11); color:var(--gray-500); margin-top:5px; line-height:1.6;}
+  .머리버튼{display:flex; gap:8px; flex:0 0 auto;}
+
+  .결과속{display:flex; flex-direction:column; gap:13px; padding-top:14px;}
+
+  /* D-3 · R-5 — 글자 버튼(라이브러리 30-btn-text) + 메뉴(21-overflow-menu) */
+  .메뉴자리{position:relative;}
+  /* 덩이 버튼 — 자동화 화면③ 조작 버튼 .b(결정 4004)와 같은 값 = 라이브러리 btn-basic size-small */
+  .btn-덩이{display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; border-radius:5px;
+    border:1px solid var(--border-default); background:#fff; color:var(--black-900);
+    font-family:inherit; font-size:12px; cursor:pointer;}
+  .btn-덩이 svg{width:15px; height:15px; color:#475062; flex:0 0 auto;}
+  .btn-덩이:hover, .btn-덩이.is-open{background:rgba(0,0,0,.05);}
+  .메뉴{position:absolute; right:0; top:32px; z-index:9; background:#fff; min-width:150px; padding:8px;
+    border-radius:12px; box-shadow:0 0 5px rgba(0,0,0,.15);}
+  .메뉴[hidden]{display:none;}
+  /* 메뉴 줄은 글자만 — 아이콘 없음(라이브러리 21 관행 · 2026-09-22 결정) */
+  .메뉴줄{display:flex; align-items:center; min-height:32px; padding:4px 8px; border-radius:5px;
+    font-size:13px; color:var(--black-900); cursor:pointer; white-space:nowrap;}
+  .메뉴줄:hover{background:rgba(0,0,0,.05);}
+
+  /* 지표판·지표·지표이름·지표값 은 **부품이 정본**이다 — `부품/지표판/지표판.css`.
+     여기 두면 값이 두 곳이 된다(규약 2). 열 수는 지표 **개수**가 정한다(`data-열`). */
+
+  /* ★ 노랑을 걷었다 (2026-09-24) — 이 프로젝트는 **주의색을 안 쓴다**
+     (2026-09-23 전처리 곁말 「주황을 안 쓴다」 · 자동화 화면③ 「알림 띠는 실패·꺼짐 둘 다 회색」).
+     `실측` 여기만 `--color-warning`(rgb 245,158,11) + `--color-warning-soft`(rgb 254,244,226) 로 남아 있었다.
+     이 판은 **혼내는 말이 아니라 읽는 법**이다 — 「이 결과를 읽을 때」. 색으로 놀랄 일이 아니다. */
+  /* (지금은 안 씀 — 보기 줄을 뺐다. 되살리면 이 값이 그대로 쓰인다)
+     ★ 보기 줄 — **세그먼트 · 가로선 없음** (2026-09-25 사용자 · 랩 `랩/탭모양` T3-1b).
+     앞서는 부품 `탭줄`(높이 50 · 밑줄)이었다. 바꾼 까닭
+       · 탭은 **걸음이 다른 화면**을 가르는 꼴인데 여기 넷은 **한 문서의 부분들**이다.
+         「결론」을 눌러도 하는 일이 안 바뀐다 — 같은 결과를 다르게 볼 뿐이다
+       · **가로선을 없애니 축 Z2 의 폭 싸움이 통째로 사라졌다** —
+         밑줄이 없으면 「본문은 960 인데 밑줄만 2410」(Z2-0)도 「밑줄이 짧아 붕 뜬다」(Z2-1)도 없다
+     왼쪽은 본문(332)과 같다 — `padding-left:24` 가 `.가운데` 의 24 와 맞는다.
+     위 14 는 화면②의 `.자리{padding:14px …}` 와 같은 값이다(앞서는 0 이었다) */
+  .탭줄{display:flex; align-items:center; padding:14px 24px 0; box-sizing:border-box;}
+  /* ⚠ 라이브러리 `segment-item-demo` 는 `.active` 에만 `border:1px` 이 붙어 **켠 칸만 1px 솟는다**
+     (`남은것.md` 열린 항목). 라이브러리를 고치는 것은 별도 결정이라, 여기서는 **안 켠 칸에
+     투명 테두리**를 줘서 자리만 맞춘다 — 라이브러리 값은 안 건드린다(as-is 규칙) */
+  .탭줄 .segment-item-demo{border:1px solid transparent;}
+
+  .주의판{}
+  /* (안 씀 — 밖 라벨로 나갔다 2026-09-25. 되살리면 이 값이 그대로 쓰인다) */
+  /* (안 씀 — 밖 라벨로 나갔다 2026-09-25. 없는 토큰 `--color-warning-strong` 도 함께 걷었다) */
+  .주의머리{font-size:var(--font-size-12); font-weight:600; color:var(--gray-600); margin-bottom:6px;}
+  /* ★ 호박색(`rgb(180,83,9)`)을 걷었다 (2026-09-25) — 2026-09-24 에 이 판의 **바탕·테두리만**
+     회색으로 바꾸고 **글자는 그대로 뒀던 것**이다. 「주의색을 안 쓴다」가 반만 지켜져 있었다.
+     `--color-warning-strong` 은 라이브러리에 **없는 토큰**이라 폴백으로 떨어지고 있었다. */
+  .주의목록{margin:0; padding-left:16px; font-size:var(--font-size-12); line-height:1.75;
+    color:var(--gray-600);}
+  .주의목록 li + li{margin-top:2px;}
+
+  .차트틀{}
+  .그림{width:100%; height:auto; display:block;}
+  .차트이름{font-size:var(--font-size-11); color:var(--gray-500); text-align:center; margin-top:6px;}
+  .교차표{width:100%; border-collapse:collapse; font-size:var(--font-size-12);}
+  .교차표 th, .교차표 td{border-top:1px solid var(--border-subtle); padding:7px 10px; text-align:left;}
+  .교차표 thead th{border-top:0; border-bottom:1px solid var(--border-default);
+    font-size:var(--font-size-11); font-weight:600; color:var(--gray-600);}
+  .교차표 tbody th{font-weight:500; color:#222;}
+
+  .결론판{}
+  /* (안 씀 — 밖 라벨로 나갔다 2026-09-25. 되살리면 이 값이 그대로 쓰인다) */
+  .결론머리{font-size:var(--font-size-13); font-weight:600; color:#222; margin-bottom:7px;}
+  /* 결론은 **이 화면에서 가장 오래 읽는 글**이라 본문 크기를 13 으로 둔다.
+     `--color-n-800`(= `#2a3445`)은 라이브러리에 **없는 토큰**이라 `--gray-600` 으로 바꿨다 */
+  .결론글{font-size:var(--font-size-13); line-height:1.85; color:var(--gray-600);}
+  .결론글 b{font-weight:600; color:var(--black-900);}
+
+  .접힘줄{display:flex; align-items:center; gap:9px;}
+  .접힘줄 em{font-style:normal; color:var(--gray-500); font-size:var(--font-size-11); flex:1;}
+  /* 파랑 → 회색 (2026-09-28 사용자). 「다시 작성」(`.덩이조작 button`)과 같은 글자 버튼 값 —
+     평소 `--gray-500`, 호버 `--black-900`. 이 화면의 파랑은 제목줄 버튼 쪽에만 남긴다 */
+  .펼치기{color:var(--gray-500); font-size:var(--font-size-11); cursor:pointer;
+    border:0; background:none; font-family:inherit; padding:0;}
+  .펼치기:hover{color:var(--black-900);}
+
+  .파일판{}
+  /* (안 씀 — 밖 라벨로 나갔다 2026-09-25. 되살리면 이 값이 그대로 쓰인다) */
+  .파일머리{font-size:var(--font-size-13); font-weight:600; color:#222;}
+  .파일이름줄{font-size:var(--font-size-13); font-weight:500; color:var(--black-900); margin-top:0;}
+
+  /* ★ 발자취 — 「이 결과가 무엇으로 나왔나」 (랩 F2-1, 2026-09-25).
+     이름/값 두 칸. 값 칸의 글자 크기·굵기는 앞서 쓰던 `.파일이름줄` 과 같게 둔다 */
+  .발자취{display:grid; grid-template-columns:auto 1fr; gap:6px 16px;}
+  .발줄{display:contents;}
+  .발이름{font-size:var(--font-size-11); color:var(--gray-500); line-height:18px;}
+  .발값{font-size:var(--font-size-13); font-weight:500; color:var(--black-900); line-height:18px;}
+  /* 안내는 이제 **판 안의 판**이 아니다 — 판이 이미 `--gray-50` 이라 바탕을 또 깔 까닭이 없고,
+     쓰던 `--color-gnb-panel-bg` 는 라이브러리에 **없는 토큰**이었다 `확인함` */
+  .파일안내{font-size:var(--font-size-11); line-height:1.7; color:var(--gray-500);
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--border-subtle);}
+/* @끝 _결과.css */
+</style>
+</head><body>
+<!-- @조각 _틀.html -->
+<div class="app">
+<div class="gnb">
+<div class="g-item"><img src="assets/ico-gnb-aiChat.svg" alt=""><span>AI 채팅</span></div>
+<div class="g-item"><img src="assets/ico-gnb-cowork.svg" alt=""><span>협업</span></div>
+<div class="g-item"><img src="assets/ico-gnb-document.svg" alt=""><span>지식/문서</span></div>
+<div class="g-item"><img src="assets/ico-gnb-mail.svg" alt=""><span>이메일</span></div>
+<div class="g-item"><img src="assets/ico-workflow-active.svg" alt=""><span>자동화</span></div>
+<div class="g-item"><img src="assets/ico-gnb-dashboard.svg" alt=""><span>프로젝트</span></div>
+<div class="g-item on"><img src="assets/ico-analysis.svg" alt=""><span>데이터 분석</span></div>
+<div class="g-item"><img src="assets/ico-gnb-system.svg" alt=""><span>관리</span></div>
+<div class="g-item"><img src="assets/ico-gnb-system02-active.svg" alt=""><span>시스템</span></div>
+</div>
+<div class="main">
+  <div class="hd"><span class="logo">Prixm AI:CREW</span><span class="sp"></span>
+    <img src="assets/ico-bell.svg" style="width:18px"><span style="font-size:12px;">박준형</span></div>
+  <div class="body">
+    <div class="lnb-panel"><div class="js-lnb"></div></div>
+<script>PRIXM_ANALYSIS_LNB({"내역": [{"t": "화학물질 안전 데이터 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 월별 추세", "on": true, "cls": "js-row-trend", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=trend"}, {"t": "측정 항목별 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 분포", "아직": "분포 결과 화면은 아직 없습니다"}, {"t": "부서별 그룹 비교", "아직": "그룹 비교 결과 화면은 아직 없습니다"}, {"t": "측정 항목 간 상관분석", "아직": "상관분석 결과 화면은 아직 없습니다"}, {"t": "부서 × 위험등급 교차표", "cls": "js-row-cross", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=cross"}], "새분석링크": "../데이터분석/정본/화면01_새분석/화면01_새분석.html"});</script>
+    <div class="main">
+      <div class="js-head"></div>
+<script>PRIXM_HEAD({ crumb: [{t:'데이터 분석', cls:'js-crumb-home'}, {t:'측정값 월별 추세', cur:true, cls:'js-crumb'}], search: '분석 검색' });</script>
+      <div class="content">
+
+<div class="가운데" data-view="trend">
+  <div class="제목줄">
+    <div class="제목묶음">
+      <div class="제목">측정값 월별 추세</div>
+      <div class="메타">추세 · 값 <b>연도</b> · 이동평균 구간 <b>7</b> &nbsp;|&nbsp; chem_safety_sample_KR.csv · 9/9 12:53 · 1.6초 · 내부 서버</div>
+    </div>
+    <div class="머리버튼">
+      <div class="메뉴자리">
+        <button class="btn-덩이 js-redo-btn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v2.4h-2.4"/></svg><span>다시 분석</span></button>
+        <div class="메뉴 js-redo-menu" hidden>
+          <div class="메뉴줄">같은 조건으로 분석</div>
+          <div class="메뉴줄">다른 조건으로 분석</div>
+        </div>
+      </div>
+      <div class="메뉴자리">
+        <button class="btn-덩이 js-save-btn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.6v7.2M5.2 7.2L8 10l2.8-2.8M3 12.4h10"/></svg><span>결과 저장</span></button>
+        <div class="메뉴 js-save-menu" style="min-width:162px" hidden>
+          <div class="메뉴줄">내 PC 에 저장</div>
+          <div class="메뉴줄">지식/문서에 저장</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="결과속">
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">주요 지표</span></div><div class="지표판" data-열="3"><div class="지표"><span class="지표이름">기울기 (단위당)</span><span class="지표값">0.000208</span></div><div class="지표"><span class="지표이름">유의확률</span><span class="지표값">0.51909</span></div><div class="지표"><span class="지표이름">상관계수 r</span><span class="지표값">0.0315</span></div><div class="지표"><span class="지표이름">R²</span><span class="지표값">0.001</span></div><div class="지표"><span class="지표이름">표준오차</span><span class="지표값">0.000322</span></div><div class="지표"><span class="지표이름">표본수</span><span class="지표값">420</span></div></div></div>
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">이 결과를 읽을 때</span></div><div class="판 주의판"><ul class="주의목록"><li>추세의 기울기가 통계적으로 유의하지 않습니다. 방향을 단정하지 마세요.</li><li>정렬 기준을 지정하지 않아 행 순서를 시간축으로 가정했습니다.</li></ul></div></div>
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">차트</span></div><div class="판 차트틀"><svg viewBox="0 0 640 150" class="그림">
+<line x1="40" y1="126" x2="624" y2="126" stroke="#d1d5db"/><line x1="40" y1="14" x2="40" y2="126" stroke="#d1d5db"/>
+<polyline points="54,96 122,88 190,100 258,78 326,92 394,82 462,96 530,74 600,86" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+<line x1="54" y1="94" x2="600" y2="84" stroke="#2563eb" stroke-width="1.5"/></svg><div class="차트이름">차트 1 · 연도별 추세와 이동평균</div></div></div>
+    <div class="덩이" data-속함="conclusion"><div class="라벨줄"><span class="라벨">결론</span><span class="덩이조작"><button type="button" class="js-결론다시"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v2.4h-2.4"/></svg>다시 작성</button></span></div><div class="판 결론판"><div class="결론글"><b>요약</b> : 연도에 따른 뚜렷한 증가나 감소는 확인되지 않았습니다(기울기 0.000208 · 유의확률 0.519).<br><b>결과 해석</b> : R² 가 0.001 로 연도가 설명하는 부분이 사실상 없습니다.<br><b>한계</b> : 정렬 기준을 지정하지 않아 행 순서를 시간축으로 가정했습니다.<br><b>다음 분석 제안</b> : 연도를 구간으로 묶어 그룹 비교를 해 보는 편이 낫습니다.</div></div></div>
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">실행한 코드</span></div><div class="코드판"><div class="판 접힘줄"><em>이 숫자를 만든 코드입니다. 같은 입력이면 항상 같습니다</em><button type="button" class="펼치기 js-코드펼침" aria-expanded="false">펼치기</button></div><pre class="코드 js-코드" hidden>import statsmodels.api as sm
+x = sm.add_constant(df['연도'])
+model = sm.OLS(df['측정값'], x).fit()
+model.params, model.pvalues, model.rsquared</pre></div></div>
+    <div class="덩이" data-속함="file"><div class="라벨줄"><span class="라벨">분석한 데이터</span></div><div class="판 파일판"><div class="발자취"><div class="발줄"><span class="발이름">파일</span><span class="발값">chem_safety_sample_KR.csv</span></div><div class="발줄"><span class="발이름">시트</span><span class="발값">측정 결과</span></div><div class="발줄"><span class="발이름">전처리</span><span class="발값">없음</span></div><div class="발줄"><span class="발이름">쓴 변수</span><span class="발값">연도 · 설명 측정값</span></div><div class="발줄"><span class="발이름">분석에 쓴 행</span><span class="발값">420행</span></div></div><div class="파일안내">원본은 보관하지 않습니다. 데이터를 다시 보려면 <b>PC 에서 이 파일을 다시 올려 주세요</b>.</div></div></div>
+  </div>
+</div>
+<div class="가운데" data-view="cross">
+  <div class="제목줄">
+    <div class="제목묶음">
+      <div class="제목">결과 · 교차표</div>
+      <div class="메타">교차표 · 행 <b>품목</b> · 열 <b>제형</b> &nbsp;|&nbsp; chem_safety_sample_KR.csv · 9/9 12:52 · 1.7초 · 내부 서버</div>
+    </div>
+    <div class="머리버튼">
+      <div class="메뉴자리">
+        <button class="btn-덩이 js-redo-btn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v2.4h-2.4"/></svg><span>다시 분석</span></button>
+        <div class="메뉴 js-redo-menu" hidden>
+          <div class="메뉴줄">같은 조건으로 분석</div>
+          <div class="메뉴줄">다른 조건으로 분석</div>
+        </div>
+      </div>
+      <div class="메뉴자리">
+        <button class="btn-덩이 js-save-btn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.6v7.2M5.2 7.2L8 10l2.8-2.8M3 12.4h10"/></svg><span>결과 저장</span></button>
+        <div class="메뉴 js-save-menu" style="min-width:162px" hidden>
+          <div class="메뉴줄">내 PC 에 저장</div>
+          <div class="메뉴줄">지식/문서에 저장</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="결과속">
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">주요 지표</span></div><div class="지표판" data-열="3"><div class="지표"><span class="지표이름">카이제곱</span><span class="지표값">276.3747</span></div><div class="지표"><span class="지표이름">유의확률</span><span class="지표값">0</span></div><div class="지표"><span class="지표이름">자유도</span><span class="지표값">15</span></div><div class="지표"><span class="지표이름">Cramér's V (연관 강도)</span><span class="지표값">0.4683</span></div><div class="지표"><span class="지표이름">표본수</span><span class="지표값">420</span></div><div class="지표"><span class="지표이름">기대빈도 5 미만 칸</span><span class="지표값">36</span></div></div></div>
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">이 결과를 읽을 때</span></div><div class="판 주의판"><ul class="주의목록"><li>기대빈도가 5 미만인 칸이 36개입니다. 카이제곱 근사가 부정확할 수 있습니다.</li></ul></div></div>
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">표</span></div><div class="판 차트틀"><div class="교차표자리"><table class="교차표"><thead><tr><th></th><th>겔·고형</th><th>분무형</th><th>액상</th><th>에어로졸</th></tr></thead><tbody><tr><th>방향제</th><td>23</td><td>30</td><td>40</td><td>0</td></tr><tr><th>살균제</th><td>0</td><td>30</td><td>25</td><td>16</td></tr><tr><th>세정제</th><td>0</td><td>36</td><td>53</td><td>0</td></tr><tr><th>접착제</th><td>29</td><td>0</td><td>19</td><td>0</td></tr><tr><th>코팅제</th><td>0</td><td>0</td><td>28</td><td>28</td></tr><tr><th>탈취제</th><td>0</td><td>23</td><td>22</td><td>18</td></tr></tbody></table></div><div class="차트이름">표 1 · 품목 × 제형 교차표</div></div></div>
+    <div class="덩이" data-속함="conclusion"><div class="라벨줄"><span class="라벨">결론</span><span class="덩이조작"><button type="button" class="js-결론다시"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8a5 5 0 1 1-1.6-3.7M13 3v2.4h-2.4"/></svg>다시 작성</button></span></div><div class="판 결론판"><div class="결론글"><b>요약</b> : 품목과 제형은 서로 독립이 아닙니다(카이제곱 276.37 · 유의확률 0 · 자유도 15).<br><b>결과 해석</b> : Cramér's V 가 0.4683 으로 연관 강도가 중간 이상입니다. 품목마다 쓰이는 제형이 뚜렷이 갈립니다.<br><b>한계</b> : 기대빈도가 5 미만인 칸이 36개라 카이제곱 근사가 부정확할 수 있습니다.<br><b>다음 분석 제안</b> : 칸이 작은 품목을 묶어 다시 보면 근사가 안정됩니다.</div></div></div>
+    <div class="덩이" data-속함="result"><div class="라벨줄"><span class="라벨">실행한 코드</span></div><div class="코드판"><div class="판 접힘줄"><em>이 숫자를 만든 코드입니다. 같은 입력이면 항상 같습니다</em><button type="button" class="펼치기 js-코드펼침" aria-expanded="false">펼치기</button></div><pre class="코드 js-코드" hidden>from scipy.stats import chi2_contingency
+표 = pd.crosstab(df['품목'], df['제형'])
+chi2, p, dof, expected = chi2_contingency(표)</pre></div></div>
+    <div class="덩이" data-속함="file"><div class="라벨줄"><span class="라벨">분석한 데이터</span></div><div class="판 파일판"><div class="발자취"><div class="발줄"><span class="발이름">파일</span><span class="발값">chem_safety_sample_KR.csv</span></div><div class="발줄"><span class="발이름">시트</span><span class="발값">측정 결과</span></div><div class="발줄"><span class="발이름">전처리</span><span class="발값">없음</span></div><div class="발줄"><span class="발이름">쓴 변수</span><span class="발값">품목 · 제형</span></div><div class="발줄"><span class="발이름">분석에 쓴 행</span><span class="발값">420행</span></div></div><div class="파일안내">원본은 보관하지 않습니다. 데이터를 다시 보려면 <b>PC 에서 이 파일을 다시 올려 주세요</b>.</div></div></div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- @끝 _틀.html -->
+<script>
+/* @조각 _결과.js */
+(function(){
+  var $  = function(s,p){ return (p||document).querySelector(s); };
+  var $$ = function(s,p){ return Array.prototype.slice.call((p||document).querySelectorAll(s)); };
+
+  var 파라 = new URLSearchParams(location.search);
+  var 보기 = parseView(파라.get('view'));
+  var 열린메뉴 = 파라.get('menu');
+  var 탭 = parseTab(파라.get('tab'));
+
+  function parseView(v){ return (v === 'cross') ? 'cross' : 'trend'; }
+  function parseTab(v){ return /^(result|conclusion|file)$/.test(v) ? v : 'all'; }
+
+  /* 탭 — 누르면 **그 덩이만 남는다**(축 T2-A · 랩/결과탭). 모양은 부품(부품/탭줄)이 맡는다.
+     덩이마다 `data-속함` 이 붙어 있고 「전체」면 전부 보인다. 결과 두 벌(추세·교차표)이
+     같은 탭 줄 하나를 쓰므로 보기를 바꿔도 보던 탭이 그대로 남는다. */
+  function 탭그리기(){
+    /* 세그먼트로 바뀌면서 켠 표시가 `지금` → 라이브러리 `active` 가 됐다(2026-09-25 · T3-1b) */
+    $$('.js-탭').forEach(function(b){ b.classList.toggle('active', b.dataset['탭'] === 탭); });
+    $$('.덩이').forEach(function(d){ d.hidden = (탭 !== 'all' && d.dataset['속함'] !== 탭); });
+  }
+
+  function 주소쓰기(){
+    var q = [];
+    if (보기 !== 'trend') q.push('view=' + 보기);
+    if (탭 !== 'all') q.push('tab=' + 탭);
+    var 열림 = 어느메뉴();
+    if (열림) q.push('menu=' + 열림);
+    // ⚠ <base href="../../컴포넌트/"> 때문에 pathname 을 반드시 붙인다
+    history.replaceState(null, '', location.pathname + (q.length ? '?' + q.join('&') : ''));
+  }
+
+  function 어느메뉴(){
+    var d = $('.가운데:not([hidden]) .js-save-menu');
+    var r = $('.가운데:not([hidden]) .js-redo-menu');
+    if (d && !d.hidden) return 'save';
+    if (r && !r.hidden) return 'redo';
+    return '';
+  }
+
+  function 보기그리기(){
+    $$('.가운데').forEach(function(el){ el.hidden = (el.dataset.view !== 보기); });
+    var 줄추 = $('.js-row-trend'), 줄교 = $('.js-row-cross');
+    if (줄추) 줄추.classList.toggle('active', 보기 === 'trend');
+    if (줄교) 줄교.classList.toggle('active', 보기 === 'cross');
+  }
+
+  function 메뉴닫기(){
+    $$('.메뉴').forEach(function(el){ el.hidden = true; });
+    $$('.btn-덩이').forEach(function(el){ el.classList.remove('is-open'); });
+  }
+
+  function 메뉴열기(어느){
+    메뉴닫기();
+    var 면 = $('.가운데:not([hidden])');
+    var 버튼 = $(어느 === 'save' ? '.js-save-btn' : '.js-redo-btn', 면);
+    var 메뉴 = $(어느 === 'save' ? '.js-save-menu' : '.js-redo-menu', 면);
+    if (!버튼) return;
+    메뉴.hidden = false;
+    버튼.classList.add('is-open');
+  }
+
+  /* ★ 「실행한 코드 · 펼치기」를 **살렸다** (2026-09-24) — 앞서는 눌러도 아무 일이 없었다
+     (`남은것.md` 「⑤ 결과 화면에 죽은 조작이 남았다」). 보기마다 코드가 따로 달린다 */
+  document.addEventListener('click', function(e){
+    var 펼 = e.target.closest('.js-코드펼침');
+    if (펼) {
+      var 판 = 펼.closest('.코드판'), 코드 = 판.querySelector('.js-코드');
+      var 열까 =코드.hidden;
+      코드.hidden = !열까;
+      펼.textContent = 열까 ? '접기' : '펼치기';
+      펼.setAttribute('aria-expanded', 열까 ? 'true' : 'false');
+      return;
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    var 버튼 = e.target.closest('.js-save-btn, .js-redo-btn');
+    if (버튼) {
+      var 어느 = 버튼.classList.contains('js-save-btn') ? 'save' : 'redo';
+      var 이미 = (어느메뉴() === 어느);
+      이미 ? 메뉴닫기() : 메뉴열기(어느);
+      주소쓰기();
+      return;
+    }
+    if (e.target.closest('.메뉴줄')) { 메뉴닫기(); 주소쓰기(); return; }
+    if (!e.target.closest('.메뉴')) { 메뉴닫기(); 주소쓰기(); }
+
+    var 탭칸 = e.target.closest('.js-탭');
+    if (탭칸) { 탭 = 탭칸.dataset['탭']; 탭그리기(); 주소쓰기(); return; }
+
+    var 줄 = e.target.closest('.js-row-trend, .js-row-cross');
+    if (줄) { 보기 = 줄.classList.contains('js-row-cross') ? 'cross' : 'trend'; 보기그리기(); 주소쓰기(); }
+  });
+
+  /* 경로 줄 마지막 조각을 보고 있는 결과 이름으로 맞춘다(자동화 화면③ syncCrumb 와 같은 규칙) */
+  function 경로맞추기(){
+    var c = $('.js-crumb');
+    if (c) c.textContent = (보기 === 'cross') ? '부서 × 위험등급 교차표' : '측정값 월별 추세';
+  }
+  var 옛보기그리기 = 보기그리기;
+  보기그리기 = function(){ 옛보기그리기(); 경로맞추기(); };
+
+  보기그리기();
+  탭그리기();
+  if (열린메뉴 === 'save' || 열린메뉴 === 'redo') 메뉴열기(열린메뉴);
+})();
+/* @끝 _결과.js */
+</script>
+</body></html>

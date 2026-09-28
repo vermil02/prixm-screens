@@ -1,0 +1,31 @@
+/* ===========================================================================
+   prixm 아이콘 — 모양 규칙 (2026-09-22)
+   `아이콘.js` 가 크기와 획 두께를 함께 넣으므로 여기 값은 **거드는 것**뿐입니다.
+   SVG 를 직접 붙여 쓸 때(파일 `svg/*.svg`)는 아래 크기 클래스로 획을 맞추십시오.
+   =========================================================================== */
+.px-ico{display:block; flex:0 0 auto; color:inherit;}
+
+/* 크기별 획 두께 — prixm 규칙 `stroke = 24 ÷ 그릴 크기`. 실효 1px 이 되게 한다. */
+.px-ico-12{width:12px; height:12px; stroke-width:2;}
+.px-ico-14{width:14px; height:14px; stroke-width:1.71;}
+.px-ico-15{width:15px; height:15px; stroke-width:1.6;}
+.px-ico-16{width:16px; height:16px; stroke-width:1.5;}
+.px-ico-18{width:18px; height:18px; stroke-width:1.33;}
+.px-ico-20{width:20px; height:20px; stroke-width:1.2;}
+.px-ico-24{width:24px; height:24px; stroke-width:1;}
+
+/* ── 색 — **아이콘은 옆 글자와 같은 색이다** ────────────────────────────────
+   `currentColor` 라 저절로 그렇게 되므로, 아이콘이 든 자리에 `color` 를 따로 주지 않는다.
+   디자이너 파일도 색을 따로 정하지 않고 **자리(역할)마다 글자색을 따라간다** —
+   Figma `prixm` node 93:32013 렌더 픽셀 실측(2026-09-22):
+
+     | 자리 | 코어 색 |
+     |---|---|
+     | LNB 메뉴 아이콘 (프로젝트 · 내 업무) | **#222222** — 그 줄 글자와 같다 |
+     | 유틸·보조 (경로줄 검색 · `↳` · 말풍선) | **#475062** — 그 자리 글자와 같다 |
+     | 상태 (진행중 ✓) | **#1dba57** — success 토큰. 뜻을 싣는 유일한 예외 |
+
+   그래서 우리도 아이콘에 색을 주는 자리는 **상태뿐**이다. */
+.px-ico.is-danger{color:var(--color-danger,#ef4444);}
+.px-ico.is-success{color:var(--color-success,#1dba57);}
+.px-ico.is-warning{color:var(--color-warning,#f59e0b);}
