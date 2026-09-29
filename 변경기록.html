@@ -28,8 +28,7 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 <li>공용 부품(상단 바 · 경로 줄 · 스크롤 막대 등)은 <code>…/화면/_공용.css</code> · <code>…/화면/부품/상단바/_상단바.js</code>, 라이브러리 원본은 <code>…/컴포넌트/</code>.</li>
 <li><b>상태는 주소로 연다</b> — 예: 자동화 ③ <code>?state=wait|run|fail|off|setup</code> · <code>?view=run:r3</code> / 자동화 ② <code>?tpl=drone&amp;edit=1</code>(설정) / 데이터분석 ⑤ <code>?view=trend|cross</code> / ② <code>?tab=method&amp;redo=trend</code>.</li>
 <li>각 화면 왼쪽 위 「설명 보기」 = 그 화면의 설명(언제 보이나 · 무엇이 보이나 · 조작 · 규칙). 설명은 AI 가 쓴 초안이라 시안과 다르면 <b>시안이 맞다</b>.</li>
-<li>표 · 차트 값, 파일 이름, 날짜는 <b>시안용 예시</b>다. 실제 값은 서버가 준다.</li>
-<li>이 시안이 정하는 것은 <b>화면 표현과 흐름</b>(무엇이 어디에 어떻게 보이고, 누르면 어디로 가나)이다. 계산 · 저장 · 옵션 값처럼 화면 뒤의 동작은 개발에서 정한다.</li>
+<li>표 · 차트 값, 파일 이름, 날짜, 분석 조건 같은 값은 화면을 보이기 위한 <b>데모값</b>이다.</li>
 </ul>
 <p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
 <hr>
@@ -53,7 +52,6 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 <p class="sub"><b>데이터분석 ② 데이터 · 분석 기법</b> (<code>화면02_데이터.html</code>)</p>
 <ul>
 <li><code>redo=</code> 로 오면 <b>지금 결과의 조건을 채워서</b> 연다 — 추세: 데이터 chem_safety_sample_KR.csv · 방법 추세 · 시간축 연도 · 값 측정값 / 교차표: 방법 교차표 · 행 품목 · 열 제형. 「분석 실행」이 켜져 있고 누르면 같은 결과로.</li>
-<li>시안은 <b>방법 · 변수까지</b> 채워 보인다. 분석 옵션(추세의 이동평균 구간 등)을 이어받는 것은 개발에서 정한다.</li>
 </ul>
 <h2><span class="v">v26.09.29-1</span><span class="m">2026-09-29 10:14 · 80940ab</span></h2>
 <p class="sub"><b>자동화 ② 자동화 생성 · 설정</b> (<code>화면02_자동화생성.html</code>)</p>
