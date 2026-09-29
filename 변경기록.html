@@ -18,54 +18,84 @@ a.card:hover{border-color:#a8afbc;}
 a.dl{display:inline-flex; align-items:center; gap:8px; margin-top:12px; font-size:12px; color:#2563eb; text-decoration:none;}
 a.dl:hover{text-decoration:underline;} a.dl span{color:#808897;}
 .foot{margin-top:30px;font-size:11px;color:#a8afbc;line-height:1.9;}
-h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;} h2 .v{font-weight:700;color:#222;} h2 .m{font-size:11px;font-weight:400;color:#808897;}ul{margin:0;padding-left:18px;font-size:13px;line-height:1.8;color:#2a3445;} ul ul{padding-left:16px;color:#566070;} code{background:#eef1f6;padding:0 4px;border-radius:3px;font-size:12px;}a.back{font-size:12px;color:#2563eb;text-decoration:none;} a.back:hover{text-decoration:underline;}</style></head><body><div class="wrap"><a class="back" href="index.html">← 프로젝트 목록</a><h1>변경 기록</h1>
-<p class="sub">Prixm 시안 <b>화면이 바뀐 것만</b> 적는다(설명서 · 사이트 첫 화면 같은 것은 안 적는다). <b>맨 위가 지금 버전</b>이다.</p>
-<p class="sub">버전 이름은 <code>v연.월.일-그날 몇 번째</code>(예: <code>v26.09.29-2</code> = 2026년 9월 29일 두 번째로 올린 것). 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호다.</p>
-<p class="sub">사이트: <a href="https://vermil02.github.io/prixm-screens/">https://vermil02.github.io/prixm-screens/</a></p>
+h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;} h2 .v{font-weight:700;color:#222;} h2 .m{font-size:11px;font-weight:400;color:#808897;}ul{margin:0;padding-left:18px;font-size:13px;line-height:1.8;color:#2a3445;} ul ul{padding-left:16px;color:#566070;} code{background:#eef1f6;padding:0 4px;border-radius:3px;font-size:12px;}a.back{font-size:12px;color:#2563eb;text-decoration:none;} a.back:hover{text-decoration:underline;}table.표{border-collapse:collapse;font-size:12px;margin:8px 0 12px;} table.표 th,table.표 td{border:1px solid #e5e7eb;padding:5px 10px;text-align:left;vertical-align:top;} table.표 th{background:#f3f4f6;font-weight:600;color:#566070;}h2.절{font-size:14px;margin:22px 0 6px;} hr{border:0;border-top:1px solid #e5e7eb;margin:26px 0 4px;} p.sub b{color:#2a3445;}</style></head><body><div class="wrap"><a class="back" href="index.html">← 프로젝트 목록</a><h1>변경 기록 — Prixm 시안</h1>
+<p class="sub">이 zip 은 <b>디자인 파일</b>이다 — 실제 제품 코드가 아니라, Prixm 화면이 어떻게 보이고 어떻게 움직여야 하는지를 HTML 로 만든 시안이다.</p>
+<p class="sub">이 기록은 시안으로 작업하는 사람과 AI 가 <b>무엇이 바뀌었고 어디를 보면 되는지</b> 빨리 찾게 하려고 적는다. <b>맨 위가 지금 버전</b>이다.</p>
+<h2 class="절">읽는 법</h2>
+<p class="sub"><b>파일</b> — 화면 하나 = HTML 한 장. 브라우저로 열면 그대로 돈다(서버 없이 더블클릭도 된다).</p>
+<table class="표"><tr><th>프로젝트</th><th>화면</th><th>파일</th></tr><tr><td>자동화</td><td>① 전체 목록</td><td><code>자동화/화면/화면01_전체목록.html</code></td></tr><tr><td></td><td>② 자동화 생성 · 설정</td><td><code>자동화/화면/화면02_자동화생성.html</code></td></tr><tr><td></td><td>③ 자동화 상세</td><td><code>자동화/화면/화면03_자동화상세.html</code></td></tr><tr><td>데이터분석</td><td>① 새 분석</td><td><code>데이터분석/데이터분석/정본/화면01_새분석/화면01_새분석.html</code></td></tr><tr><td></td><td>② 데이터 · 분석 기법</td><td><code>데이터분석/데이터분석/정본/화면02_데이터/화면02_데이터.html</code></td></tr><tr><td></td><td>⑤ 결과</td><td><code>데이터분석/데이터분석/정본/화면05_결과/화면05_결과.html</code></td></tr></table>
+<ul>
+<li>공용 부품(상단 바 · 경로 줄 · 스크롤 막대 등)은 <code>…/화면/_공용.css</code> · <code>…/화면/부품/상단바/_상단바.js</code>, 라이브러리 원본은 <code>…/컴포넌트/</code>.</li>
+<li><b>상태는 주소로 연다</b> — 예: 자동화 ③ <code>?state=wait|run|fail|off|setup</code> · <code>?view=run:r3</code> / 자동화 ② <code>?tpl=drone&amp;edit=1</code>(설정) / 데이터분석 ⑤ <code>?view=trend|cross</code> / ② <code>?tab=method&amp;redo=trend</code>.</li>
+<li>각 화면 왼쪽 위 「설명 보기」 = 그 화면의 설명(언제 보이나 · 무엇이 보이나 · 조작 · 규칙). 설명은 AI 가 쓴 초안이라 시안과 다르면 <b>시안이 맞다</b>.</li>
+<li>표 · 차트 값, 파일 이름, 날짜는 <b>시안용 예시</b>다. 실제 값은 서버가 준다.</li>
+</ul>
+<p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
+<hr>
 <h2><span class="v">v26.09.29-2</span><span class="m">2026-09-29 14:51 · d920c69</span></h2>
+<p class="sub"><b>자동화 ③ 상세</b> (<code>화면03_자동화상세.html</code>)</p>
 <ul>
-<li>자동화 ③ 상세</li>
-<ul>
-<li>「1회 실행」을 눌러도 실행 화면으로 넘어가지 않고 홈에 머문다(표 맨 위에 진행 중 줄).</li>
-<li>「진행 중」 태그: 옅은 초록 채움 + 도는 도넛(화면① 카드와 같은 움직임). 결과 칸은 「3/5 근거 검색 중」.</li>
+<li>「1회 실행」을 눌러도 실행 화면으로 <b>넘어가지 않는다</b> — 홈에 머물고 「최근 실행 결과」 표 맨 위에 진행 중 줄이 생긴다. (<code>.js-runnow</code> 처리에서 화면 이동을 뺌)</li>
+<li>진행 중 태그 = 옅은 초록 채움 + 도는 도넛(10px · 바탕 원 없음 · 자동화 ① 카드 노드 도넛과 같은 움직임). (<code>.state-badge.is-run</code> · <code>badge()</code>)</li>
+<li>진행 중 줄의 결과 칸 = 「3/5 근거 검색 중」 — 몇 번째 단계인지. 상태 칸과 말을 되풀이하지 않는다. (<code>한일()</code>)</li>
 </ul>
-<li>자동화 ① 전체 목록: 수동 대기 카드 「월간 안전점검 보고」를 더했다.</li>
+<p class="sub"><b>자동화 ① 전체 목록</b> (<code>화면01_전체목록.html</code>)</p>
 <ul>
-<li>「실행」을 누르면 화면을 옮기지 않고 그 카드가 동작 중으로 바뀐다(칩 「동작 중 2/4」 · 도는 단계 · 왼쪽 메뉴 점).</li>
-<li>「중지」를 눌러도 최근 실행이라 맨 앞자리를 지킨다. 왼쪽 메뉴 수동 실행 묶음에 같은 이름 한 줄(화면 ①②③).</li>
+<li>수동 · 대기 카드 「월간 안전점검 보고」를 더했다 — 이 카드에만 「실행」 버튼이 있다(자동 카드에는 즉시 실행이 없다).</li>
+<li>「실행」 = <b>그 자리에서</b> 동작 중으로(칩 「동작 중 2/4」 · 1단계 완료 · 2단계 도넛 · 진행 글 · 왼쪽 메뉴 점) · 화면 ③ 으로 넘어가지 않는다. 「중지」 = 대기로 돌아가되 방금 돈 것이라 최근 실행순 맨 앞을 지킨다. 카드 빈 곳을 누르면 전처럼 ③.</li>
+<li>왼쪽 메뉴 「수동 실행」 묶음에 같은 이름 한 줄(자동화 ①②③ 세 장).</li>
 </ul>
-<li>데이터분석 ⑤ 결과: 「다시 분석」을 누르면 메뉴(같은 조건 · 다른 조건) 없이 곧장 ② 분석 기법으로 간다.</li>
-<li>데이터분석 ② 분석 기법: 결과에서 넘어오면 지금 결과의 조건이 채워진 채로 열린다.</li>
+<p class="sub"><b>데이터분석 ⑤ 결과</b> (<code>화면05_결과.html</code>)</p>
 <ul>
-<li>추세 → 데이터 chem_safety_sample_KR.csv · 방법 추세 · 시간축 연도 · 값 측정값 / 교차표 → 방법 교차표 · 행 품목 · 열 제형.</li>
-<li>「분석 실행」이 바로 켜져 있고, 누르면 같은 결과로 돌아간다. 이동평균 같은 옵션은 ② 에 칸이 없어 아직 못 채운다.</li>
-</ul></ul>
+<li>상단바 「다시 분석」 = 메뉴(같은 조건 · 다른 조건) 없이 <b>곧장 ② 분석 기법</b>으로(<code>?tab=method&amp;redo=trend|cross</code>).</li>
+</ul>
+<p class="sub"><b>데이터분석 ② 데이터 · 분석 기법</b> (<code>화면02_데이터.html</code>)</p>
+<ul>
+<li><code>redo=</code> 로 오면 <b>지금 결과의 조건을 채워서</b> 연다 — 추세: 데이터 chem_safety_sample_KR.csv · 방법 추세 · 시간축 연도 · 값 측정값 / 교차표: 방법 교차표 · 행 품목 · 열 제형. 「분석 실행」이 켜져 있고 누르면 같은 결과로.</li>
+<li>남은 것: 추세의 「이동평균 7」 같은 <b>옵션</b>은 이 화면에 칸이 없어 못 채운다.</li>
+</ul>
 <h2><span class="v">v26.09.29-1</span><span class="m">2026-09-29 10:14 · 80940ab</span></h2>
+<p class="sub"><b>자동화 ② 자동화 생성 · 설정</b> (<code>화면02_자동화생성.html</code>)</p>
 <ul>
-<li>자동화</li>
-<ul>
-<li>설정 · 작성 화면을 가운데 정렬. 설정 화면 오른쪽 위에 「저장」, 설정에서는 「저장하면 바로 켜집니다」 안내를 뺐다.</li>
-<li>경로 줄: 갈 곳이 있는 조각은 링크(손가락 커서 · 밑줄). 뒤로가기 아이콘을 ‹ 에서 ← 로.</li>
-<li>③ 설정 중: 「하는 일」 칸을 빼고 안내 상자를 키웠다. 「전체 보기」 여백.</li>
+<li>작성 · 설정 화면의 [설명 240 | 입력 816] 을 <b>가운데 정렬</b>.</li>
+<li>설정(<code>?edit=1</code>)에만 경로 줄 오른쪽 「저장」(작은 파란 버튼 · 안쪽 12) — 폼 끝 저장과 같은 버튼. 설정에서는 「저장하면 바로 켜집니다」 안내를 뺐다(고쳐 저장해도 켜짐 · 꺼짐이 안 바뀐다).</li>
 </ul>
-<li>데이터분석 ⑤ 결과</li>
+<p class="sub"><b>자동화 공통 — 경로 줄</b> (<code>부품/상단바/_상단바.js</code> · <code>_공용.css</code>)</p>
 <ul>
-<li>제목 아래 메타 줄 「추세 분석 | 파일 | 420행 × 2열 | 날짜 ▾」 — 누르면 제목 밑에 무엇으로 · 무엇을 · 언제 판이 열린다(맨 아래 「분석한 데이터」 섹션을 옮김).</li>
-<li>「데이터」 팝업: 880 크기 · 가로 · 세로 스크롤 · 크게 보기. 원본 파일 내려받기.</li>
-<li>「원본은 보관하지 않습니다」 문구를 지웠다. 실행한 코드의 「펼치기」를 라벨 줄 오른쪽으로.</li>
-</ul></ul>
+<li>맨 앞 뒤로가기 아이콘 ‹ → <b>←</b>(Lucide arrow-left · 16 · 선 1.5).</li>
+<li>갈 곳이 있는 경로 조각은 <b>링크</b> — 손가락 커서 · 올리면 진한 글자 + 밑줄(<code>.crumb-link</code>). 지금 화면 · 「새 자동화」 조각은 링크가 아니다.</li>
+</ul>
+<p class="sub"><b>자동화 ③ 상세</b></p>
+<ul>
+<li>설정 중(<code>?state=setup</code>): 「하는 일」 칸을 빼고 「설정 이어서 하기」 상자 위아래를 넓혔다.</li>
+<li>「최근 실행 결과」 오른쪽 「전체 보기」 안쪽 여백 3 → 8(버튼 칸 오른끝 = 아래 표 오른끝).</li>
+</ul>
+<p class="sub"><b>데이터분석 ⑤ 결과</b></p>
+<ul>
+<li>제목 아래 메타 줄 = 「추세 분석 | 📄 파일 | 420행 × 2열 | 날짜 ▾」. ▾ 를 누르면 <b>제목 바로 밑(가로선 위)</b>에 판이 열린다:</li>
+<ul>
+<li>판: 원본 파일(⤓ 내려받기) · 시트 · 전처리 · 데이터(행 × 열 👁 보기) | 분석 방법 · 변수 · 옵션 | 분석 일시 · 걸린 시간 · 처리 장소.</li>
+<li>맨 아래에 있던 「분석한 데이터」 섹션은 이 판으로 옮겨 없앴다. 제목 줄은 상단에 고정하지 않는다.</li>
+</ul>
+<li>「데이터 👁」 팝업 — 기본 880 × 표 칸 321 · 칸 안에서 가로 · 세로 스크롤 · 머리 줄 고정 · 「크게 보기」(창 가득) · 열은 내용 폭 · 행 약 24 · 전부 왼쪽 정렬.</li>
+<ul>
+<li><b>원본 파일 ≠ 데이터</b> — 받기는 원본 파일, 보기는 분석에 쓴 데이터(시트 · 전처리 · 변수를 건 것).</li>
+</ul>
+<li>「원본은 보관하지 않습니다 …」 문구를 지웠다(원본은 서버에 보관된다). 실행한 코드의 「펼치기」를 라벨 줄 오른쪽으로.</li>
+</ul>
 <h2><span class="v">v26.09.28-6</span><span class="m">2026-09-28 16:47 · 667ad53</span></h2>
 <ul>
-<li>자동화 · 데이터분석 공통: 경로 줄 맨 앞에 뒤로가기 — 위 칸이 경로 줄 바로 앞에 보일 때만 둔다.</li>
+<li>자동화 · 데이터분석 공통: 경로 줄 맨 앞 뒤로가기 — <b>위 칸이 경로 줄 바로 앞에 보일 때만</b> 둔다(자동화 ① 전체 목록 · ② 템플릿 선택 · 데이터분석 ① · ⑤ 에는 없다).</li>
+<li>데이터분석 경로 줄은 지금 화면 이름만(「데이터 분석 ›」 없음) · ② 는 「새 분석 › 파일 이름」.</li>
 </ul>
 <h2><span class="v">v26.09.28-5</span><span class="m">2026-09-28 14:11 · 1bd749f</span></h2>
 <ul>
-<li>자동화 ③ 상세: 실행 이력 카드 · 창 폭 대응 · 타이틀 줄.</li>
-<li>데이터분석 ⑤ 결과: 타이틀 글자 크기를 자동화에 맞춤.</li>
+<li>자동화 ③ 상세: 실행 이력(오른쪽 카드 · 창이 좁으면 목록 → 상세 차례) · 타이틀 줄 고정.</li>
+<li>데이터분석 ⑤ 결과: 타이틀 글자 크기를 자동화 ③ 에 맞춤(18/600 · 설명 13).</li>
 </ul>
 <h2><span class="v">v26.09.28-3</span><span class="m">2026-09-28 13:31 · d4d6e83</span></h2>
 <ul>
-<li>자동화 ③ 상세를 새 짜임으로. 스크롤 막대를 5px 로 통일.</li>
+<li>자동화 ③ 상세를 새 짜임으로(경로 줄에 조작 · 가운데 960 · 실행 이력). 스크롤 막대를 5px 로 통일(<code>_공용.css</code>).</li>
 </ul>
 <h2><span class="v">v26.09.28-1</span><span class="m">2026-09-28 10:25 · 1ff6008</span></h2>
 <ul>
