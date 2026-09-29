@@ -362,6 +362,9 @@ body{margin:0; padding:0; background:#fff; color:var(--color-text-basic); font-f
 .crumb .btn-ico{margin-left:auto;}
 /* 경로 줄 맨 앞 ‹ — 결정 6008. 위의 margin-left:auto 를 되돌리고 경로 글자 앞에 붙인다 */
 .crumb .crumb-up{margin:0 2px 0 -8px; flex:0 0 auto;}
+/* 경로 줄에서 **눌러서 이동하는 조각** — 손가락 커서 + 올리면 진한 글자 · 밑줄(2026-09-28 사용자 「이동할 수 있는 거면 링크 표시하라니까 — 지금은 커서가 글자 표시처럼 됨」).
+   지금 화면(.cur)과 입구(「새 자동화」)에는 안 붙는다 — 갈 곳이 없다 */
+.crumb .crumb-link{cursor:pointer;} .crumb .crumb-link:hover{color:var(--color-n-800); text-decoration:underline; text-underline-offset:3px;}
 .head-zone .page-ttl{padding:22px 0 0;}
 .px-menu .px-menu-x:hover{background:var(--black-900);}
 .px-menu .px-menu-x svg{width:12px; height:12px; flex:0 0 auto;}
@@ -378,3 +381,9 @@ body{margin:0; padding:0; background:#fff; color:var(--color-text-basic); font-f
    라이브러리는 7px 이고 `height` 가 없어 **가로 막대는 브라우저 기본 두께**였다.
    ★ 화면마다 따로 쓰지 않는다 — `_디자인린트.py` 「스크롤바」 갈래가 잡는다 */
 ::-webkit-scrollbar{width:5px; height:5px;}
+
+/* ── 붙박이 제목 줄 — 스크롤 칸 맨 위에서 제목 글자까지 **22** (2026-09-28 사용자 「전체적으로 통일하고 정리」) ──
+   쓰는 곳: 자동화 화면③ `.bh-head` · 데이터 분석 화면⑤ `.제목줄`. 둘 다 `position:sticky` 이고,
+   이 여백을 **제목 줄 안쪽**(padding-top)에 둔다 — 바깥에 두면 스크롤할 때 그만큼 먼저 말려 올라간 뒤 붙는다.
+   앞서 화면③ 22 · 화면⑤ 24 로 갈려 있었다(⑤ 의 24 는 옛 여백 14 + 10 이 남은 값). 화면③ 의 스크롤 칸 위 여백도 이 값이다 */
+:root{--page-head-top:22px;}

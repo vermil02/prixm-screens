@@ -50,7 +50,7 @@
 
   // 경로 줄 맨 앞 ‹ — 2026-09-28 결정 6008(LAB 경로줄뒤로 K-1). Lucide chevron-left · 옆 검색과 같은 칸(26 · 16 · 선 1.5)
   var ICO_UP = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>';   // ← Lucide arrow-left(2026-09-28 LAB 경로줄화살표 · 전에는 chevron-left ‹ — 구분 › 와 한 줄에서 모양이 겹쳤다). 라이브러리 assets 에 왼쪽 화살표가 없어 Lucide · 16 에 선 1.5(24÷16)
 
   function esc(s) { return String(s == null ? '' : s); }
 
@@ -73,7 +73,8 @@
           skipArw = true;                               // 다음 조각은 화살표를 또 넣지 않는다
           return;
         }
-        var cls = (c.cur ? 'cur' : '') + (c.cls ? (c.cur ? ' ' : '') + c.cls : '');
+        // link — 눌러서 그 화면으로 가는 조각(2026-09-28 사용자 「이동할 수 있는 거면 링크 표시」). 모양만 붙이고 누르는 일은 화면 JS 가 cls 로 맡는다
+        var cls = [c.cur ? 'cur' : '', c.link ? 'crumb-link' : '', c.cls || ''].filter(Boolean).join(' ');
         parts.push('<span' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(c.t) + '</span>');
       });
       var srch = o.search
