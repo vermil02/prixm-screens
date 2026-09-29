@@ -264,7 +264,10 @@
 .state-badge.is-inactive{background:var(--color-primitive-gray-100,#f3f4f6); color:var(--gray-600);}
 .state-badge.is-draft{background:transparent; color:var(--gray-600); border-color:var(--border-default);}
 .state-badge.is-fail{background:var(--color-danger-soft); color:var(--color-danger);}
-.state-badge.is-run{background:transparent; color:#15803d; border-color:var(--color-n-400);}
+.state-badge.is-run{background:var(--color-success-soft); color:#15803d; border-color:transparent; display:inline-flex; align-items:center; gap:4px;}   /* LAB 진행중태그 R2-1(2026-09-29) — 「성공」과 같은 옅은 초록 채움 + 도넛. 전에는 투명 + 회색 테두리라 버튼처럼 보였다 */
+/* 도넛 = 화면① 카드 노드의 `.n .donut`(화면01:184~186) 과 같은 움직임(sp-rot · sp-dash 1.4s · _공용.css) — 10px · 바탕 원 없음(사용자 「도넛 배경은 흰색 빼는 건?」) */
+.state-badge .b-dn{width:10px; height:10px; flex:0 0 auto; animation:sp-rot 1.4s linear infinite; transform-origin:center;}
+.state-badge .b-dn circle{fill:none; stroke:var(--color-success); stroke-width:3.4; stroke-linecap:round; stroke-dasharray:50.27; stroke-dashoffset:50.27; transform-origin:center; animation:sp-dash 1.4s ease-in-out infinite;}
 /* 설정 중 — 「설정 이어서 하기」 덩이를 **남은 자리의 세로 가운데**로(2026-09-28 사용자 「설정 이어서 하기 섹션이 화면 세로로 중앙에」).
    앞서 스크롤 칸이 내용 높이(86~421)에서 멈춰 덩이가 위에 붙었다 `실측`. 이 상태에서만 칸을 창 끝까지 늘리고 덩이를 margin auto 로 가운데.
    다른 상태 짜임은 안 건드리려고 「덩이가 칸의 바로 아래 자식일 때」(:has)에만 건다 */
@@ -440,7 +443,8 @@ function 부르개(){ const n=runs().length; if(!n) return '';
   return '<button class="btn-ico p-hist js-hist'+(view!=='home'?' is-on':'')+'" title="실행 이력 '+n+'" aria-label="실행 이력 '+n+'">'+ICO.hist.replace('<svg ','<svg width="16" height="16" ')+'<span>'+수글(n)+'</span></button>'; }
 // 이력 카드 — 이력 화면(실행 하나)일 때만. 30개씩, 「더 보기」로 30개 더(결정 4011 과 같음)
 function 한일(r){
-  if(r.st==='live') return '진행 중 · '+((r.steps.find(s=>s[2]==='run')||['',''])[0]);
+  // 진행 중 — 상태 칸이 이미 「진행 중」이라 되풀이하지 않고 몇 번째 단계인지만(R2-1 · 「3/5 근거 검색 중」)
+  if(r.st==='live'){ const i=r.steps.findIndex(s=>s[2]==='run'); return i<0 ? '진행 중' : (i+1)+'/'+r.steps.length+' '+r.steps[i][0]+' 중'; }
   if(r.st==='fail') return r.stop+'에서 멈춤';
   const 끝=r.steps.filter(s=>s[2]==='ok').slice(-1)[0]||['',''];
   return 끝[0]+' · '+끝[1];
@@ -604,7 +608,8 @@ function detHtml(r, notFirst){    // 단계별 실행 표(단계 · 결과 · �
 // 단계 상태 뱃지 — 라이브러리 `.state-badge` 규격(결정 4003). 「건너뜀」이라는 말은 아직 열려 있음(D-4004)
 const SWORD={ok:'성공', fail:'실패', skip:'건너뜀', run:'진행 중', idle:'대기'};
 const SVAR ={ok:'is-active', fail:'is-fail', skip:'is-inactive', run:'is-run', idle:'is-draft'};
-function badge(k){ return '<span class="state-badge '+SVAR[k]+'">'+SWORD[k]+'</span>'; }
+const B_DN='<svg class="b-dn" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8"/></svg>';   // 진행 중 도넛(바탕 원 없이 호만)
+function badge(k){ return '<span class="state-badge '+SVAR[k]+'">'+(k==='run'?B_DN:'')+SWORD[k]+'</span>'; }
 // 무엇을 했나 — 마지막으로 끝난 단계가 한 일을 문장으로. 홈의 「마지막 실행」과 실행 하나 맨 위에 쓴다
 // (사용자: "채널 공유한 건데 이런 문구로 했다 이런 식으로 해야 하는 거 아니야?")
 function didLine(r){ const done=r.steps.filter(s=>s[2]==='ok'); if(!done.length) return '';
@@ -716,7 +721,8 @@ document.addEventListener('click', e=>{
   if(e.target.closest('.js-off')){   // 끄기 = 직접 끔(실패와 다르다 · 2026-09-20)
     if(state==='run'){ cf1.hidden=false; return; }
     state='off'; view='home'; render(); return; }
-  if(e.target.closest('.js-runnow')){ state='run'; view='run:live'; render(); return; }
+  // 1회 실행 — 실행 화면으로 넘기지 않는다(2026-09-29 사용자 「실행되면 무조건 상세로 갈 필요 없고 · 허브 화면에서도 다 파악 가능」). 홈 표 맨 위에 「진행 중」 줄이 생긴다
+  if(e.target.closest('.js-runnow')){ state='run'; render(); return; }
   if(e.target.closest('.js-stop')){ state='wait'; view='home'; render(); return; }
   const d=e.target.closest('.demo button'); if(d){ state=d.dataset.s; view='home'; render(); return; }
 });
