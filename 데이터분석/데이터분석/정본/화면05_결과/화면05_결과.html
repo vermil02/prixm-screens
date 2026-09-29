@@ -330,10 +330,7 @@
     <div class="머리버튼">
   <div class="메뉴자리">
     <button class="btn-덩이 js-redo-btn" type="button" aria-label="다시 분석" data-tip="다시 분석"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
-    <div class="메뉴 js-redo-menu" hidden>
-      <div class="메뉴줄">같은 조건으로 분석</div>
-      <div class="메뉴줄">다른 조건으로 분석</div>
-    </div>
+    <!-- 「다시 분석」 메뉴(같은 조건 · 다른 조건)는 걷었다 — 누르면 곧장 다른 조건으로 분석하는 화면(② 분석 기법)으로(2026-09-29 사용자) -->
   </div>
   <div class="메뉴자리">
     <button class="btn-덩이 js-save-btn" type="button" aria-label="결과 저장" data-tip="결과 저장"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg></button>
@@ -453,7 +450,7 @@ chi2, p, dof, expected = chi2_contingency(표)</pre></div></div>
     메뉴닫기();
     var 버튼 = $(어느 === 'save' ? '.js-save-btn' : '.js-redo-btn');
     var 메뉴 = $(어느 === 'save' ? '.js-save-menu' : '.js-redo-menu');
-    if (!버튼) return;
+    if (!버튼 || !메뉴) return;   // 다시 분석은 메뉴가 없다(아래 · 곧장 이동)
     메뉴.hidden = false;
     버튼.classList.add('is-open');
   }
@@ -473,6 +470,8 @@ chi2, p, dof, expected = chi2_contingency(표)</pre></div></div>
   });
 
   document.addEventListener('click', function(e){
+    // 「다시 분석」 = 곧장 다른 조건으로 분석하는 화면 — 화면② 「분석 기법」 탭(사용자 「같은 조건 · 다른 조건 없이 그냥 다른 조건 분석 창으로」)
+    if (e.target.closest('.js-redo-btn')) { location.href = new URL('../화면02_데이터/화면02_데이터.html?tab=method&redo=' + (typeof 보기 !== 'undefined' ? 보기 : 'trend'), location.href).href;   /* 지금 결과의 조건을 채워서(redo=trend|cross) */ return; }
     var 버튼 = e.target.closest('.js-save-btn, .js-redo-btn');
     if (버튼) {
       var 어느 = 버튼.classList.contains('js-save-btn') ? 'save' : 'redo';

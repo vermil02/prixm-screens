@@ -1189,7 +1189,29 @@ PX_ICO_채우기(document.querySelector(".js-방법"));
     location.href = 결과;
   });
 
-  탭보이기(/tab=method/.test(location.search) ? "method" : "data");
+  /* ── 다시 분석(⑤ 결과 「다시 분석」에서 · 2026-09-29 사용자 「미리 채워진 화면으로」) ──
+     `?redo=trend|cross` 로 오면 **지금 결과의 조건을 채운 채로** 분석 기법 탭을 연다 — 파일 · 방법 · 변수.
+     시안 값: 결과 쪽 파일(chem_safety_sample_KR.csv)은 이 화면의 시안 파일(안전점검_2026상반기)과 **다른 파일**이라
+     열 목록을 그 파일 꼴로 바꿔 끼운다(연도 · 품목 · 제형이 있어야 결과의 변수를 고를 수 있다) `추정` — 실제로는 결과가 쓴 파일 · 열을 서버가 준다.
+     추세의 「이동평균 7」 같은 **옵션은 이 화면에 칸이 없어** 채우지 못한다(남은 것) */
+  var 다시 = (location.search.match(/[?&]redo=(trend|cross)/) || [])[1];
+  if (다시) {
+    열들 = ["시료번호", "연도", "품목", "제형", "물질군", "시험항목", "측정값", "기준값", "판정"];
+    var 덧 = document.querySelector(".파일덧");
+    if (덧) { 덧.textContent = "측정 결과 · 420행 × " + 열들.length + "열 · 전처리 없음"; if (덧.previousElementSibling) 덧.previousElementSibling.textContent = "chem_safety_sample_KR.csv"; }
+    var 끝조각 = document.querySelector(".crumb .cur"); if (끝조각) 끝조각.textContent = "chem_safety_sample_KR.csv";
+    var 방법이름 = 다시 === "cross" ? "교차표" : "추세";
+    /* 이 화면의 시안 파일은 시간 열이 없어 「추세」가 꺼져 있다(is-off · 「시간 열이 없습니다」) — 결과 쪽 파일은 「연도」가 있어 켠다 */
+    document.querySelectorAll(".방법칸.is-off").forEach(function (c) { c.classList.remove("is-off"); var 꼬리 = c.querySelector(".방법꼬리"); if (꼬리) 꼬리.innerHTML = '<i class="필요">시간 열 1 + 수치형 1</i>'; });   /* 다른 칸처럼 「필요」 칩으로 */
+    var 방법칸 = Array.prototype.find.call(document.querySelectorAll(".방법칸"), function (c) { return c.querySelector("b").textContent.trim() === 방법이름; });
+    if (방법칸) 방법칸.click();
+    var 고를값 = 다시 === "cross" ? ["품목", "제형"] : ["연도", "측정값"];
+    document.querySelectorAll(".js-변수판 .js-열").forEach(function (s, i) { if (고를값[i]) s.value = 고를값[i]; });
+    실행상태();
+    결과 = "../데이터분석/정본/화면05_결과/화면05_결과.html?view=" + 다시;   /* 실행하면 같은 보기로 돌아간다 */
+  }
+
+  탭보이기(/tab=method|redo=/.test(location.search) ? "method" : "data");
 })();
 /* @끝 _데이터.js */
 
