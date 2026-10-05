@@ -155,6 +155,7 @@
         if(머리.some(function(h){ return x.contains(h); })){ if(깊이<8) 펼침(x,깊이+1); return; }
         var r=x.getBoundingClientRect();
         if(W>700&&r.width<W*.4&&r.height>H*.6){ if(r.left>br.left+W*.5){ 패널.push(x); return; } if(깊이<8&&자.length){ 펼침(x,깊이+1); return; } }
+        if(번호==='03'&&x.classList.contains('flex-wrap')&&자.length>1){ 자.forEach(function(y){ 내용.push(y); }); return; }   /* 지식/문서 문서 칸(폴더 보기) — 문서 하나하나 촤르륵(2026-10-06 사용자 「내문서에서도 문서 촤르륵」 · 전엔 칸 통째로) */
         if(상자(x)&&r.height<H*.9){ 내용.push(x); return; }
         if(깊이<8&&자.length&&!글있음(x)&&(자.length===1||(r.height>H*.5&&자.length>=2))){ 펼침(x,깊이+1); return; }
         내용.push(x); }); })(B,0);
@@ -188,6 +189,15 @@
       var 미리=대기; 대기=null;
       if(미리){ 미리.tl.play(0); 지금=미리; return; }
       지금=짓기(정보||{}); }); };
+    /* 지식/문서 — LNB 폴더 줄(내 문서) · 개인/공유 칸을 누르면 본문 문서 목록도 촤르륵(2026-10-06 사용자 「내문서에서도 문서 촤르륵하는 효과」) — 자동화 LNB 줄을 눌러 화면이 바뀔 때와 같은 값 · LNB 줄은 그대로.
+       저장본은 스크립트가 없어 목록 자체는 안 바뀜 · 폴더 메뉴(⋯) · 꺾쇠는 뺌 */
+    if(번호==='03') A.addEventListener('click',function(e){ var t=e.target.closest&&e.target.closest('.k-folder-row, .lab18-세그묶음 > .lab18-핵심');
+      if(!t||e.target.closest('.px-more-btn, .px-lnb-caret')) return;
+      if(t.classList.contains('k-folder-row')){   /* 켜진 폴더 · 본문 제목만 옮김(문서 칸은 데모 그대로) */
+        [].forEach.call(A.querySelectorAll('.k-folder-row'),function(x){ x.classList.toggle('is-active',x===t); });
+        var 이름=(t.querySelector('.px-lnb-label')||t).textContent.trim(), 큰=B&&B.querySelector('.knowledge-main h1');
+        [B&&B.querySelector('.lab18-제목'),큰].forEach(function(x){ if(x&&이름) x.textContent=이름; }); }
+      w.__전환숨김({}); w.__전환등장({}); });
   })();
 
   끝();
