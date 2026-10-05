@@ -1,6 +1,6 @@
 /* 조합 1안 · 부품/저장본부품 — 손질/18_전체페이지/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-05
    자동화 · 분석 부품(LNB 핵심 버튼 · 묶음 머리 · 주색 · 콘텐츠 꼴 · 화면 전환 촤르륵)을 저장본 화면에. 손질후 저장본얹기() 가 저장본(html.lab-저장본)에만 얹음.
-   켠 항목: LNB 제목(메뉴 이름) · 묶음 머리, 줄(자동 실행 · 수동 실행 꼴) · 핵심 버튼 · LNB 칸 고르기 · 회색 칸(보기 전환 꼴) · 핵심 범위 · 기본(이메일 · 프로젝트 · 채팅) · 핵심 첫 버튼 · 타일(자동화와 같게) · 주색(1안 인디고, 고른 주색 따라감) · 본문 머리(제목 16/600, 선) · 거르기 → 탭 · 보기 전환(회색 칸) · 글자 단추 · 검색, 고르기 칸 · 카드, 구역 · 표 머리 · 머리 아이콘 단추 · 주 단추 · 연하게(자동화 만들기 색) · 콘텐츠 바탕 · 연회색(자동화 #fcfcfe) · 화면 전환 촤르륵(자동화 · 분석과 같은 값) */
+   켠 항목: LNB 제목(메뉴 이름) · 묶음 머리, 줄(자동 실행 · 수동 실행 꼴) · 핵심 버튼 · LNB 칸 고르기 · 회색 칸(보기 전환 꼴) · 핵심 범위 · 기본(이메일 · 프로젝트 · 채팅) · 핵심 첫 버튼 · 타일(자동화와 같게) · 주색(1안 인디고, 고른 주색 따라감) · 본문 머리(제목 16/600, 선) · 거르기 → 탭 · 보기 전환(회색 칸) · 글자 단추 · 검색, 고르기 칸 · 카드, 구역 · 표 머리 · 머리 아이콘 단추 · 주 단추 · 연하게(자동화 만들기 색) · 콘텐츠 바탕 · 연회색(자동화 #fcfcfe) · 화면 전환 촤르륵(자동화 · 분석과 같은 값) · 연동 계정 · 배경 없음 + 초록 사용중 */
 
 /* ═══ 18 전체 페이지 — 모든 규칙은 html.lab-저장본.lab18켬-<항목> 아래(손질후 저장본 화면에만) ═══ */
 
@@ -164,3 +164,10 @@ html.lab-저장본.lab18켬-바탕흰 .lab18-바탕{background-color:#fff!import
 html.lab18-전환중 body *{transition:none!important;}
 html.lab-저장본 .lab18-전환선{border-bottom-color:transparent!important;}
 html.lab-저장본 .lab18-전환선::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--전환선색);transform-origin:0 50%;transform:scaleX(var(--전환선,1));pointer-events:none;}
+/* ── 이메일 연동 계정 — 편지함 선택과 겹치지 않게 선택 배경만 뺌(그림 · 동그라미 없이 이메일 + 사용중) · 호버만 옅게 ── */
+html.lab-저장본.lab18켬-계정초록 .lab18-계정,html.lab-저장본.lab18켬-계정어둠 .lab18-계정{background:transparent!important;}
+html.lab-저장본.lab18켬-계정초록 .lab18-계정:hover,html.lab-저장본.lab18켬-계정어둠 .lab18-계정:hover{background:rgba(239,239,255,.85)!important;}
+html.lab-저장본.lab18켬-계정초록 .lab18-계정 .lab18-계정표.lab18-계정표,html.lab-저장본.lab18켬-계정어둠 .lab18-계정 .lab18-계정표.lab18-계정표{font-size:10px!important;line-height:16px!important;height:16px!important;padding:0 5px!important;border-radius:4px!important;font-weight:500!important;}
+html.lab-저장본.lab18켬-계정초록 .lab18-계정 .lab18-계정표.lab18-계정표{background:#e9f7ef!important;color:#15803d!important;}
+html.lab-저장본.lab18켬-계정어둠 .lab18-계정 .lab18-계정표.lab18-계정표{background:var(--color-gnb-ink,#222)!important;color:#fff!important;}
+html.lab-저장본.lab18켬-계정원래 .lab18-계정 .lab18-계정표.lab18-계정표{font-size:10px!important;}   /* 지금 꼴에서도 뱃지 글자는 원래 10px(18 줄 규칙이 14 로 키웠음) */

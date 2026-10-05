@@ -1,6 +1,6 @@
 /* 조합 1안 · 부품/저장본부품 — 손질/18_전체페이지/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-05
    자동화 · 분석 부품(LNB 핵심 버튼 · 묶음 머리 · 주색 · 콘텐츠 꼴 · 화면 전환 촤르륵)을 저장본 화면에. 손질후 저장본얹기() 가 저장본(html.lab-저장본)에만 얹음.
-   켠 항목: LNB 제목(메뉴 이름) · 묶음 머리, 줄(자동 실행 · 수동 실행 꼴) · 핵심 버튼 · LNB 칸 고르기 · 회색 칸(보기 전환 꼴) · 핵심 범위 · 기본(이메일 · 프로젝트 · 채팅) · 핵심 첫 버튼 · 타일(자동화와 같게) · 주색(1안 인디고, 고른 주색 따라감) · 본문 머리(제목 16/600, 선) · 거르기 → 탭 · 보기 전환(회색 칸) · 글자 단추 · 검색, 고르기 칸 · 카드, 구역 · 표 머리 · 머리 아이콘 단추 · 주 단추 · 연하게(자동화 만들기 색) · 콘텐츠 바탕 · 연회색(자동화 #fcfcfe) · 화면 전환 촤르륵(자동화 · 분석과 같은 값) */
+   켠 항목: LNB 제목(메뉴 이름) · 묶음 머리, 줄(자동 실행 · 수동 실행 꼴) · 핵심 버튼 · LNB 칸 고르기 · 회색 칸(보기 전환 꼴) · 핵심 범위 · 기본(이메일 · 프로젝트 · 채팅) · 핵심 첫 버튼 · 타일(자동화와 같게) · 주색(1안 인디고, 고른 주색 따라감) · 본문 머리(제목 16/600, 선) · 거르기 → 탭 · 보기 전환(회색 칸) · 글자 단추 · 검색, 고르기 칸 · 카드, 구역 · 표 머리 · 머리 아이콘 단추 · 주 단추 · 연하게(자동화 만들기 색) · 콘텐츠 바탕 · 연회색(자동화 #fcfcfe) · 화면 전환 촤르륵(자동화 · 분석과 같은 값) · 연동 계정 · 배경 없음 + 초록 사용중 */
 
 /* 18 전체 페이지 엔진 — 저장본 화면 하나에 한 번. 요소를 찾아 lab18-* 표시 · 핵심 버튼 묶음 · LNB 제목을 만들고, __lab18적용(항목들) 로 html 클래스만 갈아 끼움 */
 (function(){
@@ -80,7 +80,8 @@
   [].forEach.call(A.querySelectorAll('div[class*="overflow-y-auto"] > div[class*="mb-[12px]"]'),function(h){ var t=h.querySelector('h2'); if(t) 묶음머리(h,t,null); });
   if(번호==='01'){ 모두(A,'.lnb-group.px-lnb-group','lab18-틈0'); 모두(A,'.lnb-group.px-lnb-group','lab18-묶음위12'); 모두(A,'.sidebar-list','lab18-줄목록3'); 모두(A,'.group-row','lab18-줄30'); }
   if(번호==='02'){ 모두(A,'.px-lnb-group','lab18-틈0'); 모두(A,'.px-lnb-group','lab18-위0'); 표(A.querySelector('.px-lnb-stack'),'lab18-틈12'); 모두(A,'.px-lnb-stack > section','lab18-틈12'); }
-  if(번호==='04'){ 표(A.querySelector('div[class*="overflow-y-auto"] > div[class*="mt-[6px]"]'),'lab18-위0'); }
+  if(번호==='04'){ 표(A.querySelector('div[class*="overflow-y-auto"] > div[class*="mt-[6px]"]'),'lab18-위0');
+    [].forEach.call(A.querySelectorAll('button span'),function(t){ if(t.textContent.trim()!=='사용중') return; var b=t.closest('button'); 표(b,'lab18-계정'); 표(t,'lab18-계정표'); if(b&&!b.title) b.title='사용 중인 계정'; var 글=b&&b.querySelector('span'); if(글) b.setAttribute('data-lab18-첫',(글.textContent.trim()[0]||'').toUpperCase()); }); }
   if(번호==='04'){ var 칸04=A.querySelector('div[class*="mt-[26px]"]'); 표(칸04,'lab18-묶음칸');
     var 함=칸04&&칸04.querySelector('div[class*="h-[26px]"]'); if(함){ var 함글=함.querySelector('button'); 묶음머리(함,함글,함글&&함글.querySelector('svg')); }
     표(칸04&&칸04.querySelector('nav'),'lab18-줄목록');
@@ -138,6 +139,8 @@
     function 보여(e){ var r=e.getBoundingClientRect(); return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight; }
     function 자식들(el){ return [].filter.call(el.children,function(x){ return !/^(SCRIPT|STYLE|TEMPLATE|svg)$/i.test(x.tagName)&&보여(x); }); }
     function 글있음(x){ return [].some.call(x.childNodes,function(t){ return t.nodeType===3&&t.textContent.trim(); }); }
+    /* 테두리 · 그림자 있는 상자는 통째로 — 안쪽만 내려오면 상자 위에 흰 띠(10px)가 보임(2026-10-06 사용자 「프로젝트에서 애니메이션 동작할 때 흰색 라인」 · 표 상자 .rounded-[10px].border 안의 table 만 움직였음) */
+    function 상자(x){ var c=getComputedStyle(x); return (parseFloat(c.borderTopWidth)>0&&!/rgba\(.*, 0\)$/.test(c.borderTopColor))||c.boxShadow!=='none'; }
     function 모으기(){
       var 머리=[].filter.call(B.querySelectorAll('.lab18-머리, .lab18-도구줄, .prism-page-header, .px-settings-toolbar'),보여), 내용=[], 패널=[];
       var br=B.getBoundingClientRect(), W=br.width, H=Math.min(br.height,innerHeight-br.top);
@@ -147,6 +150,7 @@
         if(머리.some(function(h){ return x.contains(h); })){ if(깊이<8) 펼침(x,깊이+1); return; }
         var r=x.getBoundingClientRect();
         if(W>700&&r.width<W*.4&&r.height>H*.6){ if(r.left>br.left+W*.5){ 패널.push(x); return; } if(깊이<8&&자.length){ 펼침(x,깊이+1); return; } }
+        if(상자(x)&&r.height<H*.9){ 내용.push(x); return; }
         if(깊이<8&&자.length&&!글있음(x)&&(자.length===1||(r.height>H*.5&&자.length>=2))){ 펼침(x,깊이+1); return; }
         내용.push(x); }); })(B,0);
       var LNB=[].filter.call(A.querySelectorAll('.lab18-묶음머리, .px-lnb-row, .lab18-줄, ul > li > a, .group-row, .k-folder-row, div.px-segment, div[class*="rounded-[6px]"][class*="p-[3px]"]'),function(e){ return 보여(e)&&!e.closest('.lab18-핵심묶음'); });
@@ -191,4 +195,4 @@
   }
 })();
 
-if (window.__lab18적용) window.__lab18적용(["제목", "묶음", "핵심", "범위원래", "첫타일", "세그회색", "주색", "머리", "탭", "보기", "글단추", "칸", "카드", "표", "아이콘", "주연", "바탕회", "전환"]);
+if (window.__lab18적용) window.__lab18적용(["제목", "묶음", "핵심", "범위원래", "첫타일", "세그회색", "주색", "머리", "탭", "보기", "글단추", "칸", "카드", "표", "아이콘", "주연", "바탕회", "전환", "계정초록"]);
