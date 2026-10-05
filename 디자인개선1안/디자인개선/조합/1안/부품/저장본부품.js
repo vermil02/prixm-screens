@@ -1,6 +1,6 @@
 /* 조합 1안 · 부품/저장본부품 — 손질/18_전체페이지/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-05
    자동화 · 분석 부품(LNB 핵심 버튼 · 묶음 머리 · 주색 · 콘텐츠 꼴 · 화면 전환 촤르륵)을 저장본 화면에. 손질후 저장본얹기() 가 저장본(html.lab-저장본)에만 얹음.
-   켠 항목: LNB 제목(메뉴 이름) · 묶음 머리, 줄(자동 실행 · 수동 실행 꼴) · 핵심 버튼 · LNB 칸 고르기 · 회색 칸(보기 전환 꼴) · 핵심 범위 · 기본(이메일 · 프로젝트 · 채팅) · 핵심 첫 버튼 · 타일(자동화와 같게) · 주색(1안 인디고, 고른 주색 따라감) · 본문 머리(제목 16/600, 선) · 거르기 → 탭 · 보기 전환(회색 칸) · 글자 단추 · 검색, 고르기 칸 · 카드, 구역 · 표 머리 · 머리 아이콘 단추 · 주 단추 · 연하게(자동화 만들기 색) · 콘텐츠 바탕 · 연회색(자동화 #fcfcfe) · 화면 전환 촤르륵(자동화 · 분석과 같은 값) · 연동 계정 · 배경 없음 + 초록 사용중 */
+   켠 항목: LNB 제목(메뉴 이름) · 묶음 머리, 줄(자동 실행 · 수동 실행 꼴) · 핵심 버튼 · LNB 칸 고르기 · 회색 칸(보기 전환 꼴) · 핵심 범위 · 기본(이메일 · 프로젝트 · 채팅) · 핵심 첫 버튼 · 타일(자동화와 같게) · 주색(1안 인디고, 고른 주색 따라감) · 본문 머리(제목 16/600, 선) · 거르기 → 탭 · 보기 전환(회색 칸) · 글자 단추 · 검색, 고르기 칸 · 카드, 구역 · 표 머리 · 머리 아이콘 단추 · 주 단추 · 연하게(자동화 만들기 색) · 콘텐츠 바탕 · 연회색(자동화 #fcfcfe) · 화면 전환 촤르륵(자동화 · 분석과 같은 값) · 연동 계정 · 배경 없음 + 초록 사용중 · 관리, 시스템 LNB 줄 아이콘(이메일 줄과 같은 꼴) */
 
 /* 18 전체 페이지 엔진 — 저장본 화면 하나에 한 번. 요소를 찾아 lab18-* 표시 · 핵심 버튼 묶음 · LNB 제목을 만들고, __lab18적용(항목들) 로 html 클래스만 갈아 끼움 */
 (function(){
@@ -82,6 +82,11 @@
   if(번호==='02'){ 모두(A,'.px-lnb-group','lab18-틈0'); 모두(A,'.px-lnb-group','lab18-위0'); 표(A.querySelector('.px-lnb-stack'),'lab18-틈12'); 모두(A,'.px-lnb-stack > section','lab18-틈12'); }
   if(번호==='04'){ 표(A.querySelector('div[class*="overflow-y-auto"] > div[class*="mt-[6px]"]'),'lab18-위0');
     [].forEach.call(A.querySelectorAll('button span'),function(t){ if(t.textContent.trim()!=='사용중') return; var b=t.closest('button'); 표(b,'lab18-계정'); 표(t,'lab18-계정표'); if(b&&!b.title) b.title='사용 중인 계정'; var 글=b&&b.querySelector('span'); if(글) b.setAttribute('data-lab18-첫',(글.textContent.trim()[0]||'').toUpperCase()); }); }
+  /* 관리 · 시스템 LNB 줄 아이콘(2026-10-06) — lucide 선 그림 · 이름에 맞는 것 · 없으면 문서 그림 */
+  if(번호==='08'||번호==='09'){ var 줄그림={"구성원": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>", "조직도": "<rect x=\"16\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"2\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"9\" y=\"2\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3\"/><path d=\"M12 12V8\"/>", "권한": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>", "활동 이력": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/><path d=\"M12 7v5l4 2\"/>", "권한 감사": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/><path d=\"m9 14 2 2 4-4\"/>", "대시보드": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/>", "운영 경보": "<path d=\"M10.268 21a2 2 0 0 0 3.464 0\"/><path d=\"M22 8c0-2.3-.8-4.3-2-6\"/><path d=\"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326\"/><path d=\"M4 2C2.8 3.7 2 5.7 2 8\"/>", "점검 · 보존 · 확장": "<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"/>", "앱 사용": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"M10 4v4\"/><path d=\"M2 8h20\"/><path d=\"M6 4v4\"/>"};
+    [].forEach.call(A.querySelectorAll('a[href]'),function(a){ if(a.closest('.gnb-menu')||a.querySelector('.lab18-줄그림')) return; var 글=a.textContent.replace(/\s+/g,' ').trim(); if(!글) return;
+      var g=d.createElementNS('http://www.w3.org/2000/svg','svg'); g.setAttribute('viewBox','0 0 24 24'); g.setAttribute('fill','none'); g.setAttribute('stroke','currentColor'); g.setAttribute('stroke-width','1.6'); g.setAttribute('stroke-linecap','round'); g.setAttribute('stroke-linejoin','round'); g.setAttribute('class','lab18-줄그림');
+      g.innerHTML=줄그림[글]||'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>'; a.insertBefore(g,a.firstChild); 표(a,'lab18-그림줄'); }); }
   if(번호==='04'){ var 칸04=A.querySelector('div[class*="mt-[26px]"]'); 표(칸04,'lab18-묶음칸');
     var 함=칸04&&칸04.querySelector('div[class*="h-[26px]"]'); if(함){ var 함글=함.querySelector('button'); 묶음머리(함,함글,함글&&함글.querySelector('svg')); }
     표(칸04&&칸04.querySelector('nav'),'lab18-줄목록');
@@ -195,4 +200,4 @@
   }
 })();
 
-if (window.__lab18적용) window.__lab18적용(["제목", "묶음", "핵심", "범위원래", "첫타일", "세그회색", "주색", "머리", "탭", "보기", "글단추", "칸", "카드", "표", "아이콘", "주연", "바탕회", "전환", "계정초록"]);
+if (window.__lab18적용) window.__lab18적용(["제목", "묶음", "핵심", "범위원래", "첫타일", "세그회색", "주색", "머리", "탭", "보기", "글단추", "칸", "카드", "표", "아이콘", "주연", "바탕회", "전환", "계정초록", "관리그림"]);
