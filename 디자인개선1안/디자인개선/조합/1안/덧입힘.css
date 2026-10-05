@@ -1,0 +1,87 @@
+/* 조합 1안 — ⚠ 실험 · 폐기 가능. 서비스별/비교.md 「부위별 추천」을 한 벌로.
+   색은 우리 톤(주색 #2563eb · AI 보라 · 상태색 정본 그대로). 규칙마다 출처 = 서비스 이름. 고르개는 서비스별 세션들이 정본을 이기도록 맞춰 둔 것을 가져왔다. */
+
+html body{
+  /* 글자 회색 3단 — 슬랙 (16.9 · 9.67 · 6.54) */
+  --color-text-basic:#1d1c1d; --black-900:#1d1c1d; --color-gnb-ink:#1d1c1d;
+  --color-n-900:#1d1c1d; --color-n-800:#1d1c1d; --color-n-700:#454447;
+  --color-n-600:#454447; --gray-600:#454447;
+  --color-n-500:#5e5d60; --gray-500:#5e5d60; --color-gnb-sub2:#5e5d60;
+  /* 반응 */
+  --j-올림:rgba(146,162,211,.1);                                   /* 네이버웍스 호버 한 값 */
+  --j-링:0 0 0 1px rgba(29,28,29,.13);                             /* 슬랙 카드 링 */
+  --j-떠오름:0 0 0 1px rgba(29,28,29,.13), 0 4px 12px rgba(0,0,0,.08);   /* 슬랙 카드 올림 */
+  --j-단추올림:0 1px 3px rgba(0,0,0,.098), 0 1px 2px -1px rgba(0,0,0,.098);   /* 슬랙 단추 올림 */
+  --j-튐:cubic-bezier(.17,.67,.55,1.09);                           /* 슬랙 · 클릭업 아이콘 칩 곡선 */
+}
+
+/* ── 바닥 · 떠 있는 LNB — 뺐음(사용자 2026-10-01 「배경하고 저렇게 되는 건 좀 별로」). 정본 바닥 · LNB 그대로. 이전 판: 판/*_바닥빼기전.css ── */
+
+/* ── GNB — 부품 GNB.css 로 바꿈(2026-10-01 사용자 「gnb 부품으로 넣어놔줘」). 이전 슬랙 · 다우오피스 칩: 판/덧입힘_261001-1615_GNB부품전.css ── */
+
+/* ── LNB — 올림만 (네이버웍스) ── */
+html body .lnb-panel .channel-text-demo{border-radius:6px; transition:none;}
+html body .lnb-panel .channel-text-demo:hover{background:var(--j-올림);}           /* 네이버웍스 · 즉시 */
+
+/* ── 글자 — 제목 · 숫자 (노션 · 클릭업 · 다우오피스) ── */
+html body .page-ttl .t{font-size:24px; font-weight:600; line-height:1.2;}             /* 노션 목록 제목 */
+html body .bh-name{font-size:28px; font-weight:600; line-height:1.25;}                 /* 클릭업 상세 제목 */
+html body .bh-name .tpl-badge{line-height:16px; align-self:center; position:relative; top:2px;}   /* 클릭업 세션 조정 */
+html body .지표값{font-size:24px; font-weight:600; line-height:1.25; font-variant-numeric:tabular-nums;}   /* 다우오피스 · 노션 */
+html body .sum-v{font-size:20px; font-weight:600; font-variant-numeric:tabular-nums;}  /* 칸 높이 56 안에서 (노션 세션 추론) */
+html body .c-desc, html body .bh-desc, html body .tpl-desc{color:#454447;}
+
+/* ── 카드 · 판 — 링 · 모서리 12 · 올리면 4px 떠오름 (슬랙) ── */
+html body .wf-card, html body .tpl-card, html body .sum-i, html body .지표, html body .steps5, html body .box,
+html body .표틀, html body .전처리판, html body .덩이 .차트틀, html body .demo{
+  background:#fff; border-color:transparent; border-radius:12px; box-shadow:var(--j-링); transition:transform .3s, box-shadow .3s;}
+html body .box:has(.t-recent), html body .box:has(.t-step){border-color:transparent;}
+html body .wf-card:hover, html body .tpl-card:hover, html body .sum-i.sum-go:hover{background:#fff; border-color:transparent; transform:translateY(-4px); box-shadow:var(--j-떠오름);}
+html body .wf-card:active, html body .tpl-card:active{transform:translateY(-2px);}
+html body .wf-card .grp{border-top-color:#eaeaea;}
+/* 결론 판(AI 보라) · 주의 판은 정본 그대로 둔다 — 처음에 `.덩이 .판` 까지 걸어 둘 다 흰 카드로 덮였던 것을 뺐다 */
+
+/* ── 목록 줄 올림 — 즉시 · 푸른 회색 (네이버웍스) ── */
+html body .tbl tr.js-nav td, html body table.tbl tbody tr td, html body .t-step.t-recent tbody tr td{transition:none;}
+html body .tbl tr.js-nav:hover td, html body table.tbl tbody tr:hover td, html body .t-step.t-recent tbody tr:hover td{background:var(--j-올림);}
+
+/* ── 단추 — 색은 우리 파랑, 올리면 그림자 한 단 (슬랙) ── */
+html body .btn-primary-demo{transition:box-shadow .2s;}
+html body .btn-primary-demo:hover{box-shadow:var(--j-단추올림);}
+html body .btn-basic-demo, html body .run-btn{transition:none;}
+html body .btn-basic-demo:hover, html body .run-btn:hover{background:var(--j-올림);}
+html body .btn-ico{transition:none;} html body .btn-ico:hover{background:var(--j-올림);}
+
+/* ── 상태 배지 — 색 점 + 옅은 알약 (노션 꼴 · 우리 색) ── */
+html body .state-badge{border-color:transparent; border-radius:10px; padding-left:7px; padding-right:9px;}
+html body .state-badge::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; display:inline-block; vertical-align:middle; margin-right:5px;}
+html body .state-badge.is-active, html body .wf-card .state-badge.run, html body .state-badge.run{background:rgba(29,186,87,.14); color:#166534;}   /* 우리 초록 #1dba57 옅게 · 글자 green-800 */
+html body .state-badge.is-active::before, html body .state-badge.run::before{background:#1dba57;}
+html body .state-badge.is-fail{background:rgba(239,68,68,.12); color:#b91c1c;}            /* 우리 빨강 · 글자 #b91c1c(정본에 있는 값) */
+html body .state-badge.is-fail::before{background:#ef4444;}
+
+/* ── 드롭다운 — 아래로만 지는 그림자 (다우오피스) · 8px 미끄러지며 .16s (슬랙) ── */
+@keyframes j-미끄럼{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:none}}
+html body .px-menu, html body .drop-menu, html body .overflow-menu-demo, html body .fld-menu{
+  border:1px solid #e4e5e5; border-radius:12px; background:#fff; box-shadow:0 8px 16px rgba(0,0,0,.1);
+  animation:j-미끄럼 .16s cubic-bezier(.25,1,.5,1);}
+html body .overflow-menu-item{border-radius:8px; border-bottom:0; transition:none;}
+html body .overflow-menu-item:hover{background:var(--j-올림);}
+
+/* ── 등장 — 덩이마다 14px 아래에서 .4s (린디) · 지연 .06s 로 줄임 ── */
+@keyframes j-떠오름{0%{opacity:0; transform:translateY(14px)} 100%{opacity:1; transform:none}}
+html body .content > *{animation:j-떠오름 .4s ease-out both;}
+html body .content > :nth-child(2){animation-delay:.06s;}
+html body .content > :nth-child(3){animation-delay:.12s;}
+html body .content > :nth-child(4){animation-delay:.18s;}
+html body .content > :nth-child(n+5){animation-delay:.24s;}
+
+@media (prefers-reduced-motion:reduce){
+  html body .content > *, html body .px-menu, html body .drop-menu, html body .overflow-menu-demo, html body .fld-menu{animation:none;}
+  html body .wf-card:hover, html body .tpl-card:hover{transform:none;}
+}
+
+/* 2026-10-02 로고 옅어짐 고침 — 사용자 「로고는 지금 버전에서는 옅게 되는 부분이 있는데 체크해 봐 줘」
+   원인(대조함): 정본 화면/_뼈대.js 로고 SVG 의 <mask id="d"> 에 style="mask-type:alpha" 가 빠짐 — 실서비스 저장본(test-crew 2026-10-02 09:15)에는 있음.
+   빠지면 마스크가 밝기로 가려서(어두운 빨강→보라 그라디언트) 무지개 띠가 옅게 보임. 정본은 그대로 두고 여기서 CSS 로 맞춤. 정본 옮길 때 _뼈대.js 에 한 줄 */
+html body .hd svg mask{mask-type:alpha;}

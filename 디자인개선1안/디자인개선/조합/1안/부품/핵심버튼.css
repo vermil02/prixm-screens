@@ -1,0 +1,47 @@
+/* 조합 1안 · 부품/핵심버튼.css — LNB 핵심 버튼(모든 자동화 · 새 자동화) 켜짐 효과 · 1안 · 2안 공통 · 짝 핵심버튼.js
+   2026-10-02 다시 짬 — 사용자 「효과가 지금 엉망 · gnb 버튼 누를 때 동작처럼 · 코드가 이상하게 짜진 것 같아 · 별로면 처음부터」
+   (전 판: 누른 화면에서 꺼짐 → 이름 저장 → 새 화면이 보일 때까지 기다렸다 다시 찾아 키프레임 — 두 번 돌고 엉킴 · ../판/핵심버튼_*_다시짜기전.*)
+   지금: GNB 처럼 **누르는 순간(손이 닿는 순간 · 뗄 때 아님) 그 자리에서 상태만 바뀌고 전환(transition)이 움직임을 맡음**. 새 화면은 켜진 모습 그대로(다시 안 돎).
+   꼴(14 랩 K-5b · 0.22초 · 처음 빠른 곡선 — 사용자 「동작도 느리고 클릭되는 순간 바로 시작해야」): 아이콘 타일 = 판 하나(::before). 켜지면 그 판이 타일 자리(7, 7 · 22 · 모서리 4)에서 버튼 전체(모서리 8)로 커짐 · 뒤 흰 버튼 없음 · 글자 흰
+   누름: 크기 변화 없음 — 색만 채움(2026-10-02) */
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo{--핵시간:.22s;position:relative;transition:transform .2s cubic-bezier(.3,.7,.4,1);}
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo > .ch-inner{position:relative;z-index:1;}
+
+/* 타일 = 판 — 아이콘 칸 자체 바탕은 늘 비우고, 그 자리에 같은 색 판을 깔아 둠(그래서 판이 커지면 「타일이 커지는」 것) */
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo .ch-ico{background:transparent!important;background-image:none!important;box-shadow:none!important;transition:transform .2s cubic-bezier(.3,.7,.4,1);}
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo::before{content:'';position:absolute;top:calc(50% - 11px);left:7px;width:22px;height:22px;border-radius:4px;background:linear-gradient(135deg,#8789f6,#6c69f0);pointer-events:none;
+  transition:top var(--핵시간) cubic-bezier(.2,.8,.2,1),left var(--핵시간) cubic-bezier(.2,.8,.2,1),width var(--핵시간) cubic-bezier(.2,.8,.2,1),height var(--핵시간) cubic-bezier(.2,.8,.2,1),border-radius var(--핵시간) cubic-bezier(.2,.8,.2,1);}
+
+/* 켜짐 = 켜진 버튼(끄는 중 빼고) · 방금 누른 버튼 */
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.active:not(.lab-끔)::before,
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-켬::before{top:0;left:0;width:100%;height:100%;border-radius:8px;}
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.active:not(.lab-끔):not(#_):not(#_),
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.active:not(.lab-끔):not(#_):not(#_):hover,
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-켬:not(#_):not(#_),
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-켬:not(#_):not(#_):hover{background:transparent!important;box-shadow:none!important;}
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo .ch-label{transition:color .2s ease-out;}
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.active:not(.lab-끔) .ch-label,
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-켬 .ch-label{color:#fff!important;transition-delay:.04s;}
+
+/* 끄는 중 = 다른 버튼을 눌러 원래 켜진 버튼이 꺼질 때 — 판이 타일 자리로 줄고 흰 꺼짐 모습으로 */
+
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.active.lab-끔 .ch-label{color:#111!important;}
+
+/* 누름 크기 변화 없음 — 버튼 98% · 타일 90% 로 작아졌다 커지던 것을 뺌(2026-10-02 사용자 「클릭처럼 작아졌다가 커지는 거 없이 그냥 색만 채워 · 덜덜거리는 느낌」) · 판 ../판/핵심버튼_*_누름크기전.css */
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo:not(.active):not(.lab-켬):not(#_):not(#_):active{background:#e9eafc!important;}
+
+/* 화면이 바뀔 때 효과 이어 가기(2026-10-02 사용자 「버튼 효과와 동시에 우측 화면이 변경되어야」) — 손질후가 미리 불러 둔 화면으로 바로 갈아 끼우면
+   새 화면 버튼은 이미 켜진 모습이라 효과가 끊김 → 갈아 끼우는 순간 앞 화면 버튼의 판 크기 · 글자색을 그대로 받아(lab-이어) 한 장 그린 뒤 풀어 제 상태로 전환을 이어 감 */
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-이어::before{top:var(--이t)!important;left:var(--이l)!important;width:var(--이w)!important;height:var(--이h)!important;border-radius:var(--이r)!important;transition:none!important;}
+html body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-이어 .ch-label{color:var(--이c)!important;transition:none!important;}
+html.lab-즉시 body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo,html.lab-즉시 body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo::before,html.lab-즉시 body .app .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo *{transition:none!important;}
+
+/* 꺼진 버튼 = 바탕 · 테 없음(2026-10-02 사용자 「지금 같은 구조면 기본 상태 핵심 버튼의 흰색 배경하고 테두리 빼 봐 줘 · 호버할 때에도 테두리 빼」)
+   올리면 바탕만(LNB 줄 올림 색 #f1f1ff · 테 없음) · 끄는 중 버튼도 같은 꼴 · 판 ../판/핵심버튼_*_흰바탕전.css */
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo:not(.active):not(.lab-켬):not(#_):not(#_),
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.active.lab-끔:not(#_):not(#_){background:transparent!important;box-shadow:none!important;}
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo:not(.active):not(.lab-켬):not(#_):not(#_):hover{background:#f1f1ff!important;box-shadow:none!important;}
+
+/* 높이 36 → 32 · 사이 6 → 4(2026-10-02 사용자 「핵심 버튼 높이 혹은 사이 간격 좀 줄여도 될 듯 · 배경색이 없어서 · 살짝만」) — 타일 판은 버튼 가운데(위 5) · 왼쪽 7 은 그대로(LNB 제목 · 아래 줄과 줄 맞춤 유지) */
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo:not(#_){height:32px!important;min-height:32px!important;}
+html body .app .lnb-panel .lnb-wrap > .lnb-group:first-child .lnb-list{gap:4px!important;}
