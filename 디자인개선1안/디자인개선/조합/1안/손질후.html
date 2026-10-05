@@ -50,12 +50,6 @@ var 안 = {
 var LNB없음 = {}, 떼어둔LNB = null;   /* test-crew 10-01 실측: 프로젝트도 LNB(240)가 생겨 LNB 없는 화면 없음 (09-17 저장본 땐 d06 만 없었음) */
 var 단추키 = ["s0", "s1", "s2", "s3", "s4", "s5", "s1t"];
 var 메뉴키 = { "AI 채팅": "d01", "협업": "d02", "지식/문서": "d03", "이메일": "d04", "자동화": "s0", "프로젝트": "d06", "데이터 분석": "s3", "관리": "d08", "시스템": "d09" };
-/* 공개본(공개_1안.py) — 저장본 화면(test-crew 실서비스 사진본)은 안 올림: 키 · GNB 연결을 지우고, 그 메뉴를 누르면 안내 */
-Object.keys(안).forEach(function (k) { if (!안[k][2]) delete 안[k]; });
-Object.keys(메뉴키).forEach(function (n) { if (!안[메뉴키[n]]) delete 메뉴키[n]; });
-function 공개없음(이름) { var d = 틀문서 || document, n = d.getElementById("공개없음");
-  if (!n) { n = d.createElement("div"); n.id = "공개없음"; n.style.cssText = "position:fixed;left:50%;top:56px;transform:translateX(-50%);z-index:99;padding:8px 14px;border-radius:8px;background:rgba(30,32,48,.9);color:#fff;font:13px/1.5 Pretendard,sans-serif;letter-spacing:-.3px;pointer-events:none;transition:opacity .2s"; d.body.appendChild(n); }
-  n.textContent = "「" + 이름 + "」 화면은 공개본에 없습니다 — 자동화 · 데이터 분석만 볼 수 있습니다"; n.style.opacity = "1"; clearTimeout(n.__t); n.__t = setTimeout(function () { n.style.opacity = "0"; }, 2200); }
 var 키메뉴 = function (k) { return k[0] === "s" ? (+k[1] < 3 ? "자동화" : "데이터 분석") : 안[k][0]; };
 
 단추키.forEach(function (k) { var b = document.createElement("button"); b.textContent = 안[k][0]; b.onclick = function () { 보기(k); }; 단추.appendChild(b); });
@@ -126,7 +120,7 @@ var 틀문서 = null, 칸집 = null, 프레임 = {}, 지금 = null, 자동화마
     /* GNB 누르기 — 켜진 칸을 옮기고(전환 효과는 틀에서 그대로) 안쪽 화면만 바꾼다 */
     d.addEventListener("click", function (e) {
       var 칸 = e.target.closest && e.target.closest(".g-item"); if (!칸) return;
-      var 이름 = 칸.textContent.trim(), k = 메뉴키[이름]; if (!k) { 공개없음(이름); return; }
+      var 이름 = 칸.textContent.trim(), k = 메뉴키[이름]; if (!k) return;
       if (이름 === "자동화") k = 자동화마지막; if (이름 === "데이터 분석") k = 분석마지막;
       보기(k);
     });
