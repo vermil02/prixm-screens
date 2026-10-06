@@ -4,12 +4,12 @@
 (function () {
   if (window.__머리붙음) return; window.__머리붙음 = true;
   var D = document, H = D.documentElement;
-  /* [제목 줄, 도구 줄, 제목 글자, 받침(겹친 제목 줄 아래 여백을 가진 칸)] — 앞에서부터 처음 맞는 것 */
+  /* [제목 줄, 도구 줄, 제목 글자, 받침(겹친 제목 줄 아래 여백을 가진 칸), 도구 받침(도구 줄을 감싸 위아래 여백을 더하는 칸)] — 앞에서부터 처음 맞는 것 */
   var 자리 = [
     [".body > .main > .page-hd", ".body > .main > .head-zone", ".page-hd .crumb .cur"],                                  /* 우리 화면(자동화 · 분석) */
     ["header.conversation-head", null, ".conversation-head .lab18-제목"],                                                  /* AI 채팅 */
     ["main div[class*='absolute'][class*='top-0'][class*='h-[41px]']", null, "h1", "받침"],                              /* 협업 채널 */
-    [".knowledge-page div[class*='h-[41px]'][class*='border-b']", ".knowledge-page .selection-toolbar-row", ".lab18-제목"], /* 지식/문서 */
+    [".knowledge-page div[class*='h-[41px]'][class*='border-b']", ".knowledge-page .selection-toolbar-row", ".lab18-제목", null, ".knowledge-page .file-list-header"], /* 지식/문서 — 도구 줄을 감싼 칸에 위 8 · 아래 10 */
     ["header[class*='h-[40px]']:has(.lab18-제목)", "div[class*='h-[45px]'][class*='gap-[40px]']", ".lab18-제목"],         /* 이메일 */
     ["nav.ax-crumb", ".pj-tools", ".lab18-제목"],                                                                          /* 프로젝트 */
     [".prism-page-header", null, ".prism-page-title"]                                                                      /* 설정(대시보드 등) */
@@ -29,6 +29,7 @@
       var 글 = 제목.querySelector(z[2]); if (글) 글.setAttribute("data-머리", "제목글");
       if (도구) { 도구.setAttribute("data-머리줄", "도구"); if (!도구.querySelector("button,input")) 도구.setAttribute("data-머리", "글"); }
       if (z[3] === "받침" && 제목.parentElement) 제목.parentElement.setAttribute("data-머리", "받침");
+      var 감쌈 = 도구 && z[4] && D.querySelector(z[4]); if (감쌈) 감쌈.setAttribute("data-머리", "도구받침");
       H.setAttribute("data-머리", 판);
       return;
     }

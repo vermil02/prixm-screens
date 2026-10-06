@@ -18,13 +18,13 @@
 }
 
 /* ── 제목 줄 ── */
-html:not(#_):not(#_) [data-머리줄="제목"]{box-sizing:border-box!important;display:flex!important;align-items:center!important;padding:0 var(--머리-우) 0 calc(var(--머리-좌) - 8px)!important;margin-top:0!important;min-height:0!important;}
+html:not(#_):not(#_) [data-머리줄="제목"]{box-sizing:border-box!important;display:flex!important;align-items:center!important;padding:0 var(--머리-우) 0 calc(var(--머리-좌) - 8px)!important;min-height:0!important;}
 html:not(#_):not(#_)[data-머리="2"] [data-머리줄="제목"]{height:var(--머리-제목줄)!important;flex:0 0 var(--머리-제목줄)!important;border-bottom:1px solid transparent!important;}
 html:not(#_):not(#_)[data-머리="2"] [data-머리줄="제목"] > *{transform:translateY(var(--머리-제목내림));}
 html:not(#_):not(#_)[data-머리="1"] [data-머리줄="제목"]{height:var(--머리-한줄)!important;flex:0 0 var(--머리-한줄)!important;border-bottom:1px solid var(--머리-선)!important;}
 html:not(#_):not(#_) [data-머리줄="제목"] [data-머리="제목글"]{font-size:var(--머리-제목크기)!important;font-weight:var(--머리-제목굵기)!important;color:var(--머리-제목색)!important;}
 /* 글자 앞 8 — 우리 화면 경로 줄(.crumb) · 설정 쪽 제목(여백 없음). 저장본 제목은 원래 왼쪽 8 이 있음 */
-html:not(#_):not(#_) [data-머리줄="제목"] > .crumb{padding-left:8px!important;}
+html:not(#_):not(#_) [data-머리줄="제목"] > .crumb{padding-left:8px!important;flex:1 1 auto!important;min-width:0!important;}   /* 경로 줄이 남는 폭을 다 차지 — 오른쪽 단추(검색 · 설정)가 끝에 붙어 있게 */
 html:not(#_):not(#_) [data-머리줄="제목"] .prism-page-title{padding-left:8px!important;}
 /* 겹쳐 놓인 제목 줄(협업 — absolute) 아래 받침도 같은 높이만큼 */
 html:not(#_):not(#_)[data-머리="1"] [data-머리="받침"]{padding-top:var(--머리-한줄)!important;}
@@ -38,3 +38,5 @@ html:not(#_):not(#_) [data-머리줄="도구"]{box-sizing:border-box!important;d
 /* 단추는 안쪽 8 이 있어 줄은 24 → 아이콘이 제목 글자와 같은 32 · 글만 있는 줄(상세 설명 · 분석 결과 정보)은 32 */
 html:not(#_):not(#_) [data-머리줄="도구"][data-머리="글"]{padding-left:var(--머리-좌)!important;}
 html:not(#_):not(#_) [data-머리줄="도구"] button{font-size:var(--머리-도구글)!important;font-weight:var(--머리-도구굵기)!important;}
+/* 도구 줄을 감싸 위아래 여백을 더하는 칸(지식/문서 .file-list-header 위 8 · 아래 10) — 여백은 도구 줄 몫 */
+html:not(#_):not(#_) [data-머리="도구받침"]{padding-top:0!important;padding-bottom:0!important;}
