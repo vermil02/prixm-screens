@@ -7,7 +7,7 @@
 html.lab-저장본{--저장본바닥:var(--톤바닥,#f1f2f5);--저장본GNB:var(--톤GNB,#f7f8fa);--저장본LNB:var(--톤LNB,#fafbfc);--저장본위:40px;--저장본r:var(--r틀,10px);--저장본그림자:0 0 0 1px rgba(30,40,90,.04),0 0 10px rgba(30,40,90,.06);}
 
 /* 바닥 — LNB 를 품은 겹(body · h-screen · main · 페이지 칸)은 모두 투명, 화면 바닥 한 색 */
-html.lab-저장본,html.lab-저장본 body{background:var(--저장본바닥)!important;}
+html.lab-저장본{background:var(--저장본바닥)!important;}html.lab-저장본 body{background:transparent!important;}   /* body 는 투명 — body 바닥색이 카드 뒤 그림자 판(body::before · z −1)을 덮어 GNB + LNB 카드 테가 빠졌음(2026-10-06 사용자 「gnb 테두리 잘리는 부분 · 접기했을 때 우측 테두리 안 보임」) */
 html.lab-저장본 body :has(> aside[class*="gnb-panel-bg"]),html.lab-저장본 body :has(aside[class*="gnb-panel-bg"]){background-color:transparent!important;}
 
 /* 상단 바 — 손질후가 잘라 내는 높이(우리 상단 바 실측)에 맞춤 · 저장본은 45 라 5px 가 비쳐 보였음 */
@@ -36,4 +36,4 @@ html.lab-저장본 body::before{content:'';position:fixed;z-index:-1;pointer-eve
 
 /* 2026-10-06 사용자 「lnb 가 우측 카드 섹션에 비해서 그림자 효과 같은 게 약해진 듯」 — 실측(틈 314 ~ 326 한 줄 밝기): 우리 화면 = LNB 끝 228(1px 테) + 양쪽 대칭 · 사진본 = LNB 끝 242 · 콘텐츠 쪽만.
    원인: LNB 카드 그림자를 body::before(z −1)로 그렸는데 body 바닥색 아래로 깔려 가려짐 → LNB 에 직접(테 + 흐림) · 왼쪽(GNB 와 붙는 쪽)은 잘라 냄 */
-html.lab-저장본 aside[class*="gnb-panel-bg"]{box-shadow:inset 1px 0 0 #f0f1f7,var(--저장본그림자)!important;clip-path:inset(-14px -14px -14px 0 round 0 var(--저장본r) var(--저장본r) 0);overflow:visible!important;}
+/* → 같은 날 다시: LNB 에 직접 단 그림자는 LNB 만 감싸 GNB 몫(펼침 때 GNB 오른쪽 위 6px · 접힘 때 GNB 오른쪽 테)이 여전히 빠졌음 → 위 body 투명으로 그림자 판이 GNB + LNB 를 한 장으로 감쌈(우리 화면 틀.css .app::before 와 같음) · LNB 직접 그림자는 뺌(두 겹 방지) · 이전 판 판/저장본_*_그림자판전.css */

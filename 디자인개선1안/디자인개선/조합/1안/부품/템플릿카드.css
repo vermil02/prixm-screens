@@ -1,0 +1,21 @@
+/* 조합 1안 · 부품/템플릿카드 — 손 부품(랩 없음) · 2026-10-07
+   사용자 「템플릿 선택도 모든 자동화 카드 참고해서 자동 수동 태그 · 템플릿명 · 설명 · 순서 정도로 해도 될 듯」
+   = 자동화① 카드 꼴(23 K-15)과 같은 결: [자동] 칩 + 테만 태그 / 이름 15 · 600 / 설명 2줄 / 구분선 / 순서(하는 일 단계 · 글자만 › 로 이음)
+   부품 「템플릿」(16 랩) 위에 얹음 — 템플릿 고르기가 보일 때만(html.lab-템플릿) · 머리 타일 · 준비물 · 「하는 일」 이름표는 숨김 */
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;padding:18px 20px 16px!important;border:1px solid #eceef8!important;border-radius:12px!important;background:#fff!important;box-shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.03)!important;text-align:left!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card:hover{border-color:#e1e3ee!important;box-shadow:0 2px 4px rgba(16,24,40,.05),0 8px 20px rgba(16,24,40,.07)!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card::before{display:none!important;}
+/* 칩 줄 — 방식(채운 칩) + 분류(테만) · 한 줄 */
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .lab-tk줄{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow:hidden;min-width:0;margin-bottom:2px;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card .lab-tk방식{display:inline-flex;align-items:center;height:18px;padding:0 5px;border-radius:4px;background:#eff0f3;color:#5e5d60;font-size:11px;font-weight:600;line-height:1;white-space:nowrap;flex:none;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card .lab-tk태그{display:inline-flex;align-items:center;height:18px;padding:0 6px;border:1px solid #e4e6ee;border-radius:5px;background:#fff;color:#5e5d60;font-size:11px;line-height:1;white-space:nowrap;flex:none;box-sizing:border-box;}
+/* 이름 · 설명 */
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > :is(.tpl-name,.tpl-desc){text-align:left!important;align-self:stretch!important;justify-content:flex-start!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-name{font-size:15px!important;font-weight:600!important;color:#1d1c1d!important;line-height:1.35!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-desc{font-size:12.5px!important;color:#5e5d60!important;line-height:1.5!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* 순서 — 구분선 아래 단계 글자만(칩 바탕 없음) */
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail{display:block!important;margin-top:auto!important;padding-top:10px!important;border-top:1px solid #f0f1f5!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail :is(.td-lb,.td-prep){display:none!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail .td-flow{display:flex!important;flex-wrap:wrap!important;align-items:center;gap:3px 5px!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail .fstep{padding:0!important;border:0!important;background:none!important;font-size:12px!important;color:#5e5d60!important;height:auto!important;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail .farw{color:#c4c5d4!important;font-size:11px!important;}

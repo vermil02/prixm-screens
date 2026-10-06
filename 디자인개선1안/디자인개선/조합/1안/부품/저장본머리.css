@@ -15,5 +15,5 @@ html.lab-저장본 aside[class*="gnb-panel-bg"]:hover .lab-저장본머리단추
 html.lab-저장본 aside[class*="gnb-panel-bg"]{transition:width .22s cubic-bezier(.2,.8,.2,1),padding .22s cubic-bezier(.2,.8,.2,1),opacity .15s;}
 html.lab-저장본 body.lnb-접힘 aside[class*="gnb-panel-bg"]{width:0!important;min-width:0!important;padding-left:0!important;padding-right:0!important;opacity:0;overflow:hidden!important;}
 html.lab-저장본 aside:has(a.gnb-menu){transition:background-color .22s cubic-bezier(.2,.8,.2,1);}
-html.lab-저장본 body.lnb-접힘 aside:has(a.gnb-menu){border-radius:var(--저장본r,10px)!important;background:var(--톤LNB,#fafbfc)!important;}
+html.lab-저장본 body.lnb-접힘 aside:has(a.gnb-menu){border-radius:var(--저장본r,10px)!important;background:var(--톤LNB,#fafbfc)!important;border-right:1px solid #eceef8!important;}   /* 오른쪽 안쪽 선 1px = 우리 접힌 GNB(LNB.css lnb-접힘 .gnb) */
 html.lab-저장본 body.lnb-접힘::before{width:62px!important;}
