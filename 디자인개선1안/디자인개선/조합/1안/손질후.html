@@ -219,12 +219,13 @@ function 보기(k, 끝) {
 }
 /* LNB 올림 넘김(2026-10-04 사용자 「lnb에서 메뉴 바꿀 때 우측 상단에 호버하면 나오는 아이콘들이 깜빡거리고」) — 미리 불러 둔 판으로 갈아 끼우면 새 판은 마우스가 LNB 위에 있어도
    다음 움직임까지 :hover 를 몰라 돋보기 · 접기가 1 → 0 → (움직이면) 0.2초에 걸쳐 1 로 깜빡였음(실측). 앞 판 LNB 가 올려져 있었으면 새 판 html 에 lab-lnb올림(부품/LNB.css 끝 · 그대로 보임 · 전환 없음)
-   → 새 판이나 바깥 틀에서 마우스가 처음 움직이면 뗌(그때부터 진짜 :hover). 저장본(우리=0)은 LNB 부품이 없어 붙여도 아무 일 없음 */
+   → 새 판이나 바깥 틀에서 마우스가 처음 움직이면 뗌(그때부터 진짜 :hover). 저장본(우리=0)은 LNB 부품이 없어 붙여도 아무 일 없음.
+   2026-10-06 + 저장본 LNB(aside) 올림도 봄 · 막대=부드럽게 의 스크롤 막대도 이 표시로 그대로 켜진 채(LNB.css · 저장본스크롤.css 끝 · 사용자 「lnb 우측 상단 아이콘 나타났다가 사라지는 타이밍하고 맞추면」) */
 function 올림넘김(옛, 새) {
   try {
     var nd = 새 && 새.contentDocument; if (!nd || !nd.documentElement) return;
     var od = 옛 && 옛 !== 새 && 옛.contentDocument, r = nd.documentElement;
-    var 올림 = !!(od && (od.querySelector(".lnb-panel:hover") || od.documentElement.classList.contains("lab-lnb올림")));
+    var 올림 = !!(od && (od.querySelector(".lnb-panel:hover, aside[class*=\"gnb-panel-bg\"]:hover") || od.documentElement.classList.contains("lab-lnb올림")));
     if (!올림) { r.classList.remove("lab-lnb올림"); return; }
     r.classList.add("lab-lnb올림");
     var 떼기 = function () { r.classList.remove("lab-lnb올림"); nd.removeEventListener("pointermove", 떼기, true); 틀문서.removeEventListener("pointermove", 떼기, true); };

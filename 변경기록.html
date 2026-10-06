@@ -39,6 +39,7 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 <li><b>사진본 LNB 그림자</b> — LNB 카드 오른쪽 테 · 그림자가 빠져 콘텐츠 카드보다 약해 보이던 것 → 자동화 화면과 같은 값. (<code>부품/저장본.css</code> 끝 · LNB aside)</li>
 <li><b>본문 머리 공통 부품</b> — 자동화 ① 머리(제목 줄 · 도구 줄 · 가로선 · 간격 · 글자 크기)를 기준으로 다른 메뉴 머리도 같게. (새 부품 <code>부품/머리줄.css</code> · <code>.js</code>)</li>
 <li>그 밖 — 우리 LNB · 사진본 LNB 스크롤 다듬음. (<code>부품/LNB.*</code> · <code>부품/저장본스크롤.*</code>)</li>
+<li><b>LNB 스크롤 막대 — 부드럽게 켜짐</b> (자동화 · 분석 LNB + 사진본 LNB) — 평소 숨김 → LNB 에 올리면 맨 위 줄 돋보기 · 접기 아이콘과 같은 0.2초(ease)에 걸쳐 <code>#d6d8e6</code> → 빼면 같은 0.2초에 꺼짐 → 막대를 누르는 동안 바로 <code>#c2c4d6</code>. 메뉴를 바꿔도 LNB 위에 마우스가 있었으면 아이콘처럼 켜진 채. 자동화 LNB 막대 오른쪽 1px 틈도 없앰(판 끝에 붙음 · 글자 자리 그대로). (<code>부품/LNB.css</code> · <code>부품/저장본스크롤.css</code> 끝 · 막대 색 변수 <code>--lab바지금</code> 은 <code>@property</code> 로 등록해 전환 · 손질후 <code>올림넘김()</code>)</li>
 </ul>
 <h2><span class="v">v26.10.06-7</span><span class="m">2026-10-06</span></h2>
 <p class="sub"><b>디자인 개선 1안 — 사진본 LNB 스크롤 줄 너비</b> (<code>디자인개선1안/</code>)</p>

@@ -148,9 +148,11 @@ html body .lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo:hove
 /* 2026-10-04 사용자 「lnb에서 메뉴 바꿀 때 우측 상단에 호버하면 나오는 아이콘들이 깜빡거리고」 — 손질후가 미리 불러 둔 판으로 갈아 끼우면 새 판은 마우스가 LNB 위에 있어도 :hover 를 모름(다음 마우스 움직임까지) → 돋보기 · 접기가 1 → 0 → 0.2초에 걸쳐 다시 1(실측). 앞 판이 올려져 있었으면 손질후가 html.lab-lnb올림 을 붙여 그대로 보이게 · 새 판(또는 바깥 틀)에서 마우스가 처음 움직이면 뗌 → 그때부터는 진짜 :hover 가 맡음 */
 html.lab-lnb올림 body .lnb-panel .lnb-top-search,html.lab-lnb올림 body .lnb-panel .lnb-top-fold{opacity:1!important;transition:none!important;}
 
-/* 2026-10-06 비교용 「막대=숨김」(짝 LNB.js 끝) — 평소 막대 투명 · LNB 에 올리면 #d6d8e6 · 누름 #c2c4d6 그대로 */html.lab-막대숨김 body .lnb-panel{--lab바:transparent;}
-/* 2026-10-06 비교용 「막대=옅게」 — 평소 #f0f1f6(09 랩 ① 거의 안 보임) · 올림 · 누름 그대로 */html.lab-막대옅게 body .lnb-panel{--lab바:#f0f1f6;}
-/* 2026-10-06 비교용 「막대=부드럽게」 — 평소 숨김 → LNB 에 올리면 0.2초에 걸쳐 #d6d8e6(맨 위 줄 돋보기 · 접기 아이콘 opacity .2s ease 와 같게) → 누르면 바로 #c2c4d6.
+/* 2026-10-06 정본 「막대 부드럽게」(사용자 「막대 부드럽게를 정본으로 ㄱ」 · 숨김 · 옅게 안은 버림 — 판 ../판/*_부드럽게정본전.*) — 평소 숨김 → LNB 에 올리면 0.2초에 걸쳐 #d6d8e6(맨 위 줄 돋보기 · 접기 아이콘 opacity .2s ease 와 같게) → 누르면 바로 #c2c4d6.
    막대(::-webkit-scrollbar-thumb)엔 transition 이 안 먹어서, 색을 @property 로 등록한 변수 --lab바지금 에 두고 목록 칸에서 그 변수를 전환(실제 크롬 창 시험: 등록 변수는 서서히 · 안 한 건 한 번에) */
 @property --lab바지금{syntax:'<color>';inherits:true;initial-value:transparent}
-html.lab-막대부드럽게 body .lnb-panel .lab-목록{--lab바지금:rgba(214,216,230,0);transition:--lab바지금 .2s ease;}html.lab-막대부드럽게 body .lnb-panel:hover .lab-목록{--lab바지금:#d6d8e6;}html.lab-막대부드럽게 body .lnb-panel .lab-목록::-webkit-scrollbar-thumb,html.lab-막대부드럽게 body .lnb-panel:hover .lab-목록::-webkit-scrollbar-thumb{background:var(--lab바지금);}html.lab-막대부드럽게 body .lnb-panel:hover .lab-목록::-webkit-scrollbar-thumb:active,html.lab-막대부드럽게 body .lnb-panel .lab-목록::-webkit-scrollbar-thumb:active{background:var(--lab바누름);}
+html body .lnb-panel .lab-목록{--lab바지금:rgba(214,216,230,0);transition:--lab바지금 .2s ease;}html body .lnb-panel:hover .lab-목록{--lab바지금:#d6d8e6;}html body .lnb-panel .lab-목록::-webkit-scrollbar-thumb,html body .lnb-panel:hover .lab-목록::-webkit-scrollbar-thumb{background:var(--lab바지금);}html body .lnb-panel:hover .lab-목록::-webkit-scrollbar-thumb:active,html body .lnb-panel .lab-목록::-webkit-scrollbar-thumb:active{background:var(--lab바누름);}
+/* 막대 부드럽게 + 올림 넘김 — 메뉴를 바꿔도 LNB 위에 마우스가 있었으면 돋보기 · 접기처럼 막대도 그대로 켜진 채(전환 없음 · 손질후 올림넘김()) */html.lab-lnb올림 body .lnb-panel .lab-목록{--lab바지금:#d6d8e6;transition:none!important;}
+/* 2026-10-06 막대 오른쪽 1px 틈 — 사용자 「스크롤바가 lnb 에서는 우측에 딱 붙어 있던 것 같은데 지금 여백이 미세하게」. LNB 판 안쪽 여백이 10 인데(실측) 목록 칸 · 고정 머리는 09 랩 때 값 -9 만큼만 넓혀서
+   막대와 판 끝 사이에 바탕 1px(실측 313px). -10 으로 넓히고 안쪽 여백도 +1(왼 10 · 오른 5 = 4 + 1) → 막대가 판 끝에 붙고 글자 자리는 그대로. 저장본 LNB 는 원래 붙어 있음 */
+html body .lnb-panel .lab-목록{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:5px;}html body .lnb-panel > .lnb-wrap > .lnb-group:first-child{margin-left:-10px!important;margin-right:-10px!important;padding-left:10px!important;padding-right:10px!important;}
