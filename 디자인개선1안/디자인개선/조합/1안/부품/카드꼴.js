@@ -1,4 +1,4 @@
-/* 조합 1안 · 부품/카드꼴 — 손질/23_카드꼴/_만들기/1안반영.js 가 만듦(손으로 고치지 말 것) · 2026-10-06 16:53
+/* 조합 1안 · 부품/카드꼴 — 손질/23_카드꼴/_만들기/1안반영.js 가 만듦(손으로 고치지 말 것) · 2026-10-06 17:01
    자동화① 목록 카드 — 20 목록 구분(G 보기 탭 c · 묶음 실행 · 대기 · 확인 필요 · 임시 저장) + 21 카드 아이콘(I-43 [자동] [수동] 칩 · 진행 글 앞 도넛)
    + 22 단추 색(중지 빨강 옅게 · 카드에 올리면 보임 · 고정 핀 · 대기 회색 · 임시 저장 빈 원) + 23 카드 꼴 K-15(테 + 옅은 그림자 · 둥글기 12 · 구분선 → 동작 중엔 진행 막대 · 방식 옆 테만 태그 · 한 줄 + n)
    20 덧 h-nodot · t5 / 21 덧 l-chip · a-none · sp-text · c-run · x-red · p-indigo / 22 s4 · f0 · h2 · z14 · k1 · c1 · d1 · g10 · t10 · 이름 n2 / 23 lab23-m2 · lab23-r12 · lab23-b1 · lab23-c6 · lab23-p1 · lab23-s0 · lab23-g3 · lab23-o1 · lab23-d0 */
@@ -78,6 +78,32 @@ d.addEventListener("click", function () {
     onEnter: function (els) { return gsap.fromTo(els, { opacity: 0 }, { opacity: 1, duration: .25 }); },
     onComplete: function () { gsap.set(판.children, { clearProps: "transform,translate,rotate,scale,opacity" }); } });
 });
+/* 카드 상태가 바뀌면 묶음 다시 — 사용자 「대기 상태에서 자동도 토글 버튼 활성화하면 실행으로 넘어가야지?」(2026-10-07)
+   20 엔진은 탭을 누르거나 카드가 다시 꽂힐 때만 묶음을 다시 정해서, 스위치로 data-state 만 바뀌면(꺼짐 → 대기 · 켜짐) 대기 묶음에 그대로 남았음
+   → 카드 안을 누르는 순간(잡기 단계) 자리를 적어 두고, 카드 data-state · 스위치 켜짐이 바뀌면 다음 그림 전에 엔진에 다시 묶게 한 뒤 카드 + 머리를 한 번에 Flip(탭과 같은 값) */
+var 상태적음 = null, 상태대기 = false;
+/* 화면01 스위치는 누르는 순간(pointerdown) 상태를 바꿔서 click 보다 먼저 적어야 함 */
+d.addEventListener("pointerdown", function (e) {
+  if (!e.target.closest || !e.target.closest(".content .grid > .wf-card") || !window.Flip) return;
+  var 판 = d.querySelector(".content .grid"); if (!판) return; 날id(판); 상태적음 = [Flip.getState(판.children, { simple: true }), Date.now()];
+}, true);
+function 상태다시() {
+  상태대기 = false; var 판 = d.querySelector(".content .grid"); if (!판 || !window.__lab20적용) return;
+  var 적 = 상태적음 && Date.now() - 상태적음[1] < 4000 ? 상태적음[0] : null; 상태적음 = null;
+  var F = window.Flip; window.Flip = null; try { window.__lab20적용(["h-nodot","t5"]); } catch (e) {} window.Flip = F;
+  if (!적 || !F) return; 날id(판);
+  F.from(적, { targets: [].slice.call(판.children), duration: .38, ease: "power2.inOut", stagger: 0, simple: true, prune: true,
+    onEnter: function (els) { return gsap.fromTo(els, { opacity: 0 }, { opacity: 1, duration: .25 }); },
+    onComplete: function () { gsap.set(판.children, { clearProps: "transform,translate,rotate,scale,opacity" }); } });
+}
+new MutationObserver(function (ms) {
+  if (상태대기) return;
+  var 바뀜 = ms.some(function (m) { var t = m.target;
+    /* 화면01 은 스위치를 켜면 카드를 새로 그려 다시 꽂음(속성 변화 없이) → 카드 안을 누른 직후(적어 둔 자리가 있을 때)의 카드 다시 꽂힘도 봄 */
+    if (m.type === "childList") return !!상태적음 && t.matches && t.matches(".content .grid") && [].some.call(m.addedNodes, function (n) { return n.classList && n.classList.contains("wf-card"); });
+    return (m.attributeName === "data-state" && t.classList && t.classList.contains("wf-card")) || (m.attributeName === "class" && t.classList && t.classList.contains("switch-demo") && (m.oldValue || "").indexOf("is-on") < 0 !== !t.classList.contains("is-on")); });
+  if (바뀜) { 상태대기 = true; Promise.resolve().then(상태다시); }
+}).observe(d.querySelector(".content") || d.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-state", "class"], attributeOldValue: true });
 /* 새로고침 — 처음엔 회색 뼈대 → 사용자 「기존에 있던 자동화에서 로드하는 게 맞는 거지?」 · 「아이콘만 돌던지 · 리스트 창에는 로드되고 있는 효과만」
    → (띠 · 카드 위 빛도 해 봄) → 「그냥 아이콘 회전 효과만」 · 받는 동안(데모 0.9초) 아이콘만 돎 · 끝나면 멈춤(실서비스는 응답이 오면 끝 · 바뀐 카드만 제자리 갱신) */
 d.addEventListener("click", function (e) {

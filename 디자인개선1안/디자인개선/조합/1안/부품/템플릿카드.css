@@ -19,3 +19,6 @@ html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail :
 html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail .td-flow{display:flex!important;flex-wrap:wrap!important;align-items:center;gap:3px 5px!important;}
 html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail .fstep{padding:0!important;border:0!important;background:none!important;font-size:12px!important;color:#5e5d60!important;height:auto!important;}
 html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card > .tpl-detail .farw{color:#c4c5d4!important;font-size:11px!important;}
+/* 방식 칩 색 — 사용자 「템플릿에서는 자동 수동 색을 다르게 해 놔도 될 듯」(2026-10-07) · 템플릿엔 상태(실행 중)가 없으니 방식으로 색 · 16 랩 머리 타일과 같은 짝(자동 파랑 · 수동 주황) */
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card .lab-tk방식[data-k="자동"]{background:#e8f0fe;color:#2f6fe0;}
+html.lab-템플릿:not(#_):not(#_) body #v-pick .gal > .tpl-card .lab-tk방식[data-k="수동"]{background:#fdf1e3;color:#c26d0f;}
