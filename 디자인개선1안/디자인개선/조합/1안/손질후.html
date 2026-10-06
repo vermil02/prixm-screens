@@ -109,14 +109,17 @@ function 등장(f, 정보) {
 }
 
 /* ── 틀 ── */
-var 틀문서 = null, 칸집 = null, 프레임 = {}, 지금 = null, 자동화마지막 = "s0", 분석마지막 = "s3";
+var 칸위 = 틀.위, 틀문서 = null, 칸집 = null, 프레임 = {}, 지금 = null, 자동화마지막 = "s0", 분석마지막 = "s3";
 판.addEventListener("load", function () {
   var d = 판.contentDocument; 틀문서 = d;
   얹기(d, function () {
     /* 상단바 높이를 재서 자름(2026-10-02 상단바 45 → 40) — 숫자를 박아 두면 높이를 바꿀 때마다 안쪽 화면 위가 어긋난다 */
     var 머리 = d.querySelector(".hd"); if (머리) 틀.위 = Math.round(머리.getBoundingClientRect().height) || 틀.위;
+    /* 칸집 윗변 = 상단 바 아래 끝과 오른쪽 아바타 · 종 아래 끝 중 낮은 쪽 — 아바타(32 · 화면 위 ~ 카드 위 가운데)가 바(40)보다 2px 내려와 칸집에 깔려 잘렸음(2026-10-06 사용자 「아바타 안 잘리도록」).
+       안쪽 화면 그리는 자리는 그대로(iframe 을 같은 만큼 올림) — 보여 주는 창 윗변만 내려감 · 그 자리는 카드 위 바닥색 · 이전 판 판/손질후_*_아바타잘림전.html */
+    var 오른 = d.querySelector(".hd-right"); 칸위 = Math.max(틀.위, 오른 ? Math.ceil(오른.getBoundingClientRect().bottom) : 0);
     칸집 = d.createElement("div"); 칸집.className = "칸집";   /* 틀이전.css 가 둥글기 · 그림자를 거는 자리 — 안쪽 화면은 왼쪽 68 · 위 45 를 잘라 내서, 안쪽에 건 그림자는 GNB · 상단 바 쪽으로 번지지 못함 */
-    칸집.style.cssText = "position:fixed;left:" + 틀.왼 + "px;top:" + 틀.위 + "px;right:0;bottom:0;z-index:5;overflow:hidden;background:#fff;";
+    칸집.style.cssText = "position:fixed;left:" + 틀.왼 + "px;top:" + 칸위 + "px;right:0;bottom:0;z-index:5;overflow:hidden;background:#fff;";
     d.body.appendChild(칸집);
     /* GNB 누르기 — 켜진 칸을 옮기고(전환 효과는 틀에서 그대로) 안쪽 화면만 바꾼다 */
     d.addEventListener("click", function (e) {
@@ -141,7 +144,7 @@ function 만들기(k, 끝) {
    새 판을 뒤에서 불러 덧입힘 · 짝 스크립트까지 다 얹은 뒤 갈아 끼운다 — 덧입힘 전 정본 모습이 한두 장 보이던 번쩍임 없앰(2026-10-02) */
 function 새판(k, 주소, 끝) {
   var f = 틀문서.createElement("iframe"), 우리 = 안[k][2];
-  f.style.cssText = "position:absolute;left:-" + 틀.왼 + "px;top:-" + 틀.위 + "px;width:calc(100% + " + 틀.왼 + "px);height:calc(100% + " + 틀.위 + "px);border:0;background:#fff;visibility:hidden;";
+  f.style.cssText = "position:absolute;left:-" + 틀.왼 + "px;top:-" + 칸위 + "px;width:calc(100% + " + 틀.왼 + "px);height:calc(100% + " + 칸위 + "px);border:0;background:#fff;visibility:hidden;";
   f.준비 = false; f.기다림 = [끝];
   f.addEventListener("load", function () {
     var d = f.contentDocument; d.addEventListener("keydown", 키);

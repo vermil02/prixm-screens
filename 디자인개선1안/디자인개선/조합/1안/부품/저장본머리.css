@@ -9,5 +9,11 @@ html.lab-저장본 aside[class*="gnb-panel-bg"] .lab-저장본머리단추 svg{w
 html.lab-저장본 aside[class*="gnb-panel-bg"] .lab-저장본머리단추:hover{background:rgba(99,102,241,.08)!important;color:#111!important;}
 html.lab-저장본 aside[class*="gnb-panel-bg"]:hover .lab-저장본머리단추,html.lab-저장본 aside[class*="gnb-panel-bg"]:has(:focus-visible) .lab-저장본머리단추{opacity:1;}
 /* 접힘 — LNB 를 걷고 본문 카드가 GNB 옆(12 띄움)으로 · LNB 카드 그림자(GNB + LNB 302)는 GNB 몫(62)만 */
-html.lab-저장본 body.lnb-접힘 aside[class*="gnb-panel-bg"]{display:none!important;}
+/* 2026-10-06 사용자 「접기 펼치기할 때 자동화 · 데이터분석만 정상 · 나머지는 애니메이션 효과하고 접혔을 때 lnb 모양도 다르고」
+   ① 움직임 — 그 자리에서 사라지던 것(display:none) → 우리 LNB(LNB.css .lnb-panel)와 같은 값: 폭 · 좌우 여백 0.22초 cubic-bezier(.2,.8,.2,1) · 투명도 0.15초 · 본문 카드는 폭을 따라 미끄러짐 · 펼칠 때도 같은 길로
+   ② 접힌 모양 — 사진본 자기 GNB 끝(68 ~ 74)이 왼쪽만 둥근 모서리 · 옛 GNB 색으로 남아 우리 GNB 오른쪽이 각져 보였음 → 접히면 네 모서리 둥글게 + LNB 색(우리 접힌 GNB 와 같음 · 색은 0.22초) · 이전 판 판/저장본머리_*_접기움직임전.css */
+html.lab-저장본 aside[class*="gnb-panel-bg"]{transition:width .22s cubic-bezier(.2,.8,.2,1),padding .22s cubic-bezier(.2,.8,.2,1),opacity .15s;}
+html.lab-저장본 body.lnb-접힘 aside[class*="gnb-panel-bg"]{width:0!important;min-width:0!important;padding-left:0!important;padding-right:0!important;opacity:0;overflow:hidden!important;}
+html.lab-저장본 aside:has(a.gnb-menu){transition:background-color .22s cubic-bezier(.2,.8,.2,1);}
+html.lab-저장본 body.lnb-접힘 aside:has(a.gnb-menu){border-radius:var(--저장본r,10px)!important;background:var(--톤LNB,#fafbfc)!important;}
 html.lab-저장본 body.lnb-접힘::before{width:62px!important;}
