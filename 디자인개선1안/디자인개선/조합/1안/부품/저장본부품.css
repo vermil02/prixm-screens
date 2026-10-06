@@ -176,5 +176,11 @@ html.lab-저장본 .lab18-줄그림{display:none;}
 html.lab-저장본.lab18켬-관리그림 .lab18-줄그림{display:block;flex:none;width:16px;height:16px;margin-right:10px;color:#5e5d60;}
 html.lab-저장본.lab18켬-관리그림 a.lab18-그림줄.lab18-그림줄{padding-left:9px!important;}
 /* ── 사진본 자기 GNB 숨김(늘) — 손질후가 안쪽 화면 왼쪽 68 을 잘라 우리 GNB 로 덮는데, 1안 틀이 사진본 GNB 를 12 밀어 74 까지 와서
-   켜진 메뉴 연보라 배경 끝 6px 이 우리 GNB 오른쪽에 막대처럼 비쳤음(2026-10-06 사용자 「GNB 버튼 우측에 이상한 게」) ── */
-html.lab-저장본 aside:has(a.gnb-menu){visibility:hidden!important;}
+   켜진 메뉴 연보라 배경 끝 6px 이 우리 GNB 오른쪽에 막대처럼 비쳤음(2026-10-06 사용자 「GNB 버튼 우측에 이상한 게」)
+   → 칸째 숨기니 GNB 색 바탕까지 빠져 GNB · LNB 사이 6px 에 바닥색이 틈처럼 보였음(같은 날 「gnb 하고 lnb 사이에 여백」) — 칸 바탕은 두고 속만 숨김 · 이전 판 판/저장본부품_*_GNB틈전.css ── */
+html.lab-저장본 aside:has(a.gnb-menu) > *{visibility:hidden!important;}
+
+/* 2026-10-06 사용자 「내 문서에서는 업로드, 새 폴더, 새 파일 아래 가로 라인은 좌우 꽉 채우고 · 위에 라인은 지워도 될 듯」
+   ① 위 선 = 「내 문서」 제목 줄(높이 41) 아래 1px → 없앰  ② 도구 줄 아래 선 = 콘텐츠 칸 좌우 안쪽 30 만큼 들어와 있던 것 → 칸 좌우 끝까지(음수 여백 · 안쪽 여백으로 글자 자리는 그대로) */
+html.lab-저장본 .knowledge-page div[class*="h-[41px]"][class*="border-b"]{border-bottom-color:transparent!important;}
+html.lab-저장본 .knowledge-page .selection-toolbar-row{margin-left:-30px!important;margin-right:-30px!important;padding-left:30px!important;padding-right:30px!important;}

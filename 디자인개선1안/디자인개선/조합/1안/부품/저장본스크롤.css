@@ -1,0 +1,16 @@
+/* 조합 1안 · 부품/저장본스크롤 — 2026-10-06 사용자 「작업할 때 스크롤에 대한 거 작업했었는데 그거 반영되게끔」
+   우리 LNB 스크롤(LNB.css 끝 · 손질/09_LNB스크롤호버 S-3 + 스크롤바 ①b) 을 저장본 화면(test-crew 7장) LNB 에도 같은 값으로.
+   짝 저장본스크롤.js 가 LNB 스크롤 칸 안을 [고정(핵심 버튼 · 세그) + 목록 칸] 으로 나눔 — 규칙은 모두 그 표시(lab-스크롤칸 · lab-고정 · lab-목록) 아래라
+   짝 스크립트가 없으면(18 랩) 아무것도 안 먹음.
+   고정 = 제목 줄(원래 바깥) + 핵심 버튼 + 그 아래 10 · 목록 칸만 스크롤 · 스크롤하면 고정 아래 끝에서 위만 흐림(바탕색 9px · 목록 스크롤 24px 에 걸쳐) · 아래 흐림 없음
+   스크롤바 = 평소 #e6e7f0 → LNB 에 올리면 #d6d8e6 → 막대 누르는 동안 #c2c4d6 · 막대 5px */
+html.lab-저장본 .lab-스크롤칸{--lab바:#e6e7f0;--lab바올림:#d6d8e6;--lab바누름:#c2c4d6;overflow:hidden!important;display:flex!important;flex-direction:column;padding-top:0!important;timeline-scope:--lab저장본목록;}
+html.lab-저장본 .lab-스크롤칸 > .lab-고정{flex:none;position:relative;z-index:2;margin:0 -10px;padding:10px 10px 0;animation:lab저장본흐림 linear both;animation-timeline:--lab저장본목록;animation-range:0 24px;}
+html.lab-저장본 .lab-스크롤칸 > .lab-고정 > :last-child{margin-bottom:0!important;}
+html.lab-저장본 .lab-스크롤칸 > .lab-목록{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;margin:0 -10px -25px;padding:0 5px 25px 10px;scroll-timeline:--lab저장본목록 block;scrollbar-width:auto;scrollbar-color:auto;}
+@keyframes lab저장본흐림{from{box-shadow:0 0 0 0 transparent}to{box-shadow:0 9px 9px 0 var(--저장본LNB,#fafbfc)}}
+html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar{width:5px;}
+html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-track{background:transparent;margin:4px 0;}
+html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb{background:var(--lab바);border-radius:3px;}
+html.lab-저장본 aside:hover .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb{background:var(--lab바올림);}
+html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb:active{background:var(--lab바누름);}

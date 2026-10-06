@@ -1,3 +1,4 @@
+/* 2026-10-06 GNB 9칸 → 8칸(관리 · 시스템 → 설정): 칸 번호 8(관리) 규칙은 nth-child(98) 로 꺼 둠 · 9(시스템) 규칙은 8(설정)로 당김 · 이전 판 ../판/*_GNB설정전.css */
 /* 조합 1안 · 부품/GNB.css — 손질/01_GNB/덧입힘.css 사본(2026-10-01 16:50 판 = 확정 1차 + 다듬기 「말랑 → 단단」 + 빛 높이 150 + LNB 없을 때 오른쪽 선).
    사용자 「gnb 우선 내가 직접 수정 중 버전1에 gnb 부품으로 넣어놔줘」. 미리보기.html 이 덧입힘.css 다음에 얹는다(이 파일이 이김).
    여기서 고쳐도 손질/01_GNB 에는 안 돌아간다 — 정할 것은 그쪽으로. */
@@ -37,17 +38,17 @@ html body .g-item:nth-child(6) svg path:nth-of-type(2){d:path("M3 10V6a2 2 0 0 1
 html body .g-item.on:nth-child(6) svg path:nth-of-type(2){fill-opacity:1;}
 html body .g-item:nth-child(7) svg path:nth-of-type(2){d:path("M6.453 15H17.547L19.755 19.04A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96Z");fill:currentColor;fill-opacity:0;}
 html body .g-item.on:nth-child(7) svg path:nth-of-type(2){fill-opacity:1;}
-html body .g-item:nth-child(8) svg path:nth-of-type(1){fill:currentColor;fill-opacity:0;}
-html body .g-item.on:nth-child(8) svg path:nth-of-type(1){fill-opacity:1;}
-html body .g-item:nth-child(9) svg path:nth-of-type(2){fill:currentColor;fill-opacity:0;}
-html body .g-item.on:nth-child(9) svg path:nth-of-type(2){fill-opacity:1;}
+html body .g-item:nth-child(98) svg path:nth-of-type(1){fill:currentColor;fill-opacity:0;}
+html body .g-item.on:nth-child(98) svg path:nth-of-type(1){fill-opacity:1;}
+html body .g-item:nth-child(8) svg path:nth-of-type(2){fill:currentColor;fill-opacity:0;}
+html body .g-item.on:nth-child(8) svg path:nth-of-type(2){fill-opacity:1;}
 html body .g-item.on:nth-child(2) svg path:nth-of-type(1){d:path("M11.667 7.5A1.667 1.667 0 0 1 10 9.167H5L1.667 12.5V3.333a1.667 1.667 0 0 1 1.666-1.666H10a1.667 1.667 0 0 1 1.667 1.666z");}
 html body .g-item.on:nth-child(2) svg path:nth-of-type(2){d:path("M15 7.5h1.667a1.667 1.667 0 0 1 1.666 1.667v9.166L15 15h-5a1.667 1.667 0 0 1-1.667-1.667V12.5M16.75 1.25l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z");stroke-width:1.05;}
 html body .g-item:nth-child(2) svg path:nth-of-type(1){transition-property:color,stroke,fill,fill-opacity;transition-duration:0.15s,0.15s,0.15s,0s;}
 html body .g-item.on:nth-child(2) svg path:nth-of-type(1){transition-duration:0.15s;}
 html body .g-item.on:nth-child(3) svg path:nth-of-type(2){stroke:#efefff;}
 html body .g-item.on:nth-child(4) svg path:nth-of-type(2){stroke:#efefff;}
-html body .g-item.on:nth-child(9) svg path:nth-of-type(3){fill:#efefff;}
+html body .g-item.on:nth-child(8) svg path:nth-of-type(3){fill:#efefff;}
 html body .g-item.on:nth-child(3) svg path:nth-of-type(2){d:path("M11.667 1.667v5h5z");fill:#efefff;stroke:currentColor;}
 html body .g-item.on:nth-child(4) svg path:nth-of-type(2){fill:#efefff;stroke:currentColor;}
 html body .g-item:nth-child(1) svg path:nth-of-type(2){fill:currentColor;fill-opacity:0;}
@@ -71,7 +72,7 @@ html body .g-item{height:58px;gap:2px;}
 html body .g-item.on svg{background-image:linear-gradient(135deg,#ffffff 0%,#efefff 45%,#dcdcfc 100%);}
 html body .gnb{background:#eff0fe;}
 html body .g-item.on svg{background:#777af4;background-image:linear-gradient(135deg,#9a9df9 0%,#777af4 50%,#615eec 100%);color:#fff;box-shadow:none;}
-html body .g-item.on:nth-child(3) svg path:nth-of-type(2),html body .g-item.on:nth-child(4) svg path:nth-of-type(2),html body .g-item.on:nth-child(9) svg path:nth-of-type(3){fill:#777af4;}
+html body .g-item.on:nth-child(3) svg path:nth-of-type(2),html body .g-item.on:nth-child(4) svg path:nth-of-type(2),html body .g-item.on:nth-child(8) svg path:nth-of-type(3){fill:#777af4;}
 html body .g-item{height:54px;gap:2px;}
 html body .g-item svg{padding:5px;}
 html body .g-item:nth-child(7){height:64px;}
