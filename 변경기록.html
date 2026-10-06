@@ -32,6 +32,14 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 </ul>
 <p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
 <hr>
+<h2><span class="v">v26.10.06-6</span><span class="m">2026-10-06</span></h2>
+<p class="sub"><b>디자인 개선 1안 — GNB 「설정」 · 선 정리 · 사진본 LNB 스크롤</b> (<code>디자인개선1안/</code>)</p>
+<ul>
+<li><b>GNB</b> — 「관리 · 시스템」 두 칸을 제품(test-crew)처럼 <b>「설정」 한 칸</b>으로(8칸). 아이콘은 제품 설정 아이콘(창 + 톱니) · 설정을 누르면 사진본 「설정 · 운영 대시보드」. (<code>화면/_뼈대.js</code> GNB 목록 · 1안 <code>부품/GNB.css</code> · <code>GNB움직임.css</code> · <code>틀.css</code> 칸 번호 9 → 8 · 손질후 <code>메뉴키</code>)</li>
+<li><b>자동화 ③ 상세</b> — 요약 칸(누적 실행 · 누적 실패 · 마지막 실행) 위 빈 머리의 가로선을 뺌. (<code>부품/상세.css</code> 끝 · <code>.bh-head</code>)</li>
+<li><b>지식/문서 (사진본)</b> — 「내 문서」 제목 아래 선을 빼고, 업로드 · 새 폴더 · 새 파일 줄 아래 선을 콘텐츠 칸 좌우 끝까지. (<code>부품/저장본부품.css</code> 끝 · <code>.selection-toolbar-row</code>)</li>
+<li><b>사진본 LNB 스크롤</b> — 우리 LNB 와 같은 스크롤 꼴을 사진본 화면 LNB 에도. (새 부품 <code>부품/저장본스크롤.css</code> · <code>.js</code>)</li>
+</ul>
 <h2><span class="v">v26.10.06-5</span><span class="m">2026-10-06</span></h2>
 <p class="sub"><b>디자인 개선 1안 — 지식/문서 폴더 누를 때 문서 촤르륵</b> (<code>디자인개선1안/</code>)</p>
 <ul>
