@@ -1,0 +1,13 @@
+/* 조합 1안 · 부품/저장본머리.css — 사진본(test-crew 저장본) LNB 머리의 검색 · 접기를 우리 자동화 LNB 처럼 · 짝 저장본머리.js (2026-10-06)
+   사용자 「자동화 lnb 호버하면 우측 상단에 검색 아이콘이랑 축소하기 생기는 것처럼 각 메뉴들도 · 닫기가 << 로 되어 있을 건데 내가 작업한 아이콘 + 닫기 열기 방식 · 검색 아이콘이 있는 경우 없는 경우 맞춰서」
+   실측(2026-10-06 · 머리 단추): AI 채팅 · 협업 · 지식/문서 · 설정 = 검색 + 접기 « / 이메일 · 프로젝트 = 접기 « 만 · 둘 다 늘 보임(16 × 16)
+   → 우리 값(LNB.css .lnb-top-search · .lnb-top-fold): 24 × 24 · 모서리 6 · #5e5d60 · 올림 rgba(99,102,241,.08) + #111 · 평소 투명도 0 → LNB 에 올리면 0.2초에 보임
+   단추 자리는 그대로 두고(겉 크기 16 + 바깥 여백 −4 로 24 칸) 그림만 우리 것으로(짝 스크립트가 바꿔 끼움) · 접기 = 우리 방식(body.lnb-접힘 + 바깥 GNB 맨 위 「다시 열기」) */
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab-저장본머리단추{width:24px!important;height:24px!important;margin:-4px!important;padding:0!important;display:grid!important;place-items:center!important;border-radius:6px!important;color:#5e5d60!important;background:transparent;
+  opacity:0;transition:opacity .2s ease,background-color .15s;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab-저장본머리단추 svg{width:16px!important;height:16px!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab-저장본머리단추:hover{background:rgba(99,102,241,.08)!important;color:#111!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"]:hover .lab-저장본머리단추,html.lab-저장본 aside[class*="gnb-panel-bg"]:has(:focus-visible) .lab-저장본머리단추{opacity:1;}
+/* 접힘 — LNB 를 걷고 본문 카드가 GNB 옆(12 띄움)으로 · LNB 카드 그림자(GNB + LNB 302)는 GNB 몫(62)만 */
+html.lab-저장본 body.lnb-접힘 aside[class*="gnb-panel-bg"]{display:none!important;}
+html.lab-저장본 body.lnb-접힘::before{width:62px!important;}

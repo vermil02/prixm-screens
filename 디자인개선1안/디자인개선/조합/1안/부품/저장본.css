@@ -33,3 +33,7 @@ html.lab-저장본 aside[class*="gnb-panel-bg"] .px-lnb-section,html.lab-저장�
 
 /* GNB + LNB 카드 그림자 — 두 조각(GNB · LNB)이 따로 그려져 이음매에 비치지 않게 카드 뒤 판 하나(틀.css .app::before 와 같은 자리 · 크기) */
 html.lab-저장본 body::before{content:'';position:fixed;z-index:-1;pointer-events:none;left:12px;top:calc(var(--저장본위) + 12px);bottom:12px;width:302px;border-radius:var(--저장본r);box-shadow:var(--저장본그림자);}
+
+/* 2026-10-06 사용자 「lnb 가 우측 카드 섹션에 비해서 그림자 효과 같은 게 약해진 듯」 — 실측(틈 314 ~ 326 한 줄 밝기): 우리 화면 = LNB 끝 228(1px 테) + 양쪽 대칭 · 사진본 = LNB 끝 242 · 콘텐츠 쪽만.
+   원인: LNB 카드 그림자를 body::before(z −1)로 그렸는데 body 바닥색 아래로 깔려 가려짐 → LNB 에 직접(테 + 흐림) · 왼쪽(GNB 와 붙는 쪽)은 잘라 냄 */
+html.lab-저장본 aside[class*="gnb-panel-bg"]{box-shadow:inset 1px 0 0 #f0f1f7,var(--저장본그림자)!important;clip-path:inset(-14px -14px -14px 0 round 0 var(--저장본r) var(--저장본r) 0);overflow:visible!important;}

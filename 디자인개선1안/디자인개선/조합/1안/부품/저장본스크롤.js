@@ -23,3 +23,6 @@
   고정.style.paddingBottom=아래+'px';
   목록.style.paddingTop=(틈-아래)+'px';
 })();
+
+/* 2026-10-06 비교용 「막대=숨김」 — 사용자 「호버하기 전에는 안 보이다가 호버하면 보이는 버전도 봐 보고 싶은디」. 손질후 주소에 &막대=숨김 이면 html.lab-막대숨김 → 평소 막대 투명(올림 · 누름 색은 그대로). 짝 LNB.css · 저장본스크롤.css 끝 */
+/* + 「막대=부드럽게」(사용자 「호버 전 아예 숨김 · 켜질 때 부드럽게 · lnb 우측 상단 아이콘처럼」) + 「막대=옅게」 — 사용자 「호버하기 전에는 완전 옅게」 = 09 랩 ① 평소 #f0f1f6 */(function(){try{var q=decodeURIComponent(top.location.search);if(/[?&]막대=숨김/.test(q))document.documentElement.classList.add('lab-막대숨김');if(/[?&]막대=옅게/.test(q))document.documentElement.classList.add('lab-막대옅게');if(/[?&]막대=부드럽게/.test(q))document.documentElement.classList.add('lab-막대부드럽게');}catch(e){}})();
