@@ -14,4 +14,5 @@ html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar{width:5px;
 html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-track{background:transparent;margin:4px 0;}
 html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb{background:var(--lab바);border-radius:3px;}
 html.lab-저장본 aside:hover .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb{background:var(--lab바올림);}
-html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb:active{background:var(--lab바누름);}
+/* 누름은 올림보다 세게 — 누르는 동안도 마우스가 LNB 위라 aside:hover 규칙이 같이 걸림(2026-10-06 사용자 「클릭하면 진해지는 건 안 되는데」) */
+html.lab-저장본 aside:hover .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb:active,html.lab-저장본 .lab-스크롤칸 > .lab-목록::-webkit-scrollbar-thumb:active{background:var(--lab바누름);}

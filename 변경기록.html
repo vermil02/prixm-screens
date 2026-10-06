@@ -36,6 +36,7 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 <p class="sub"><b>디자인 개선 1안 — 사진본 LNB 스크롤 줄 너비</b> (<code>디자인개선1안/</code>)</p>
 <ul>
 <li><b>사진본 LNB 스크롤</b> — -6 에 들어간 목록 칸 오른쪽 여백이 5 라서 LNB 줄이 원래보다 5px 넓었음 → 10 으로(원래 스크롤 칸 여백 그대로). 가만히 있을 때 LNB 글자 자리 · 너비가 넣기 전과 같음(AI 채팅 · 협업 · 지식/문서 · 이메일 · 프로젝트 · 설정 실측). 스크롤바 = 평소 <code>#e6e7f0</code> → LNB 에 올리면 <code>#d6d8e6</code> → 막대 누르는 동안 <code>#c2c4d6</code>. (<code>부품/저장본스크롤.css</code> · <code>.lab-목록</code>)</li>
+<li><b>사진본 LNB 스크롤바 누름</b> — 막대를 누르는 동안 진해지지 않던 것 고침(LNB 올림 규칙이 누름보다 우선이었음 → 누름이 이기게). (<code>부품/저장본스크롤.css</code> 끝 · <code>::-webkit-scrollbar-thumb:active</code>)</li>
 </ul>
 <h2><span class="v">v26.10.06-6</span><span class="m">2026-10-06</span></h2>
 <p class="sub"><b>디자인 개선 1안 — GNB 「설정」 · 선 정리 · 사진본 LNB 스크롤</b> (<code>디자인개선1안/</code>)</p>
