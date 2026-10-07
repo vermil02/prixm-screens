@@ -1,4 +1,0 @@
-/* 조합 2안 · 부품/본문판 — 본문 칸(.main) 바탕을 흰색으로(2026-10-05)
-   1안 부품/본문판.css 와 같은 까닭: 화면 전환이 본문 조각(.page-hd · .head-zone · .content — 각자 흰 바탕)을 투명에서 들여보내 뒤가 비침.
-   2안은 조각이 칸에 꽉 붙음(안쪽 여백 0 · 실측) → 판 대신 .main 바탕만 흰색. 화면05 · 화면02 는 이미 흰색 · 화면01(모든 자동화)만 투명이었음(실측 · 1안 부품/카드.css 의 html.lab-카드 … .main{background:transparent!important} 탓) → 그보다 센 선택자 */
-html body .app .body > .main.main,html.lab-카드 body .app .body > .main.main{background-color:#fff!important;}

@@ -1,3 +1,0 @@
-/* 목록 바뀔 때 자리 이동 — 07 콘텐츠 랩 「자리 5 GSAP Flip」(2026-10-02 사용자 「gsap 로 1안 2안 ㄱㄱ」) · 1안 · 2안 공통
-   움직이는 동안 카드 전환을 끔 — 덧입힘 카드 호버 전환(transform .3s)이 GSAP 가 매 프레임 쓰는 transform 을 뒤에서 끌면 카드가 기어가거나 튄다(랩 실측) */
-html body .자리이동중{transition:none!important;}

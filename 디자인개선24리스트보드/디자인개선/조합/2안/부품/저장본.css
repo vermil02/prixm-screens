@@ -1,9 +1,0 @@
-/* 조합 2안 · 부품/저장본.css — test-crew 저장본(d01 ~ d09)을 2안 틀(카드 전)로. 공통 ../../1안/부품/저장본.css 뒤에 얹어 카드 몫만 되돌림(2026-10-03 사용자 「1안 2안 다른 페이지들도 1안 2안 레이아웃으로 수정해줘」).
-   LNB 줄 · 올림 · 켜짐 · 묶음 머리는 1안 파일 그대로(LNB.css 가 두 안 공통이라). 모든 규칙 html.lab-저장본 아래.
-   값 = 우리 화면 s0(2안 손질후) 실측: 상단 바 50(손질후가 50 을 잘라 냄) · LNB x68 y50 240 · 위아래 끝까지 · #fafbfd · 오른쪽 선 1px #e6e8f1 · GNB 쪽 안쪽 선 #f0f1f7 · 모서리 없음
-   본문 x308 ~ 끝 · 흰 · 모서리 · 그림자 없음. 왼쪽 위 모서리 8 + 은은한 그림자는 바깥 틀의 .칸집(틀.css)이 걸어 저장본에도 그대로 먹음. */
-html.lab-저장본{--저장본바닥:var(--톤GNB,#f3f4fa);--저장본위:50px;}
-html.lab-저장본 aside[class*="w-[68px]"][class*="gnb-bg"]{width:68px!important;margin:0!important;height:100%!important;border-radius:0!important;background:#f3f4fa!important;}
-html.lab-저장본 aside[class*="gnb-panel-bg"]{margin:0!important;height:100%!important;border-radius:0!important;background:#fafbfd!important;border-right:1px solid #e6e8f1!important;box-shadow:inset 1px 0 0 #f0f1f7!important;}
-html.lab-저장본 aside[class*="gnb-panel-bg"] + *{margin:0!important;border-radius:0!important;box-shadow:none!important;}
-html.lab-저장본 body::before{content:none!important;}

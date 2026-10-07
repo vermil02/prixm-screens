@@ -1,7 +1,0 @@
-/* 전환 — 페이지 등장 · 메뉴로 갈 때 「촤르륵」 · 손질/17_등장전환/1안반영.py 가 만듦(손으로 고치지 말 것)
-   고른 것: E-5 패널 옆에서 — 머리 · 내용은 위에서부터 차례로(10px · 40ms) · 좁고 높은 옆 패널(aside · .rail · 펼친 .sheet)은 옆에서 20px 밀려 들어옴 — ⚠ 지금 7화면엔 처음부터 펼친 옆 패널이 없어 E-2 와 같게 보임(패널 있는 화면이 생기면 차이) · 덧붙임 시간 · 0.3초 · LNB 줄도 차르르(GNB 바꿀 때) · LNB 이징 · power2.out · 이징 · power2.out 부드럽게 · LNB 시차 · 10ms · 시차 · 15ms · 시작 투명도 · 30%
-   덧입힘 「덩이 떠오름」(.content > *) · 옛 부품 「등장」(카드 대각선)을 대신함 → 둘 다 끔 · 들어오기 전엔 머리 · 내용을 가려 둠(html.전환준비 가 붙으면 풀림)
-   움직임 줄이기 설정이면 짝 스크립트가 0.15초 페이드 한 번 */
-html body .content > *,html body .grid > .wf-card,html body .gal > .tpl-card{animation:none!important;}
-html:not(.전환준비) body .body > .main > .page-hd,html:not(.전환준비) body .body > .main > .head-zone,html:not(.전환준비) body .body > .main > .content{opacity:0;}
-:root{--전환-꼴:패널옆;--전환-시간:.3;--전환-시차:.015;--전환-거리:10;--전환-방향:아래;--전환-이징:power2.out;--전환-나감:없음;--전환-LNB줄:1;--전환-LNB이징:power2.out;--전환-LNB시차:.01;--전환-시작투명:.3;}
