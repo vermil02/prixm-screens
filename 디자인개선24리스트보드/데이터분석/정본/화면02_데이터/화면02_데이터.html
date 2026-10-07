@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터 분석 ②③ 데이터 고르기 · 분석 기법 — 정본</title>
+<base href="../../../컴포넌트/">
+<link rel="stylesheet" href="common/common.css">
+<link rel="stylesheet" href="../화면/_공용.css?v=20260928c">
+<!-- ★ 탭 줄 값의 정본. 여기 값을 조각에 베껴 쓰지 않는다 (규약 2) -->
+<link rel="stylesheet" href="../데이터분석/부품/탭줄/탭줄.css?v=20260922a">
+<link rel="stylesheet" href="../데이터분석/부품/아이콘/아이콘.css?v=20260924a">
+<script src="../데이터분석/부품/아이콘/아이콘.js?v=20260924a"></script>
+<script src="../화면/_뼈대.js?v=20260917a" defer></script>
+<script src="../데이터분석/부품/좌측목록/_좌측목록.js?v=20260922c"></script>
+<script src="../화면/부품/상단바/_상단바.js?v=20260928d"></script>
+<style>
+/* @조각 _데이터.css */
+  /* ②③ 데이터 고르기 · 분석 기법 — D-4(탭으로 오가기) + T-1(번호 없는 밑줄 탭)
+     ★ 탭 줄 값은 여기 없습니다 — `부품/탭줄/탭줄.css` 가 정본입니다(규약 2).
+     본문 값은 라이브 2026-09-22 11:35 실측을 따르되, 입력칸은 **라이브러리 규격**
+     (높이 32 · radius --radius-input)으로 그립니다 — 라이브의 25px 은 제품 뿌리 글자 14px
+     때문에 생긴 반픽셀 자국이라 따라 그리지 않습니다. */
+  /* ★ 간격 리듬 (2026-09-22 사용자 「변수 고르기 창하고 간격도 이상하고」).
+     전에는 `gap:11px` 하나로 다 띄워서 **라벨 위아래가 거의 같았다** — 어디가 한 묶음인지 안 갈렸다.
+     셋으로 나눈다:  **묶음 사이 20 · 라벨 → 그 내용 6 · 같은 묶음 안 11.** */
+  /* ★ 2026-09-23 — **간격을 margin 흉내에서 진짜 `gap` 으로** 바꿨다.
+     전에는 `.자리 > * + *{margin-top:11}` · `.자리 > .라벨{20}` · `.자리 > .라벨 + *{6}`
+     세 규칙이 서로를 덮어써서, 항목을 하나 넣을 때마다 **어느 규칙이 걸리는지 따져야 했다.**
+     이제 「라벨 + 그 내용」을 `.묶음` 으로 싸고 층마다 간격 하나씩만 둔다.
+
+     자리 (20)
+      ├ 묶음 (6)   라벨 + 그 내용
+      ├ 묶음 (11)  시트줄 + 표      ← `.붙게`
+      └ 실행줄 / 바닥
+
+     덤 — 이 짜임이라야 화면을 IR(JSON)로 뽑을 때 **오토레이아웃이 잡힌다.**
+     추출기는 한 그릇의 간격이 **하나**여야 인정하는데, 6·20·6·20 이라 포기했었다
+     (`업무도구/htmlcanvas/README.md` §첫 걸음, 2026-09-23 실측). */
+  .자리{display:flex; flex-direction:column; gap:20px; padding:14px 0 26px;}
+  .자리[hidden]{display:none;}
+  .묶음{display:flex; flex-direction:column; gap:6px; min-width:0;}
+  .묶음.붙게{gap:11px;}
+  /* ★ 라이브러리 버튼은 `display:inline-flex` 라 [hidden] 을 이긴다 — 여기서 되돌린다.
+     (2026-09-22 실제로 데이터 탭에도 「분석 실행」이 보였다) */
+  .변수자리[hidden]{display:none !important;}
+  /* 「분석 실행」 줄 — 아래 왼쪽. 한 화면에 실행 버튼이 둘인데 하나는 오른쪽 위,
+     하나는 왼쪽 아래면 같은 일을 두 자리에서 배우게 된다
+     (2026-09-22 사용자 「분석 실행도 왼쪽 아래에 두는게 맞을듯」).
+     ★ 버튼 크기는 **`size-medium`** — 「분석 기법 고르기」와 같다(2026-09-22 사용자가 어긋난 것을 잡음).
+       둘 다 **그 탭의 주 동작**이다. 전처리의 「적용」만 `size-small` 로 남는데,
+       그것은 판 **안**의 딸린 동작이라 한 단 작은 것이 맞다. */
+  .실행줄{display:flex; align-items:center; gap:9px;}
+  .라벨{font-size:11px; font-weight:500; color:var(--gray-500);}
+
+  /* ── 전처리 (축 E-1 · W-8 · Z-1 · N 무리 B-7·C-4·D-2·P-1) ──────────────
+     머리 줄 전체가 누르는 자리 + 왼쪽 화살표 — 라이브러리 `label-toggle` 관행 그대로.
+     값은 라이브러리 것을 쓴다 — 태그는 `key-chip`(_공용.css), 버튼은 `btn-*-demo size-small`. */
+  .전처리판{border:1px solid var(--border-default); border-radius:8px; background:#fff; overflow:hidden;}
+  /* ★ 높이를 **분석 기법 탭의 「선택된 데이터」 줄과 맞춘다** (2026-09-23 사용자).
+     `실측` — 그 줄(`.줄`)은 41px(판 43), 전처리 머리는 34px(판 36)였다. padding 은 9/12 로 같은데
+     안에 든 것(파일 아이콘 + 15px 글자 vs 필터 아이콘 + 12px 글자)이 달라 생긴 차이라,
+     **min-height 로 바닥을 맞춘다** — 글자가 바뀌어도 두 탭의 첫 줄이 같은 높이로 남는다. */
+  /* ★ 머리 줄 (2026-09-23) — **가로 줄 전체가 닫는 자리**다(버튼 위만 빼고).
+     그래서 `<div>` 이고, 안의 더하기 버튼과 캐럿이 형제로 선다(중첩 버튼을 피한다).
+     padding 8 : 안의 더하기 버튼이 24 라 8+24+8 = 40 이고 min-height 41 이 이긴다.
+     9 로 두면 42 가 되어 분석 기법 탭 「선택된 데이터」 줄(41)과 어긋난다 `실측 확인함` */
+  .전처리머리줄{display:flex; align-items:center; min-height:41px; box-sizing:border-box;
+    padding:8px 12px;}
+  /* 여닫이가 살아 있을 때만 줄이 눌린다 — 줄이 없으면 접을 것이 없다 */
+  .전처리머리줄.줄있음{cursor:pointer;}
+  .전처리머리줄.줄있음:hover{background:rgba(0,0,0,.03);}
+  /* ★ 더하는 버튼 위에 있을 때는 **줄 호버를 끈다** (2026-09-23 사용자
+     「그 버튼들 호버중일땐 배경 호버 효과 꺼져야하는거 아냐?」).
+     버튼은 **여닫기와 다른 일**을 하므로, 바탕이 둘 겹치면 「지금 무엇이 눌리나」가 흐려진다.
+     ※ 캐럿은 일부러 안 끈다 — 캐럿은 줄과 **같은 일**(여닫기)을 하므로 같이 켜지는 것이 맞다. */
+  .전처리머리줄.줄있음:has(.머리조작:hover){background:none;}
+  .전처리머리줄 .머리조작{cursor:default;}
+  .머리조작 .더하기버튼{cursor:pointer;}
+
+  /* 상태 묶음 — 아이콘 + 「적용 전/적용됨」 + 덧말. 내용 넓이만큼만 */
+  .전처리머리{display:flex; align-items:center; gap:8px; flex:0 0 auto;}
+  .전처리아이콘{flex:0 0 16px; color:var(--black-900); display:inline-flex;}
+  .전처리상태{font-size:12px; font-weight:500; color:var(--black-900); white-space:nowrap;}
+  /* 덧말은 **접었을 때만** 보인다 (M-4) — 펼치면 줄이 눈앞에 있어 겹말이고,
+     폭이 변하는 것이 더하기 버튼 앞에 있으면 누를 때마다 버튼이 밀린다 */
+  /* ★ 덧말은 **가름선 뒤 · 버튼과 같은 여백(14)** 이다 (2026-09-23 사용자) —
+     그래서 가름선이 세 모습에서 **늘 같은 x** 에 서고, 뒤 내용만 버튼↔덧말로 바뀐다 */
+  .전처리덧{margin-left:14px; font-size:11px; color:var(--gray-500); white-space:nowrap;}
+  .전처리덧[hidden]{display:none;}
+
+  /* ★ 캐럿은 **맨 오른쪽**이다 — 줄 전체가 누르는 자리라, 캐럿은 「이 줄이 어디까지인가」를 표시한다.
+     손이 갈 일이 없으므로 멀어도 된다(조작 버튼을 오른쪽 끝에 두면 안 됐던 것과 다른 이야기).
+     줄이 없으면 `hidden` 이라 **자리도 안 잡는다**(사용자: 「적용 전 우측 여백도 없음」). */
+  .전처리캐럿{margin-left:auto; flex:0 0 auto; width:24px; height:24px; padding:0; border:0;
+    background:none; border-radius:5px; color:var(--gray-500);
+    display:inline-flex; align-items:center; justify-content:center; cursor:pointer;}
+  .전처리캐럿:hover{background:rgba(0,0,0,.06); color:#2a3445;}
+  .전처리캐럿[hidden]{display:none;}
+  .전처리캐럿 svg{display:block; transition:transform .15s;}
+  .전처리캐럿[aria-expanded="true"] svg{transform:rotate(180deg);}
+  .전처리아이콘 svg{display:block;}
+
+  /* 적용되면 **판 테두리까지 파랑**(2026-09-23 P2-1 · 랩 `랩/전처리테두리`) */
+  .전처리판:has(.전처리머리줄.is-applied){border-color:var(--brand-primary);}
+  .전처리머리줄.is-applied .전처리아이콘{color:var(--brand-primary);}
+  .전처리머리줄.is-applied .전처리상태{color:var(--brand-primary); font-weight:600;}
+
+  /* 가름선 — 라이브러리 `.btn-text-divider`(1 × 8.5) 를 그대로 쓴다. 여기서 주는 것은 자리뿐이다.
+     ★ **늘 보인다** — 뒤에 버튼이 오든 덧말이 오든 무언가가 오기 때문이다(앞서는 접힘에서 같이 감췄다) */
+  .머리가름{margin-left:14px;}
+  .머리조작{margin-left:14px; display:inline-flex; align-items:center; gap:4px;}
+  .머리조작[hidden]{display:none;}
+  /* 24px — 라이브러리 버튼 크기(28/32/38)에 없는 값이지만, 이 버튼은 테두리도 바탕도 없어
+     높이가 **호버 바탕에만** 쓰인다. 줄을 41 로 맞추려면 24 라야 한다 */
+  .더하기버튼.작게{height:24px; padding:0 7px; gap:3px;}
+  .더하기버튼{height:28px; padding:0 8px; border:0; background:none; border-radius:5px; display:inline-flex;
+    align-items:center; gap:4px; font-family:inherit; font-size:12px; color:var(--gray-600); cursor:pointer;}
+  .더하기버튼:hover{background:rgba(0,0,0,.05); color:#2a3445;}
+  .더하기버튼 svg{display:block;}
+  .지우기버튼{color:var(--gray-500);}
+
+  .전처리속{padding:2px 12px 12px; display:flex; flex-direction:column; gap:7px;}
+  .전처리속[hidden]{display:none;}
+  /* 더하는 줄이 **맨 위**다 — 줄이 몇 개 쌓이든 자리가 안 바뀐다(2026-09-23 사용자) */
+  .더하기줄{display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding-bottom:2px;}
+  /* A2-4 — 더하는 버튼은 **글자 버튼**(테두리 없음) + ＋ */
+  /* ★ 머리 줄의 더하는 버튼 묶음 — **상태 글자 바로 옆**이다.
+     `margin-left:auto` 로 오른쪽 끝에 밀면 `실측` 창 2718 · 판 2362 에서 마우스가 **1700px** 간다
+     (「적용」을 왼쪽에 둔 것과 같은 까닭 — 내용은 왼쪽 500px 안에 다 들어간다) */
+  /* ★ L-1 — 가름선은 라이브러리 `.btn-text-divider`(1 × 8.5 · `--border-default`) 를 그대로 쓴다.
+     여기서 주는 것은 **자리(여백)뿐**이다 — 굵기·높이·색은 라이브러리가 정본(규약 2) */
+  .머리가름{margin-left:14px;}
+  .머리조작{margin-left:14px; display:inline-flex; align-items:center; gap:4px;}
+  /* 24px — 라이브러리 버튼 크기(28/32/38)에 없는 값이지만, 이 버튼은 테두리도 바탕도 없어
+     높이가 **호버 바탕에만** 쓰인다. 줄을 41 로 맞추려면 24 라야 한다 */
+  .더하기버튼.작게{height:24px; padding:0 7px; gap:3px;}
+  .더하기버튼{height:28px; padding:0 8px; border:0; background:none; border-radius:5px;
+    display:inline-flex; align-items:center; gap:4px; font-family:inherit; font-size:12px;
+    color:var(--gray-600); cursor:pointer;}
+  .더하기버튼:hover{background:rgba(0,0,0,.05); color:#2a3445;}
+  /* 「모두 지우기」는 더하기와 **같은 줄·같은 꼴**이되, 되돌리는 일이라 한 단 옅다 */
+  .지우기버튼{color:var(--gray-500); margin-left:6px;}
+  .지우기버튼[hidden]{display:none;}
+  .더하기버튼 svg{display:block;}
+  /* 초기화 — 되돌리는 일이라 **글자 버튼**으로 무게를 내린다. 자동화 도구 줄(px-btn-text)과 같은 어휘 */
+  .초기화글자{height:28px; padding:0 8px; border:0; background:none; border-radius:5px;
+    font-family:inherit; font-size:12px; color:var(--gray-500); cursor:pointer;}
+  .초기화글자:hover{background:rgba(0,0,0,.05); color:#2a3445;}
+  .초기화글자[hidden]{display:none;}
+  .항목목록{display:flex; flex-direction:column; gap:2px;}
+
+  /* ★ **회색 띠를 뺐다** (2026-09-23 사용자 · 랩 `랩/조건줄` 무리 A → W2-1).
+     전에는 「한 면 = 한 항목」으로 묶어 줄내림돼도 흩어지지 않게 했는데, 줄마다 회색 면이 쌓여
+     판 안이 무거웠다(띠·칩·셀렉트가 각각 다른 회색이라 **회색이 세 겹**이었다).
+     칩을 글자 라벨로 내리고(J-3b) 띠까지 빼니 **흰 바탕에 칸만** 남아 셀렉트가 또렷하다.
+     ⚠ 줄내림 보호가 사라졌으므로, 조건이 길어져 두 줄이 되는 경우가 생기면 이 결정을 다시 본다. */
+  .항목{display:flex; align-items:center; gap:7px; flex-wrap:wrap; padding:5px 0;}
+  /* ★ ✕ 는 **줄 맨 앞**이다 (2026-09-23 사용자 그림). 앞서는 `order:99` 로 마지막 칸 뒤에 뒀는데,
+     `실측` 갈래마다 칸 짜임이 달라 ✕ 가 **조건 452 · 형식 347 로 105px 어긋났다** —
+     줄을 섞어 쌓으면 ✕ 가 들쭉날쭉했다. 앞에 두면 갈래와 상관없이 **한 줄로 선다.**
+     (마크업은 원래 `지움 + 속` 으로 ✕ 가 먼저였다 — `order:99` 한 줄만 걷었다.)
+     ✕ 를 오른쪽 끝으로 미는 `margin-left:auto` 는 여전히 안 쓴다 — 판이 넓어지면 멀어진다. */
+  .항목 .지움{display:flex; align-items:center; justify-content:center;
+    width:24px; height:24px; margin-right:2px; border-radius:5px;
+    color:var(--gray-500); cursor:pointer;}
+  .항목 .지움:hover{background:rgba(0,0,0,.05); color:#2a3445;}
+  .항목 .key-chip{flex:0 0 auto;}
+  /* 갈래 표시는 **글자 라벨** — 칩(테두리 있는 알약)을 걷었다(2026-09-23 J-3b).
+     화살표는 **형식 줄에만** 붙는다 — 조건 줄은 칸만 나열한다 */
+  .항목 .갈래말{flex:0 0 auto; font-size:11px; color:var(--gray-600);}
+  .항목 .화살{flex:0 0 auto; font-size:13px; color:var(--gray-500); padding:0 1px;}
+  .항목 select,.항목 input,.쪽오른 select{height:32px; box-sizing:border-box;
+    border:1px solid var(--border-default); border-radius:var(--radius-input,7px);
+    font-family:inherit; font-size:12px; padding:0 8px; background:#fff; color:#222;}
+  .항목 select{width:163px;} .항목 select.좁게{width:110px;} .항목 input{width:118px;}
+  /* ★ 조건 줄의 드롭다운도 **변수 고르기와 같은 화살표**를 쓴다(2026-09-23).
+     전에는 브라우저 기본 화살표라 한 화면에 화살표가 두 벌이었다. 기본을 끄고 부품 캐럿을 얹는다 —
+     자리·여백은 `.열칸` 과 같은 값(오른쪽 8 · 14px)이라 한 번만 배우면 된다. */
+  .항목 .열칸 select{appearance:none; -webkit-appearance:none; padding-right:26px; cursor:pointer;}
+  .잇말{font-size:12px; color:var(--gray-600);}
+
+  /* 적용은 아래 왼쪽, 경고는 그 오른쪽 같은 줄 */
+  .전처리바닥{display:flex; align-items:center; gap:9px; padding-top:8px;}
+  .전처리바닥[hidden]{display:none;}
+  /* 적용만 좌우 여백을 넓힌다 — 라이브러리 `size-small` 은 padding 0 **6px** 이라 글자가 테두리에 붙는다
+     (2026-09-23 사용자 「적용버튼만 좌우 여백좀」) */
+  .전처리바닥 .btn-primary-demo.size-small{padding:0 14px;}
+  /* 비었을 때 — 빈 목록도 flex 자식이라 gap 이 먹어 버튼 위아래가 어긋났다(위 19 / 아래 12).
+     목록을 빼고 gap 을 죽여 둘레를 사방 12 로 맞춘다 */
+  /* ★ H-5 로 **비었을 때 속에 아무것도 없어** 속 자체를 감춘다(`_데이터.js` 의 `펴기(false)`).
+     그래서 전에 있던 `.전처리속.비었음` 묶음(여백 손질 · 목록 감추기)은 할 일이 없어져 걷었다 */
+  /* 더하기 버튼은 **어느 상태에서나 같은 꼴**이다 — 테두리도 바탕도 없는 글자 버튼(A2-4).
+     비었을 때만 테두리를 주는 판, 바탕을 채우는 판을 차례로 넣어 봤다가 둘 다 물렀다
+     (2026-09-23 사용자: 「바탕 없는 버전으로 해야 하는 거 아냐?」).
+     까닭: 상태에 따라 버튼 꼴이 바뀌면 같은 버튼이 두 개로 읽힌다.
+     눌리는 표시는 호버 바탕(.더하기버튼:hover)이 맡고, 비었을 때는 **판에 그것밖에
+     없다는 사실 자체가** 다음에 할 일을 가리킨다. */
+  .더하기줄 .btn-basic-demo svg{color:var(--gray-600);}
+  /* 경고는 **곁말**이다 — 「못 한다」는 적용 버튼의 비활성이 이미 말한다.
+     그래서 주황(warning)을 안 쓴다. 주황은 「주의하라」는 뜻이고 이건 미완성일 뿐이다. */
+  .경고{font-size:11px; color:var(--gray-500);}
+  .경고[hidden]{display:none;}
+  /* 「적용 전」 — 라이브러리 state-badge.is-draft 원값(중립 · 테두리).
+     라이브는 warning-soft 주황이지만 「아직 안 눌렀다」는 주의가 아니라 상태다. */
+
+  /* ── 시트 · 표 · 쪽 넘김 ── */
+  .시트줄{display:flex; align-items:center; min-width:0;}
+  /* ★ 넘침 — 들어가는 만큼 두고 나머지는 「＋N」 뒤로 (S2-5 · 2026-09-23 사용자).
+     세그먼트 무리가 줄지 않게 `flex:0 0 auto` 로 못 박고, 숨기는 것은 JS 가 `[hidden]` 으로 한다 */
+  .시트줄 .segment-control-demo{flex:0 0 auto;}
+  .segment-item-demo[hidden]{display:none;}
+  .넘침자리{position:relative; display:inline-flex; margin-left:6px; flex:0 0 auto;}
+  .넘침자리[hidden]{display:none;}
+  /* 높이 28 은 세그먼트 칸과 맞춘 값 `실측` — 나란히 섰을 때 밑줄이 어긋나지 않는다 */
+  .넘침{height:28px; padding:0 9px; border:1px solid var(--border-default); background:#fff;
+    border-radius:6px; font-family:inherit; font-size:12px; color:var(--gray-600); cursor:pointer;}
+  .넘침:hover{background:rgba(0,0,0,.04); color:#2a3445;}
+  .넘침메뉴{position:absolute; top:34px; left:0; z-index:20;}
+  .넘침메뉴[hidden]{display:none;}
+  /* 보기 설정은 시트 줄 **오른쪽 끝** — 표 위의 「몇 행씩 볼까」 자리 */
+  .시트오른{margin-left:auto; font-size:11px; color:var(--gray-500);}
+  /* ★ 표는 **일정 높이를 넘으면 세로로 구른다**(2026-09-22 사용자).
+     그래서 **쪽 넘김이 없다** — 「20행 보기」·「1 / 1」도 함께 뺐다. 쪽 넘김이 있어야 뜻이 있는 것들이다.
+     420px ≈ 머리칸 + **13행**. 그보다 적으면 표가 제 높이로 서고 스크롤이 안 생긴다.
+     머리칸은 `sticky` 로 붙여 굴러도 무슨 열인지 안 잃는다. */
+  /* ★ 표 바깥 테두리와 둥글기를 걷었다 (2026-09-25 사용자 그림 · 라이브 AI 채팅).
+     라이브의 표는 **바깥 상자가 없다** — 머리칸 바탕과 행 선만으로 표가 된다.
+     `실측` 라이브 `.chat-md-table`: 테두리 0 · 둥글기 0 · 부모 `overflow:auto`. */
+  /* ★★ 2026-09-28 — 바깥 상자를 **되살렸다**(사용자 「여기 표 형태가 달라진거같다?? 아까 사용하던 표 참고해서」).
+     자동화 화면③ 의 표 넷(최근 실행 결과 · 하는 일 · 단계별 실행 · 세부 정보)이 오늘 **테두리 1px · 둥글기 8 상자**로 모여서,
+     이 표만 상자 없이 선만 그어져 달라 보였다. 위 09-25 결정(바깥 상자 걷음)을 이 말로 덮는다.
+     둥근 모서리는 상자가 자른다(`overflow` — 스크롤 표는 auto 가 같은 일을 한다) · 위 선은 상자가 맡아 머리칸 위 선은 뺀다 */
+  .표틀{background:#fff; overflow:hidden; border:1px solid var(--border-default); border-radius:8px;}
+  .표틀.스크롤{max-height:420px; overflow:auto;}
+  .표틀.스크롤 thead th{position:sticky; top:0; z-index:1;}
+  /* ★ 표를 **라이브러리 `.tbl-table` 규격으로** 맞췄다 (2026-09-25 사용자 「표라던지 그런것들
+     다른 색으로 해야 하는 거 아님?」 · `컴포넌트/common/common.css:852`).
+     라이브 채팅 화면의 표와 **한 글자도 안 틀린다** `실측 확인함`
+     (`근거/라이브저장/라이브_채팅표_2718w_260925-0115.html`).
+
+     우리가 쓰던 값과 무엇이 달랐나
+       th 바탕  **#f8fafc**(토큰 아님 · 거의 흰색)  →  `--color-primitive-gray-100` (#f3f4f6)
+       th 글    12px 500 `--gray-600`              →  **11px 600 #222**
+       td 여백  **6px** 9px                        →  **14px** 9px  (행 높이가 두 배)
+       칸 선    td 아래 `--border-subtle`           →  td **위** `--border-default`
+     머리칸이 옅어 **표 같아 보이지 않던 것**이 이 물음의 뿌리다.
+     자동화 화면③은 이미 이 규격(컴포넌트 34-tbl)을 쓰기로 했는데 데이터 분석만 빠져 있었다.
+
+     ※ 이 화면에만 남기는 것 둘 — `table-layout:fixed` 와 칸 말줄임.
+       열이 많아도 폭이 안 무너지게 하려던 것이라 규격과 부딪히지 않는다. */
+  table.tbl{width:100%; border-collapse:collapse; table-layout:fixed;}
+  table.tbl th{background:var(--color-primitive-gray-100); text-align:left;
+    font-size:var(--font-size-11); font-weight:600; color:#222; padding:5px 10px;
+    border-top:0; border-bottom:1px solid var(--border-default);   /* 위 선은 상자(.표틀)가 맡는다 — 2026-09-28 */
+    white-space:nowrap;}
+  table.tbl tbody tr:first-child td{border-top:0;}   /* 머리칸 아래 선과 첫 줄 위 선이 겹쳐 2px 이 되지 않게(화면③ .t-step 과 같은 처리) */
+  /* ★ 세로 여백만 **14 → 7** 로 되돌린다 (2026-09-25 사용자 「분석할 데이터 표는 왜 이렇게 늘어났지」).
+     라이브러리 `.tbl-table` 은 주석에 **「조건 비교표」** 라 적혀 있고 긴 글 칸(`.tbl-td-desc`
+     line-height 1.5)이 딸린 **읽는 표**다. 그래서 세로 14 가 맞다.
+     **우리 표는 데이터 미리보기**다 — 짧은 칸을 **많이 훑는 것**이 쓸모라 14 면 행이 44 가 되어
+     한 화면에 보이는 행이 확 준다 `실측`(28 → 44).
+     7 로 두면 행이 **32** 가 되는데, 32 는 라이브러리가 **열 곳에서 쓰는 줄 높이**다
+     (`overflow-menu-item` 등) — 아무 값이 아니라 **라이브러리 안의 값**이다.
+     색·글자·칸 선은 `.tbl-table` 그대로 둔다 — 사용자가 지적한 것이 그것이었다. */
+  table.tbl td{background:#fff; vertical-align:top; padding:7px 9px;
+    border-top:1px solid var(--border-default);
+    font-size:var(--font-size-13); font-weight:500; color:#222;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  /* 쪽 줄 — **전부 왼쪽**. 「7행 × 6열」(시트 줄)과 「1–7 / 7행」이 같은 말이라 여기 한 줄로 합쳤다
+     (2026-09-22 사용자). 20행 보기도 왼쪽으로 모은다. */
+
+  /* 다음 걸음 버튼도 **왼쪽**으로 — 내용이 왼쪽에 몰려 있다(2026-09-22 사용자) */
+  /* 표 ↔ 「분석 기법 고르기」 — 6 은 표에 붙어 표의 일부처럼 보였다.
+     실행줄과 **같은 20** 으로 맞춘다(2026-09-22 사용자 「살짝 위에 표하고 여백주고」).
+     두 탭의 주 버튼이 같은 규격·같은 자리·같은 여백이어야 한 번만 배운다. */
+  .바닥{display:flex;}
+
+  /* ── 분석 방법 — **3열** (랩 무리 G · G-3 채택 2026-09-22).
+     9개는 3의 배수라 **3·3·3 으로 떨어져 마지막 줄이 남지 않는다.**
+     4열은 4·4·1 이라 하나가 덜렁 남았고, 5열(칸 290)은 곁말이 잘린다(라이브 우패널 320과 같은 문제).
+     칸 폭 약 490 — 곁말이 온전하다. ── */
+  /* ★ 카드 영역은 **전체 폭**을 쓰고 열 수를 고정하지 않는다 (2026-09-22 사용자
+     「4열이 아니라 전체 좌우 넓이면 그냥 10열이든 뭐든 걍 옆으로 쭉 하면 되잖아」).
+     `auto-fill` + `minmax(200px,1fr)` — **들어가는 만큼 늘어나고 창을 줄이면 알아서 줄어든다.**
+     200 은 곁말이 한 줄에 들어가는 최소값이다 — 가장 긴 곁말
+     「Shapiro-Wilk · 왜도 + Q-Q 도표」가 11.5px 에서 약 170px + 안 여백 22. */
+  .방법목록{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:5px;}
+  /* 변수 판 — **카드와 같은 전체 폭**. 바로 위 카드 목록과 좌우가 맞아야 한 덩이로 읽힌다. */
+
+  .방법칸{display:flex; flex-direction:column; gap:4px; padding:9px 11px; min-width:0;
+    cursor:pointer; width:auto;}
+  .방법칸.is-selected{border-color:var(--brand-primary);}
+  .방법머리{display:flex; align-items:center; gap:7px; min-width:0;}
+  .방법아이콘{width:16px; flex:0 0 16px; display:flex; align-items:center; justify-content:center;}
+  .방법머리 b{font-size:12.5px; font-weight:500; color:#222;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .방법곁{font-style:normal; font-size:11.5px; color:var(--gray-500); line-height:1.45;}
+
+  /* 「필요한 열」과 못 쓰는 까닭은 **한 줄** — 까닭이 필요 오른쪽 (F-2 · 2026-09-22 사용자) */
+  .방법꼬리{display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-width:0;}
+  .필요{font-size:10px; color:var(--color-n-600); background:var(--color-n-50,#f8fafc);
+    border-radius:4px; padding:1px 5px; font-style:normal; white-space:nowrap;}
+  /* 까닭 — **주황이 아니다.** 「못 쓴다」는 상태 설명이라 무채색이 맞다
+     (전처리 경고를 회색으로 내린 것과 같은 규칙) */
+  .까닭{font-size:10px; color:var(--color-n-600); font-style:normal;}
+
+  /* 못 쓰는 방법 — **반투명(opacity)을 쓰지 않는다** (2026-09-22 사용자).
+     opacity 는 글자까지 옅게 만들어 읽을 수 없게 한다. 바탕과 글자색만 내린다.
+     ★ **테두리는 쓸 수 있는 카드와 같다**(`--border-default`) — 카드가 사라진 것이 아니라
+       「지금은 못 쓴다」는 상태이므로 틀은 같아야 한다(2026-09-22 사용자).
+     토큰 — 바탕 `--color-n-50` · 테두리 `--border-default`(동일) ·
+       제목 `--color-n-500` · 곁말 `--color-n-400` · 아이콘 `--color-n-400`
+     ★ **까닭만 `--color-n-600`** 으로 한 단 진하다 — 못 쓰는 카드에서 <b>가장 중요한 정보가 「왜」</b>이므로
+       위계를 뒤집는 것이 맞다. 그래도 주황(`--color-warning`)은 쓰지 않는다 — 주의가 아니라 상태다. */
+  .방법칸.is-off{background:var(--color-n-50,#f8fafc); border-color:var(--border-default);
+    cursor:default;}
+  .방법칸.is-off:hover{border-color:var(--border-default);}
+  .방법칸.is-off .방법머리 b{color:var(--color-n-500);}
+  .방법칸.is-off .방법곁{color:var(--color-n-400);}
+  .방법칸.is-off .방법아이콘{color:var(--color-n-400);}
+  .방법칸.is-off .까닭{color:var(--color-n-600);}
+
+  /* ── 선택된 데이터 한 줄 · 변수 고르기 ── */
+  /* 선택된 데이터 — **줄 전체가 누르는 자리**다(2026-09-22 사용자).
+     오른쪽 「데이터 다시 고르기」만 누르게 두면 누를 수 있는 곳이 좁아 못 찾는다. */
+  .줄틀{border:1px solid var(--border-default); border-radius:8px; background:#fff;}
+  /* ★ <button> 이라 색을 물려받지 않는다 — 브라우저 기본이 `color:buttontext`(검정)다.
+     아이콘이 currentColor 를 쓰므로 여기서 색을 정해 줘야 한다(2026-09-22 실제로 #000 이 됐다). */
+  .줄{display:flex; align-items:center; gap:8px; padding:9px 12px; font-size:12px;
+    width:100%; box-sizing:border-box; border:0; background:none; font-family:inherit;
+    color:var(--black-900); text-align:left; cursor:pointer; border-radius:8px;}
+  .줄:hover{background:var(--color-n-50,#f8fafc);}
+  .줄:hover .px-btn-text{background:var(--button-hover,rgba(0,0,0,0.05));}
+  .줄 b{font-weight:500; color:#222;}
+  .파일덧{font-size:11px; color:var(--gray-500);}
+  .파일조작{margin-left:auto;}
+  /* 변수자리는 이제 `.묶음` 이라 배치는 묶음이 맡는다 — 여기 남는 것은 숨김뿐.
+     ★ [hidden] 에 !important 가 필요하다 — `.묶음` 의 display:flex 가 더 늦게 이긴다 */
+  .변수자리[hidden]{display:none !important;}
+  /* 변수 판 — **카드와 같은 전체 폭**(바로 위 카드 목록과 좌우가 맞아야 한 덩이로 읽힌다).
+     ★ **테두리는 회색**으로 되돌렸다 (2026-09-22 사용자 「변수고르기 파란색 빼봐줘」) —
+     파랑은 이제 **지금 만지고 있는 칸** 하나에만 쓴다. 판까지 파랗면 어디를 만지는지 안 보인다. */
+  .변수판{border:1px solid var(--border-default); border-radius:8px; background:#fff; padding:13px;
+    display:flex; flex-direction:column; gap:9px;}
+
+  /* 역할 하나에 칸 하나 (V-2). 역할 이름은 왼쪽에 줄 맞춰 세운다 */
+  .역할줄{display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+  .역할이름{font-size:11px; color:var(--gray-600); flex:0 0 72px;}
+  .역할칸{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  /* 드롭다운 — **칸 폭을 하나로 맞춘다**(전에는 163 / 110 으로 갈려 세로가 안 맞았다).
+     화살표는 브라우저 기본을 끄고 우리 것으로 그린다 — 기본 화살표는 **테두리에 붙어** 여백을 못 준다.
+     규격은 자동화 화면②의 `.sel-wrap` 선례 그대로 `확인함`: `appearance:none` ·
+     `padding-right:26px` · 화살표 `right:10px` (2026-09-22 사용자 「우측 화살표하고 칸하고 여백 추가」). */
+  .열칸{position:relative; display:inline-flex;}
+  .열셀렉트{height:32px; box-sizing:border-box; border:1px solid var(--border-default);
+    border-radius:var(--radius-input,7px); font-family:inherit; font-size:12px;
+    padding:0 26px 0 10px; background:#fff; color:#222; width:180px;
+    appearance:none; -webkit-appearance:none; cursor:pointer;}
+  /* 만지고 있는 칸 — **두께를 키우지 않는다.** 브라우저 기본 포커스 테두리는 2px 로 굵어져
+     칸이 커 보이고 옆 칸과 줄이 어긋난다(2026-09-22 사용자 「테두리 두께 증가하는데 차라리
+     선택한게 파랗게」). 두께는 1px 그대로 두고 **색만 파랑**으로 바꾼다.
+     ⚠️ 라이브러리 `common.css` 에는 입력칸 포커스 규칙이 아예 없다 `확인함` — 여기서 새로 정한 값이라
+     `부품/` 을 거쳐 라이브러리로 올릴 것. */
+  .열셀렉트:focus{outline:none; border-color:var(--brand-primary);}
+  /* 칸마다 **고른 것과 안 고른 것을 갈라 보인다**(2026-09-22 사용자 「없는거는 회색,
+     채워진거는 파란테두리」). 고른 칸은 파란 테두리, 아직 안 고른 칸은 회색 테두리에 회색 글씨.
+     ★ 앞선 결정(「변수고르기 파란색 빼봐줘」)은 **판 테두리**의 파랑을 뺀 것이고 여기 파랑은
+     **칸 하나의 상태**다 — 판은 회색 그대로 둔다. 두께는 1px 로 같아 줄이 어긋나지 않는다. */
+  /* ★ 「고른 칸은 파란 테두리」를 **걷었다** (2026-09-24 사용자 그림).
+     `실측` 「빈 값」은 기본값이 늘 차 있어 **처음부터 파랗고**(rgb 37,99,235),
+     정작 사람이 채워야 할 「결과 변수」는 회색(rgb 229,231,235)이었다 —
+     **색이 중요도를 거꾸로** 말하고 있었다. 게다가 파랑은 이 화면에서
+     「지금 고른 것」(방법 칸 · 적용됨)을 뜻하는데, 다 채운 칸마다 파랗게 되면 그 뜻이 묽어진다.
+     이제 칸은 **평소에 조용하고**, 색은 「눌러 봤더니 모자라더라」(부품 `입력오류` 빨강)만 맡는다 —
+     전처리에서 세운 규칙과 같다(축 Y). */
+  .열셀렉트.is-empty{color:var(--gray-500);}
+  .열칸:focus-within .열화살{color:var(--brand-primary);}
+  /* 화살표는 **부품**이다(부품/아이콘 「캐럿」 = Lucide chevron-down · 2026-09-23).
+     전에는 8×5 손그림이었다 — 규약 2 대로 아이콘은 부품으로만 쓴다 */
+  /* 캐럿 자리 — **보이는 획 기준으로** 맞춘다(2026-09-23 실측).
+     Lucide 캐럿은 viewBox 24 안에서 가운데 절반만 그려져(`m6 9 6 6 6-6` = x 6~18),
+     14px 틀 안의 **실제 획은 7×4**이고 틀 좌우에 3.5씩 빈다. 그래서 `right` 에 3.5를 더한 만큼이 눈에 보인다.
+       · right 8 → 보이는 여백 11.5 (글자 왼쪽 여백 8 보다 떠 보였다 — 사용자 「간격 조정」)
+       · **right 6 → 9.5** · 글자와 획 사이도 9.5 — 좌우가 맞는다 */
+  .열칸 .열화살{position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:14px; height:14px; pointer-events:none; color:var(--gray-500); display:inline-flex;}
+  .열칸 .열화살 svg{display:block; width:14px; height:14px;}
+  /* ★ 열을 여러 개 받는 역할 — **체크 목록** (축 V2 · V2-3 · 2026-09-24 사용자).
+     앞서 「＋ 열 추가」로 드롭다운을 가로로 늘리던 것을 걷었다.
+     상자에 **높이 상한 + 스크롤**을 둔다 — 열이 적으면 상한에 안 닿아 **그냥 펼쳐 보이고**,
+     많아지면 그 안에서 굴러간다. **한 가지 모양으로 둘 다 된다.** */
+  /* 여러 개 받는 줄만 위 정렬이다(내용이 두 줄). 이름이 **체크 첫 줄과 나란히** 서게
+     줄 높이를 맞춰 준다 — 안 맞추면 이름만 위로 떠 보인다 `실측` */
+  .역할줄.여럿{align-items:flex-start;}
+  .역할줄.여럿 .역할이름{line-height:17px;}
+  .체크{line-height:17px;}
+  /* ★ 상자를 안 두른다 (2026-09-24 사용자 「분석할 열은 그냥 안 묶여있어도 될 거 같은데」).
+     폭도 안 박는다 — 420px 로 박아 두니 테두리가 **515 에서 끊기고 그 뒤가 비어** 보였다 `실측`.
+     테두리를 걷으면 남는 자리는 그냥 **여백**으로 읽힌다. */
+  .고르는틀{display:flex; flex-direction:column; gap:5px; align-items:flex-start; min-width:0;}
+  .찾기칸{height:30px; box-sizing:border-box; border:1px solid var(--border-default);
+    border-radius:var(--radius-input,7px); display:flex; align-items:center; gap:6px;
+    padding:0 8px; color:var(--gray-500);}
+  .찾기칸 svg{display:block;} .찾기글{font-size:12px;}
+  /* 보통은 **그냥 늘어놓는다** — 테두리도 안쪽 여백도 없다 */
+  .체크칸{display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px 16px; min-width:0;}
+  /* ★ 열이 **많을 때만** 상자에 담아 가둔다 — 가두지 않으면 스무 줄이 그대로 흘러내린다.
+     담을 때만 테두리가 생기는 것은 「같아 보이는데 다르게 구는」 것이 아니라
+     **달라 보이고 다르게 구는** 것이라 괜찮다(JS 가 `많음` 을 붙인다) */
+  .고르는틀.많음 .체크칸{max-height:150px; overflow-y:auto; box-sizing:border-box;
+    border:1px solid var(--border-default); border-radius:8px; padding:8px 10px; width:520px; max-width:100%;}
+  /* 스크롤 막대는 따로 안 쓴다 — 전 화면 공통 5px(`화면/_공용.css` · 2026-09-28).
+     앞서 여기만 6px · `--border-default` 손잡이 · 둥글기 3 이었다 */
+  .고르는틀.많음 .찾기칸{width:520px; max-width:100%;}
+  .체크{display:inline-flex; align-items:center; gap:5px; font-size:12px; color:#222; cursor:pointer;}
+  /* 진짜 체크박스는 숨기고 네모를 그린다 — 키보드로도 켜진다 */
+  .체크 input{position:absolute; opacity:0; width:0; height:0;}
+  .네모{width:15px; height:15px; flex:0 0 15px; border:1px solid var(--border-default); border-radius:4px;
+    display:inline-flex; align-items:center; justify-content:center; color:#fff; background:#fff;}
+  .네모 svg{display:block; opacity:0;}
+  .체크 input:checked + .네모{background:var(--brand-primary); border-color:var(--brand-primary);}
+  .체크 input:checked + .네모 svg{opacity:1;}
+  .체크 input:focus-visible + .네모{outline:2px solid var(--brand-primary); outline-offset:1px;}
+  .고른수{font-size:11px; color:var(--gray-500);}
+  /* 모자랄 때도 **빨강을 안 쓴다** — 빨강은 「눌러 봤더니 모자라더라」를 짚는 자리(부품 `입력오류`)가 맡고,
+     이 곁말은 **세어 주는 말**이다. 전처리에서 곁말을 회색으로 둔 것과 같은 규칙 */
+  .고른수.모자람{color:var(--gray-600);}
+
+  .열더하기{gap:4px;}
+  .역할줄 .지움{display:flex; align-items:center; justify-content:center; flex:0 0 18px;
+    color:var(--gray-500); cursor:pointer;}
+  .역할덧{font-size:10.5px; color:var(--gray-500);}
+/* @끝 _데이터.css */
+
+  .body > .main{flex:1; min-width:0; display:flex; flex-direction:column;}
+  .content{flex:1; min-width:0; min-height:0; overflow:auto; padding:0 24px;}
+  /* 탭 줄의 아래 선은 **본문 폭 끝까지** 간다 — 여백 24 만큼 밖으로 뺀다(부품 README) */
+  .content > .탭줄{margin:0 -24px; padding:0 24px;}
+</style>
+<!-- ★ 입력 오류 표시 — 라이브러리에 없어 만든 부품(값의 정본은 그 파일 · 규약 2).
+     **`</style>` 뒤**에 둔다 — 화면의 `.항목 input{border:…}` 과 순위가 같아서(0,1,1)
+     앞에 두면 나중에 온 화면 규칙에 밀려 **빨강이 안 먹는다** `실측 확인함`.
+     이 부품은 화면 기본값을 **덮어야** 하는 것이라 뒤가 맞다. -->
+<link rel="stylesheet" href="../데이터분석/부품/입력오류/입력오류.css?v=20260923a">
+</head><body>
+
+<div class="app">
+<div class="gnb">
+<div class="g-item"><img src="assets/ico-gnb-aiChat.svg" alt=""><span>AI 채팅</span></div>
+<div class="g-item"><img src="assets/ico-gnb-cowork.svg" alt=""><span>협업</span></div>
+<div class="g-item"><img src="assets/ico-gnb-document.svg" alt=""><span>지식/문서</span></div>
+<div class="g-item"><img src="assets/ico-gnb-mail.svg" alt=""><span>이메일</span></div>
+<div class="g-item"><img src="assets/ico-workflow.svg" alt=""><span>자동화</span></div>
+<div class="g-item"><img src="assets/ico-gnb-dashboard.svg" alt=""><span>프로젝트</span></div>
+<div class="g-item on"><img src="assets/ico-analysis.svg" alt=""><span>데이터 분석</span></div>
+<div class="g-item"><img src="assets/ico-gnb-system.svg" alt=""><span>관리</span></div>
+<div class="g-item"><img src="assets/ico-gnb-system02-active.svg" alt=""><span>시스템</span></div>
+</div>
+<div class="main">
+  <div class="hd"><span class="logo">Prixm AI:CREW</span><span class="sp"></span>
+    <img src="assets/ico-bell.svg" style="width:18px"><span style="font-size:12px;">박준형</span></div>
+  <div class="body">
+    <div class="lnb-panel"><div class="js-lnb"></div></div>
+    <script>PRIXM_ANALYSIS_LNB({"내역": [{"t": "화학물질 안전 데이터 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 월별 추세", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=trend"}, {"t": "측정 항목별 기술통계", "아직": "기술통계 결과 화면은 아직 없습니다"}, {"t": "측정값 분포", "아직": "분포 결과 화면은 아직 없습니다"}, {"t": "부서별 그룹 비교", "아직": "그룹 비교 결과 화면은 아직 없습니다"}, {"t": "측정 항목 간 상관분석", "아직": "상관분석 결과 화면은 아직 없습니다"}, {"t": "부서 × 위험등급 교차표", "href": "../데이터분석/정본/화면05_결과/화면05_결과.html?view=cross"}], "새분석링크": "../데이터분석/정본/화면01_새분석/화면01_새분석.html"});</script>
+    <div class="main">
+      <div class="js-head"></div>
+      <script>PRIXM_HEAD({ crumb:[{t:'새 분석', link:true, cls:'js-crumb-home'},{t:'안전점검_2026상반기', cur:true}], up:true, search:'분석 검색' });</script>
+      <div class="content">
+<!-- @조각 _틀.html -->
+<!-- 탭 줄 — 부품(부품/탭줄/탭줄.css)이 모양을 맡는다. 여기는 마크업만 -->
+<div class="탭줄">
+  <div class="탭묶음">
+    <button class="탭칸 지금" data-탭="data">데이터</button>
+    <button class="탭칸" data-탭="method">분석 기법</button>
+  </div>
+</div>
+
+<!-- ───────────────── 1 데이터 ───────────────── -->
+<!-- 축 E-1 · W-8(전처리) · Z-1(판 하나) · N 무리 B-7·C-4·D-2·P-1. 랩: 랩/데이터탭 · 랩/좁히기줄 -->
+<section class="자리" data-자리="data">
+
+  <!-- 전처리 — 접힌 채로 시작. 머리 줄 전체가 누르는 자리(라이브러리 label-toggle 관행).
+       2026-09-23 사용자 피그마 개선안대로 줄을 다시 짰다 —
+         ① 이름은 판 **밖 라벨**로 뺀다(분석 기법 탭의 「선택된 데이터 · 분석 방법」과 같은 짜임)
+         ② 왼쪽은 **필터 아이콘**(부품 「좁히기」 = Lucide filter)
+         ③ 상태는 **「적용 전 ↔ 적용됨」 쌍**. 전에는 적용하면 배지가 **사라져서**
+            「적용된 것」과 「전처리가 없는 것」이 구분이 안 됐다
+         ④ 오른쪽 끝은 **위아래 캐럿**(부품 「위아래」 = Lucide chevrons-up-down) -->
+  <div class="묶음">
+    <div class="라벨">전처리</div>
+    <div class="전처리판">
+    <!-- ★ H-5 (2026-09-23) — **더하는 버튼이 머리 줄에 있다.** 판 안의 「더하기 줄」은 없앴다.
+         까닭 셋 · 랩 `랩/빈전처리` 축 H
+           ① 비었을 때 판이 **머리 한 줄**(41px)뿐인데 무엇을 더할 수 있는지가 **보인다** — 클릭 1번
+           ② 아래에 아무것도 안 두므로 **「캐럿이 있다 ⟺ 접을 것이 있다」가 늘 참**이 된다.
+              전에는 아래에 버튼이 **있는데도** 캐럿을 감춰서 어긋났다
+           ③ 더하기 줄을 맨 위로 올린 까닭(「줄이 몇 개 쌓이든 버튼 자리가 안 바뀐다」)이
+              **접힘·펼침까지** 넓어진다 — 머리 줄은 접어도 안 사라지는 유일한 줄이다
+         ⚠ 버튼은 **상태 글자 바로 옆**이다. `margin-left:auto` 로 오른쪽 끝에 밀면
+            `실측` 창 2718 · 판 2362 에서 **마우스가 1700px 간다**(적용을 왼쪽에 둔 것과 같은 까닭).
+         ⚠ 머리(`<button>`) **안에** 버튼을 넣으면 중첩 버튼이라 잘못된 HTML 이다.
+            그래서 `.전처리머리줄` 로 감싸고 **형제로** 둔다 — 덕분에 클릭이 서로 안 섞인다. -->
+    <!-- ★ 머리 줄 (2026-09-23 사용자) — 상태에 따라 **세 모습**이다
+           ① 비었음(기본)  ▽ 적용 전 │ ＋필터조건 ＋열형식변경          캐럿 **없음** · 뒤 여백 없음
+           ② 펼침          ①  + ↺모두지우기                    ……… 맨 오른쪽 ⌃
+           ③ 접힘          ▽ 적용 전 │ 형식1·조건2              ……… 맨 오른쪽 ⌄  **버튼 없음**
+         · 닫는 자리는 **가로 줄 전체**다(버튼 위만 빼고). 그래서 머리를 `<button>` 으로 두지 못한다 —
+           안에 버튼이 들어가면 중첩 버튼이라 잘못된 HTML 이다. 줄은 `<div>` 이고 클릭을 받으며,
+           **캐럿만 `<button>`** 으로 남겨 키보드로도 여닫을 수 있게 둔다(클릭은 줄로 올라가 한 군데서 처리).
+         · 캐럿이 **맨 오른쪽**인 까닭: 줄 전체가 누르는 자리라 캐럿은 **그 줄이 어디까지인지**를 표시한다.
+           손이 갈 일이 없으므로 멀어도 된다(앞서 조작 버튼을 오른쪽 끝에 두면 안 됐던 것과 다른 이야기).
+         · 버튼과 덧말은 **같이 안 나온다** — 펼치면 버튼(덧말은 겹말), 접으면 덧말(버튼은 쓸 일 없음).
+           덕분에 더하는 버튼의 x 가 **한 모습 안에서 절대 안 바뀐다**(랩 `랩/버튼자리고정` 축 M). -->
+    <div class="전처리머리줄 js-전처리머리줄">
+      <!-- 부품이 `<i data-ico>` 를 **통째로 바꿔치기**하므로(outerHTML) class 는 감싸는 span 이 갖는다 -->
+      <span class="전처리머리">
+        <span class="전처리아이콘"><i data-ico="좁히기" data-크기="16"></i></span>
+        <span class="전처리상태 js-전처리상태">적용 전</span>
+      </span>
+      <!-- 가름선 — 라이브러리 `common.css:1192` `.btn-text-divider`(1 × 8.5 · `--border-default`) 그대로.
+           8.5 는 글자(12)보다 **낮아서** 칸을 나누지 않고 층만 가른다 — 2026-09-23 에 판 안 **가로** 선을
+           걷어낸 까닭과 부딪히지 않는다. 버튼이 감춰지면 이 선도 같이 감춘다 (L-1) -->
+      <span class="btn-text-divider 머리가름"></span>
+      <!-- ★ 덧말은 **가름선 뒤 · 버튼과 같은 자리**다 (2026-09-23 사용자
+           「형식1 조건3 이것도 버튼처럼 │ 있고 동일한 여백 우측에 있으면 통일감있을듯?」).
+           그래서 **가름선은 세 모습에서 늘 같은 x** 에 서고, 그 뒤 내용만 바뀐다 —
+           비었음·펼침은 **버튼들**, 접힘은 **덧말**. 둘은 같이 안 나오므로 자리를 다투지 않는다. -->
+      <span class="전처리덧 js-전처리덧" hidden>형식 1 · 조건 1</span>
+      <span class="머리조작 js-더하기줄">
+        <button type="button" class="더하기버튼 작게 js-조건추가"><i data-ico="더하기" data-크기="13"></i>필터 조건</button>
+        <button type="button" class="더하기버튼 작게 js-형식추가"><i data-ico="더하기" data-크기="13"></i>열 형식 변경</button>
+        <!-- 아이콘은 부품 「전체해제」(Lucide rotate-ccw) -->
+        <button type="button" class="더하기버튼 작게 지우기버튼 js-초기화"><i data-ico="전체해제" data-크기="13"></i>모두 지우기</button>
+      </span>
+      <!-- 줄이 있을 때만 나온다. 없으면 `hidden` 이라 **자리도 안 잡는다**(사용자: 「적용 전 우측 여백도 없음」) -->
+      <button type="button" class="전처리캐럿 js-전처리캐럿" aria-expanded="false" aria-label="전처리 펼치기" hidden>
+        <i data-ico="캐럿" data-크기="16"></i></button>
+    </div><!-- /전처리머리줄 -->
+
+    <div class="전처리속 js-전처리속" hidden>
+      <!-- ★ 짜임 — **더하는 줄이 맨 위**, 그 아래로 줄이 쌓인다 (2026-09-23 사용자 피그마 안).
+           앞의 U-10 은 더하기를 목록 **아래**에 뒀었다. 뒤집은 까닭: 줄이 늘어날수록 더하는 버튼이
+           아래로 밀려 **자리가 고정되지 않았다** — 위에 붙여 두면 몇 줄이 쌓이든 늘 같은 자리다.
+           치르는 값: 누른 자리(위)와 줄이 생기는 자리(아래)가 어긋난다 — 줄이 목록 맨 아래에 붙으니까.
+           · 「모두 지우기」도 같은 줄 — 줄을 **다루는 일**끼리 한 층이다. 더한 것이 있을 때만 보인다
+           · 판 안에는 **가름선이 없다**(2026-09-23 사용자) — 층은 여백으로만 가른다.
+             판 자체가 이미 테두리 상자라, 안에 선을 또 그으면 한 덩이가 세 칸으로 쪼개져 보인다
+           · 적용을 **왼쪽**에 둔 까닭: 판이 1564px 인데 내용은 왼쪽 500px 안에 다 들어간다.
+             오른쪽 끝에 두면 마우스가 1000px 를 간다 -->
+
+      <!-- 버튼 모양은 **A2-4**(랩 `랩/더하기버튼` · 2026-09-23 사용자) — **글자 버튼**(테두리도 바탕도 없음) + `＋`.
+           비었을 때도 같은 꼴이다 — 상태마다 꼴이 바뀌면 같은 버튼이 둘로 읽힌다.
+           이름은 「필터 조건」·「열 형식 변경」 — **무엇을 더하는지** 말한다(피그마 141:3427) -->
+
+      <div class="항목목록 js-항목목록"></div>
+      <!-- 빈 안내는 **당분간 감춰 둡니다**(2026-09-23 사용자 「일단 숨겨봐줘」).
+           되살리려면 hidden 을 지우고 `_데이터.js` 의 `적용표시()` 에서 `빈.hidden = 있나` 로 되돌립니다 -->
+      <div class="빈안내 js-빈안내" hidden>아직 더한 것이 없습니다.</div>
+
+      <!-- 적용은 아래 왼쪽, 경고는 그 오른쪽 같은 줄. 값이 비면 적용이 비활성이다(라이브도 그렇다).
+           「모두 지우기」는 되돌리는 일이라 글자 버튼이고, 더한 것이 있을 때만 보인다 -->
+      <div class="전처리바닥 js-전처리바닥">
+        <div class="btn-primary-demo size-small state-disabled js-적용">적용</div>
+        <span class="경고 js-경고">값이 비어 있는 조건이 있습니다.</span>
+      </div>
+    </div>
+    </div>
+  </div><!-- /묶음 전처리 -->
+
+  <!-- 시트 줄과 표는 **한 덩이**다 — 시트를 바꾸면 표가 바뀐다.
+       그래서 라벨 묶음들과 같은 층에 나란히 선다(간격 11 은 이 묶음 안의 값). -->
+  <!-- ★ 라벨을 달았다 (2026-09-24 사용자 · 랩 `랩/시트라벨` 축 I → **I-1 「분석할 데이터」 채택**)
+       앞서 라벨이 없어 데이터 탭 안에서 **묶음 둘이 다르게 생겼었다**(위 전처리만 라벨이 있었다).
+
+       ★ 「분석할 시트」(I-3)를 한 번 넣었다가 **되돌렸다.** 내가 「분석 기법 탭의 「선택된 데이터」와
+         부딪힌다」고 봤는데, 다시 재 보니 **부딪히지 않는다** — 그 줄의 부제가
+         `안전점검_2026상반기 · 측정 결과 · …` 로 **시트까지 담고 있다.** 즉 두 라벨은
+         **같은 것을 두 단계에서** 부르는 말이다
+             데이터 탭    「분석할 데이터」  ← 지금 고르는 중
+             분석 기법 탭 「선택된 데이터」  ← 다 고른 것
+         말이 갈리는 것이 아니라 **때가 갈리는** 것이라 오히려 짝이 맞는다.
+         그래서 **분석 기법 탭 라벨은 안 건드렸다.**
+       ※ 「시트」라는 말을 안 쓰기로 했으므로 **제품 용어 확인도 필요 없어졌다.**
+
+       라벨이 붙으면서 `붙게`(gap 11)를 놓고 다른 묶음과 같은 **gap 6** 이 됐다.
+       치르는 값: 「시트 줄이 표의 머리」라는 붙은 느낌이 옅어진다 -->
+  <div class="묶음">
+    <div class="라벨">분석할 데이터</div>
+  <!-- ★ 시트가 많으면 **들어가는 만큼 두고 나머지는 「＋N」** 뒤로 (2026-09-23 사용자 · 랩 `랩/시트넘침` S2-5)
+       앞서는 넘침을 아무도 안 막아 칸이 잘렸다(사용자 그림). 자를 자리는 **사람이 안 정하고 폭이 정한다.**
+       넓은 창에서는 ＋N 이 아예 안 생겨 지금과 똑같다.
+       ★ **고른 시트는 절대 안 숨긴다** — ＋N 안으로 밀리면 「지금 무엇을 보고 있나」가 사라진다.
+         그래서 뒤에서부터 숨기되 **켠 칸은 건너뛴다**. 켠 칸은 자연히 보이는 무리 끝으로 붙어 선다.
+       메뉴는 라이브러리 `.overflow-menu-demo` 그대로다 — **새로 만든 부품이 없다** -->
+  <div class="시트줄">
+    <div class="segment-control-demo js-시트">
+      <div class="segment-item-demo active">측정 결과</div>
+      <div class="segment-item-demo">기준값</div>
+      <div class="segment-item-demo">부서 목록</div>
+      <div class="segment-item-demo">점검 이력</div>
+      <div class="segment-item-demo">설비 대장</div>
+      <div class="segment-item-demo">교육 이수</div>
+      <div class="segment-item-demo">작업 허가</div>
+      <div class="segment-item-demo">협력사 평가</div>
+    </div>
+    <span class="넘침자리 js-넘침자리" hidden>
+      <button type="button" class="넘침 js-넘침" aria-expanded="false">＋0</button>
+      <span class="넘침메뉴 js-넘침메뉴" hidden><span class="overflow-menu-demo js-넘침목록"></span></span>
+    </span>
+  </div>
+
+  <div class="표틀 스크롤"><table class="tbl">
+    <thead><tr><th>시료번호</th><th>물질군</th><th>시험항목</th><th>측정값</th><th>기준값</th><th>판정</th></tr></thead>
+    <tbody>
+      <tr><td>CS-3001</td><td>유기용제</td><td>농도</td><td>0.80</td><td>5.00</td><td>적합</td></tr>
+      <tr><td>CS-3002</td><td>가스</td><td>pH</td><td>2.10</td><td>7.00</td><td>적합</td></tr>
+      <tr><td>CS-3003</td><td>산·알칼리</td><td>인화점</td><td>3.40</td><td>10.00</td><td>적합</td></tr>
+      <tr><td>CS-3004</td><td>중금속</td><td>증기압</td><td>4.70</td><td>1.00</td><td>적합</td></tr>
+      <tr><td>CS-3005</td><td>유기용제</td><td>농도</td><td>6.00</td><td>5.00</td><td>부적합</td></tr>
+      <tr><td>CS-3006</td><td>가스</td><td>pH</td><td>7.30</td><td>7.00</td><td>적합</td></tr>
+      <tr><td>CS-3007</td><td>산·알칼리</td><td>인화점</td><td>8.60</td><td>10.00</td><td>적합</td></tr>
+    </tbody></table></div>
+  </div><!-- /묶음 표 -->
+  <!-- 쪽 줄 — 전부 왼쪽. 「7행 × 6열」과 「1–7 / 7행」이 같은 말이라 여기 한 줄로 합쳤다 -->
+  <div class="바닥"><div class="btn-primary-demo size-medium state-default js-다음">분석 기법 고르기</div></div>
+</section>
+
+<!-- ───────────────── 2 분석 기법 ───────────────── -->
+<section class="자리" data-자리="method" hidden>
+  <div class="묶음">
+    <div class="라벨">선택된 데이터</div>
+    <!-- 줄 **전체**가 데이터 탭으로 가는 자리다. 오른쪽 글자는 「여기를 누르면 된다」는 표시로 남긴다 -->
+    <div class="줄틀"><button type="button" class="줄 js-데이터로">
+    <span class="파일아이콘"><i data-ico="파일표" data-크기="16"></i></span><b>안전점검_2026상반기</b>
+    <span class="파일덧">측정 결과 · 7행 × 6열 · 전처리 없음</span>
+    <span class="파일조작"><span class="px-btn-text">데이터 다시 고르기</span></span>
+  </button></div>
+  </div><!-- /묶음 선택된 데이터 -->
+
+  <div class="묶음">
+    <div class="라벨">분석 방법</div>
+    <div class="방법목록 js-방법"></div>
+  </div>
+
+  <!-- 변수 고르기 — 축 V 의 V-2(역할마다 드롭다운). 방법에 따라 역할이 다르므로 JS 가 그린다.
+       열을 여러 개 받는 역할(상관분석 · 기술통계 · 선형회귀의 설명 변수)은 「+ 열 추가」로 칸이 늘어난다
+       — 전처리의 「+ 조건 추가」와 같은 늘리는 방식이다(2026-09-22). -->
+  <div class="묶음 변수자리 js-변수" hidden>
+    <div class="라벨">변수 고르기</div>
+    <div class="변수판 js-변수판"></div>
+  </div>
+
+  <!-- 「분석 실행」 — **아래 왼쪽.** 전처리의 「적용」과 같은 자리·같은 규칙이다(P-1).
+       곁말은 왜 못 누르는지를 말한다 — 비활성만으로는 무엇이 모자란지 안 보인다. -->
+  <div class="실행줄">
+    <div class="btn-primary-demo size-medium state-disabled js-실행">분석 실행</div>
+    <span class="경고 js-실행곁">분석 방법을 고르세요.</span>
+  </div>
+</section>
+<!-- @끝 _틀.html -->
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* 분석 방법 9개 — 굽기가 넣는다(라이브 우패널의 이름·곁말 그대로) */
+document.querySelector(".js-방법").innerHTML = "<div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"기술통계\" data-크기=\"16\"></i></span><b>기술통계</b></span><i class=\"방법곁\">평균·표준편차·사분위·결측</i><span class=\"방법꼬리\"><i class=\"필요\">수치형 1개 이상</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"상관분석\" data-크기=\"16\"></i></span><b>상관분석</b></span><i class=\"방법곁\">변수 간 상관행렬 + 히트맵</i><span class=\"방법꼬리\"><i class=\"필요\">수치형 2개 이상</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"그룹비교\" data-크기=\"16\"></i></span><b>그룹 비교</b></span><i class=\"방법곁\">t-검정 / ANOVA + 박스플롯</i><span class=\"방법꼬리\"><i class=\"필요\">그룹 열 1 + 수치형 1</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"분포\" data-크기=\"16\"></i></span><b>분포</b></span><i class=\"방법곁\">히스토그램 + 기본 통계</i><span class=\"방법꼬리\"><i class=\"필요\">수치형 1개</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"선형회귀\" data-크기=\"16\"></i></span><b>선형회귀</b></span><i class=\"방법곁\">설명력·계수·유의성 + 잔차 진단</i><span class=\"방법꼬리\"><i class=\"필요\">수치형 2개 이상</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"정규성\" data-크기=\"16\"></i></span><b>정규성</b></span><i class=\"방법곁\">Shapiro-Wilk · 왜도 + Q-Q 도표</i><span class=\"방법꼬리\"><i class=\"필요\">수치형 1개</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"교차표\" data-크기=\"16\"></i></span><b>교차표</b></span><i class=\"방법곁\">카이제곱 독립성 + Cramér's V</i><span class=\"방법꼬리\"><i class=\"필요\">범주형 2개</i></span></div><div class=\"card-demo 방법칸\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"이상치\" data-크기=\"16\"></i></span><b>이상치</b></span><i class=\"방법곁\">IQR · z-점수 + 상자그림</i><span class=\"방법꼬리\"><i class=\"필요\">수치형 1개</i></span></div><div class=\"card-demo 방법칸 is-off\"><span class=\"방법머리\"><span class=\"방법아이콘\"><i data-ico=\"추세\" data-크기=\"16\"></i></span><b>추세</b></span><i class=\"방법곁\">선형 추세 · 이동평균</i><span class=\"방법꼬리\"><i class=\"까닭\">시간 열이 없습니다</i></span></div>";
+/* innerHTML 로 나중에 그린 것이라 아이콘을 다시 채운다 */
+PX_ICO_채우기(document.querySelector(".js-방법"));
+</script>
+<script>
+/* @조각 _데이터.js */
+/* ②③ 데이터 고르기 · 분석 기법 — D-4(탭으로 오가기)
+   탭 상태는 주소(?tab=data|method)에 남긴다 — 「화면·주소를 하나만 만들면 된다」가 D-4 를 택한 이유다.
+   ★ T-1 이 남긴 걸림 ②차례·③끝남은 아직 안 메웠다(랩/탭줄 무리 B, 5안 미정).
+     지금은 오른쪽 요약과 「분석 실행」 버튼이 그 자리를 임시로 맡는다. */
+(function () {
+  var 결과 = "../데이터분석/정본/화면05_결과/화면05_결과.html?view=trend";
+
+  function 탭보이기(어디) {
+    document.querySelectorAll(".탭칸").forEach(function (b) {
+      b.classList.toggle("지금", b.dataset["탭"] === 어디);
+    });
+    document.querySelectorAll(".자리").forEach(function (s) {
+      s.hidden = s.dataset["자리"] !== 어디;
+    });
+    /* 「분석 실행」은 이제 **분석 기법 자리 안 아래 왼쪽**에 산다(2026-09-22 사용자) —
+       자리가 통째로 숨으므로 버튼을 따로 숨길 일이 없다.
+       데이터 자리의 요약도 뺐다 — 전처리 머리(「형식 1 · 조건 1 · 적용 전」)가 이미 말한다. */
+    /* ★ <base> 가 컴포넌트/ 를 가리키므로 상대 주소를 주면 그쪽으로 풀린다.
+       location.pathname 으로 **절대 경로**를 만들어야 한다 (2026-09-22 실제로 겪음). */
+    history.replaceState(null, "", location.pathname + "?tab=" + 어디);
+  }
+
+  document.querySelectorAll(".탭칸").forEach(function (b) {
+    b.addEventListener("click", function () { 탭보이기(b.dataset["탭"]); });
+  });
+  document.querySelector(".js-다음").addEventListener("click", function () { 탭보이기("method"); });
+  document.querySelector(".js-데이터로").addEventListener("click", function () { 탭보이기("data"); });
+
+  /* ── 시트 줄 — 고르기 + 넘침 (S2-5 · 2026-09-23 사용자 · 랩 `랩/시트넘침`) ──────────
+     앞서는 칸이 **아무 동작도 없었다**(눌러도 무반응) — 고르기부터 붙인다.
+     넘침: 칸을 **폭이 허락하는 만큼** 두고 나머지를 「＋N」 뒤 메뉴로 보낸다.
+     ★ **고른 시트는 절대 안 숨긴다.** ＋N 안으로 밀리면 「지금 무엇을 보고 있나」가 사라진다.
+       그래서 뒤에서부터 숨기되 **켠 칸은 건너뛴다** — 켠 칸은 보이는 무리 끝에 자연히 붙어 선다.
+     ------------------------------------------------------------------------- */
+  var 시트틀 = document.querySelector(".js-시트");
+  if (시트틀) (function () {
+    var 시트줄 = 시트틀.parentNode;
+    var 칸들 = [].slice.call(시트틀.querySelectorAll(".segment-item-demo"));
+    var 넘침자리 = document.querySelector(".js-넘침자리");
+    var 넘침 = document.querySelector(".js-넘침");
+    var 넘침메뉴 = document.querySelector(".js-넘침메뉴");
+    var 넘침목록 = document.querySelector(".js-넘침목록");
+
+    function 고르기(칸) {
+      칸들.forEach(function (c) { c.classList.toggle("active", c === 칸); });
+      넘침메뉴.hidden = true;
+      넘침.setAttribute("aria-expanded", "false");
+      재기();
+    }
+    시트틀.addEventListener("click", function (e) {
+      var 칸 = e.target.closest(".segment-item-demo");
+      if (칸) 고르기(칸);
+    });
+
+    /* 몇 개가 들어가나 — 켠 칸과 「＋N」 자리를 먼저 빼고 남는 폭에 앞에서부터 채운다 */
+    function 재기() {
+      칸들.forEach(function (c) { c.hidden = false; });
+      넘침자리.hidden = true;
+      var 쓸폭 = 시트줄.clientWidth;
+      if (!쓸폭) return;
+      var 잼 = 칸들.map(function (c) { return c.offsetWidth; });
+      var 칸합 = 잼.reduce(function (a, b) { return a + b; }, 0);
+      /* ★ 세그먼트 무리는 **자기 테두리·안쪽 여백**을 가진다(`실측` 약 33px).
+         칸 폭만 더해 재면 그만큼 모자라게 봐서 **넘치는데도 안 걸린다** —
+         실제로 한 번 그랬다(칸합 432 · 줄 430 인데 통과). 무리 전체 폭으로 잰다. */
+      var 여분 = 시트틀.offsetWidth - 칸합;
+      if (시트틀.offsetWidth <= 쓸폭) return;   /* 다 들어간다 — ＋N 이 아예 안 생긴다 */
+
+      넘침자리.hidden = false;
+      var 켠 = 칸들.findIndex(function (c) { return c.classList.contains("active"); });
+      var 남는폭 = 쓸폭 - 여분 - 넘침자리.offsetWidth - 6;   /* 6 = 넘침자리 margin-left */
+      if (켠 >= 0) 남는폭 -= 잼[켠];                        /* 켠 칸 자리는 먼저 뗀다 */
+
+      var 쌓임 = 0, 숨김 = [];
+      칸들.forEach(function (c, i) {
+        if (i === 켠) return;                        /* 켠 칸은 건너뛴다 — 절대 안 숨긴다 */
+        if (쌓임 + 잼[i] <= 남는폭) { 쌓임 += 잼[i]; }
+        else { c.hidden = true; 숨김.push(c); }
+      });
+
+      넘침.textContent = "＋" + 숨김.length;
+      넘침자리.hidden = 숨김.length === 0;
+      넘침목록.innerHTML = "";
+      숨김.forEach(function (c) {
+        var 줄 = document.createElement("div");
+        줄.className = "overflow-menu-item";
+        줄.innerHTML = "<span>" + c.textContent + "</span>";
+        줄.addEventListener("click", function () { 고르기(c); });
+        넘침목록.appendChild(줄);
+      });
+    }
+
+    넘침.addEventListener("click", function (e) {
+      e.stopPropagation();
+      넘침메뉴.hidden = !넘침메뉴.hidden;
+      넘침.setAttribute("aria-expanded", 넘침메뉴.hidden ? "false" : "true");
+    });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".js-넘침자리")) { 넘침메뉴.hidden = true; 넘침.setAttribute("aria-expanded", "false"); }
+    });
+
+    /* ★ 창이 바뀌면 다시 잰다 — 그런데 **그냥 붙이면 얼어붙는다.**
+       `재기()` 가 칸을 숨기고 ＋N 을 띄우면 크기가 또 바뀌고, 그것이 다시 `재기()` 를 불러
+       **끝없이 돈다**(2026-09-23에 실제로 렌더러가 멈췄다). 막는 장치 셋을 둔다
+         ① **보는 대상을 부모로** — 우리가 안을 건드리는 `.시트줄` 말고, 폭을 정해 주는 바깥을 본다
+         ② **다시 들어옴 막기** — 재는 동안 들어온 알림은 버린다
+         ③ **폭이 그대로면 아무것도 안 한다** — 같은 값으로 다시 그리지 않는다 */
+    var 재는중 = false, 지난폭 = -1;
+    function 다시재기() {
+      if (재는중) return;
+      var 이번폭 = 시트줄.clientWidth;
+      if (이번폭 === 지난폭) return;
+      재는중 = true;
+      지난폭 = 이번폭;
+      /* ⚠ 여기서 `requestAnimationFrame` 으로 풀면 **배경 탭에서 영영 안 풀린다** —
+         rAF 는 안 보이는 탭에서 멈춘다. 그러면 `재는중` 이 true 로 잠겨 다시는 안 잰다
+         (2026-09-23에 실제로 그랬다 — 창을 줄여도 ＋N 이 안 나왔다).
+         **그 자리에서 푼다.** 끝없이 도는 것은 위의 「폭이 그대로면 안 한다」가 막는다 —
+         `재기()` 는 칸만 숨기지 `.시트줄` 의 폭은 안 바꾸므로 같은 폭으로 다시 들어오면 바로 빠져나간다. */
+      try { 재기(); } finally { 재는중 = false; }
+    }
+    /* 고르기 등으로 **속이 바뀌었을 때**는 폭이 같아도 다시 그려야 하므로 `재기()` 를 바로 부른다 */
+    /* 둘 **다** 듣는다 — 하나로는 모자란다
+         · `resize` — 창을 줄일 때. 가장 흔한 경우다
+         · `ResizeObserver` — 창은 그대로인데 **바깥 폭만** 바뀔 때(왼쪽 목록 접기 등).
+           다만 배달이 **렌더링에 묶여** 있어 안 보이는 탭에서는 안 온다. 그래서 `resize` 도 같이 둔다 */
+    var 봄 = 시트줄.parentNode || 시트줄;
+    if (window.ResizeObserver) new ResizeObserver(다시재기).observe(봄);
+    window.addEventListener("resize", 다시재기);
+    지난폭 = 시트줄.clientWidth;
+    재기();
+  })();
+
+  /* ── 전처리 머리 줄 ────────────────────────────────────────────────────
+     ★ 2026-09-23 사용자 — 머리 줄은 상태에 따라 **세 모습**이다
+         ① 비었음(기본)  ▽ 적용 전 │ ＋필터조건 ＋열형식변경     캐럿 없음 · 뒤 여백 없음
+         ② 펼침          ① + ↺모두지우기                 ……… 맨 오른쪽 ⌃
+         ③ 접힘          ▽ 적용 전 │ 형식1·조건2          ……… 맨 오른쪽 ⌄  **버튼 없음**
+     · 닫는 자리는 **가로 줄 전체**(버튼 위만 뺀다). 그래서 줄이 `<div>` 다 —
+       `<button>` 안에 버튼을 넣으면 중첩 버튼이라 잘못된 HTML 이다.
+     · **버튼과 덧말은 같이 안 나온다.** 펼치면 버튼(덧말은 겹말), 접으면 덧말(버튼은 쓸 일이 없다).
+       덕분에 더하는 버튼의 x 가 한 모습 안에서 **절대 안 바뀐다**(랩 `랩/버튼자리고정` 축 M).
+     ------------------------------------------------------------------- */
+  var 머리줄 = document.querySelector(".js-전처리머리줄");
+  var 캐럿 = document.querySelector(".js-전처리캐럿");
+  var 속 = document.querySelector(".js-전처리속");
+
+  function 줄수() { return document.querySelectorAll(".js-항목목록 .항목").length; }
+
+  /* 머리 줄의 세 모습을 **한 곳에서** 정한다 — 흩어 두면 어긋난다(전에 「모두 지우기」가 그랬다) */
+  function 머리모습() {
+    var 있나 = 줄수() > 0;
+    var 접힘 = 속.hidden;
+    var 접은채 = 있나 && 접힘;                    /* ③ */
+    document.querySelector(".js-전처리덧").hidden = !접은채;
+    document.querySelector(".js-더하기줄").hidden = 접은채;
+    /* 가름선은 **안 건드린다** — 뒤에 버튼이든 덧말이든 늘 무언가가 온다(2026-09-23 사용자) */
+    캐럿.hidden = !있나;                           /* ① 은 자리도 안 잡는다 */
+    캐럿.setAttribute("aria-expanded", 접힘 ? "false" : "true");
+    캐럿.setAttribute("aria-label", 접힘 ? "전처리 펼치기" : "전처리 접기");
+    머리줄.classList.toggle("줄있음", 있나);       /* 커서·호버가 이 클래스를 본다 */
+  }
+
+  function 펴기(펼까) {
+    속.hidden = !펼까;
+    머리모습();
+  }
+
+  /* 줄 아무 데나 누르면 여닫는다 — **더하는 버튼 위만 뺀다**(거기선 다른 일이 일어난다).
+     캐럿은 `<button>` 이지만 따로 안 듣는다 — 클릭이 줄로 올라와 여기 한 군데서 처리된다
+     (키보드 Enter/Space 도 click 으로 올라온다) */
+  머리줄.addEventListener("click", function (e) {
+    if (e.target.closest(".머리조작")) return;
+    if (!머리줄.classList.contains("줄있음")) return;   /* 비었으면 접을 것이 없다 */
+    펴기(속.hidden);
+  });
+
+  /* 적용됐는지를 **머리 줄 하나로** 말한다 — 「적용 전 ↔ 적용됨」.
+     전에는 적용하면 배지가 사라져서 「적용된 것」과 「전처리가 없는 것」이 구분이 안 됐다
+     (2026-09-23 사용자 피그마 개선안). 색은 파랑 하나만 쓴다 — `is-applied` 가 아이콘까지 물들인다.
+     머리 글자는 **둘**이다 — 「적용 전 ↔ 적용됨」. 「하나도 없음」과 「넣었는데 안 눌렀음」은
+     **덧말이 가른다**(비었으면 덧말 자체가 없다). */
+  var 적용됐나 = false;
+  function 적용표시(됐나) {
+    if (됐나 !== undefined) 적용됐나 = !!됐나;
+    var 있나 = 줄수() > 0;
+    머리줄.classList.toggle("is-applied", 있나 && 적용됐나);
+    document.querySelector(".js-전처리상태").textContent = (있나 && 적용됐나) ? "적용됨" : "적용 전";
+    /* 빈 안내는 감춰 둔 상태다(2026-09-23 사용자) — 되살리려면 `빈.hidden = 있나` 로 되돌린다 */
+    var 빈 = document.querySelector(".js-빈안내");
+    if (빈) 빈.hidden = true;
+    /* 「적용」과 「모두 지우기」는 **더한 것이 있을 때만** 보인다 — 되돌릴 것도 적용할 것도 없는데
+       버튼만 있으면 거짓 조작이다. 경고 곁말도 같은 줄이라 함께 숨는다 */
+    var 바닥 = document.querySelector(".js-전처리바닥");
+    if (바닥) 바닥.hidden = !있나;
+    var 초 = document.querySelector(".js-초기화");
+    if (초) 초.hidden = !있나;
+    /* 줄이 없으면 접는다 — 속에 줄 말고는 아무것도 없으므로 접을 것이 없다 */
+    if (!있나) 속.hidden = true;
+    머리모습();
+  }
+
+  /* ── 빈 값 검사 — **누른 뒤부터** 말한다 (2026-09-23 사용자 · 랩 `랩/값검사` 축 Y) ──
+     앞서는 **막고 설명했다** — 빈 값이 있으면 `적용` 이 늘 `state-disabled` 이고
+     그 옆에 「값이 비어 있는 조건이 있습니다」가 **늘** 떠 있었다(라이브도 disabled 다).
+     그것이 치르던 값 셋
+       ① 줄을 **만들자마자** 경고가 떴다 — 아직 채우는 중인데 혼나는 꼴
+       ② **어느 줄이 비었는지 안 알려 줬다** — 줄이 다섯이면 사람이 찾아야 했다
+       ③ `disabled` 는 **왜 안 눌리는지 스스로 말하지 못한다** → 그래서 옆에 글자를 달았고,
+          그 글자가 늘 떠 있게 됐다. 즉 상시 경고는 **disabled 를 쓴 대가**였다
+
+     ★ 고친 것은 **막느냐 마느냐가 아니라 「언제 말하느냐」다.**
+        `적용` 은 **처음부터 비활성**이다(라이브와 같다). 달라진 것은 **곁말이 언제 뜨느냐**다.
+       · 누르기 전  조용하다. 비활성 버튼만 있고 곁말도 빨간 칸도 **없다**
+       · **비활성인 채로 눌러 보면**  빈 칸이 **빨간 테두리**가 되고 곁말이 뜬다
+                    (사용자: 「애초부터 비활성에 비활성 누르면 가이드를 생각한건데」)
+       · 그 뒤      값을 채우면 **그 자리에서** 풀린다. 다시 누를 때까지 기다리면 혼내는 것이 된다
+     이러면 `disabled` 의 오랜 문제(**왜 안 눌리는지 스스로 말하지 못한다**)가 풀린다 —
+     **눌러 보면 말해 준다.** 평소엔 조용하고, 물어본 사람에게만 답한다.
+     ⚠ 곁말은 **회색 그대로**다 (사용자: 「이거를 빨간색으로 안해도될거같고」) —
+       빨강은 **어디가 문제인지 짚는 칸**이 맡고, 글자는 **무슨 일인지 말하는 곁말**로 남는다.
+       빨강을 둘로 늘리면 어디를 봐야 하는지가 흐려진다.
+     ⚠ 라이브는 늘 `disabled` 다 — **제품과 달라지므로 개발에 알릴 것.** */
+  var 적용 = document.querySelector(".js-적용");
+  var 경고 = document.querySelector(".js-경고");
+  var 검사켬 = false;
+
+  function 빈칸들() {
+    var 것 = [];
+    document.querySelectorAll(".js-값").forEach(function (el) {
+      if (!el.value.trim()) 것.push(el);
+    });
+    return 것;
+  }
+
+  function 적용상태() {
+    var 빈 = 빈칸들();
+    var 있나 = 빈.length > 0;
+    /* ★ 적용은 **처음부터 비활성**이다 — 빈 값이 있으면 못 누른다(라이브와 같다).
+       달라진 것은 **말하는 때**다. 곁말과 빨간 칸은 **누르기 전에는 안 나온다.** */
+    적용.classList.toggle("state-disabled", 있나);
+    경고.hidden = !(검사켬 && 있나);
+    document.querySelectorAll(".js-값").forEach(function (el) { el.classList.remove("틀림"); });
+    if (검사켬) 빈.forEach(function (el) { el.classList.add("틀림"); });
+  }
+  document.querySelector(".js-항목목록").addEventListener("input", 적용상태);
+
+  /* ★ **비활성인 채로도 클릭을 듣는다.** 그것이 이 안의 핵심이다 —
+     `disabled` 버튼의 오랜 문제는 **왜 안 눌리는지 스스로 말하지 못한다**는 것이고,
+     그래서 앞서는 곁말을 **늘** 띄워 둬야 했다(줄을 만들자마자 혼나는 꼴이었다).
+     눌러 보면 말해 주게 하면, 평소엔 조용하면서 **물어본 사람에게만** 답한다.
+     ※ 진짜 `<button disabled>` 면 클릭이 안 온다. 이 버튼은 `<div class="btn-primary-demo state-disabled">`
+       라 이벤트가 온다 — 라이브러리 꼴을 그대로 쓴 덕을 본 자리다 `확인함`.
+     ※ 남는 값 — **안 눌러 본 사람은 까닭을 모른다.** 그 대신 채우는 내내 조용하다. */
+  적용.addEventListener("click", function () {
+    if (this.classList.contains("state-disabled")) {
+      검사켬 = true;                /* 여기서 검사가 켜진다 — 빈 칸이 빨개지고 곁말이 뜬다 */
+      적용상태();
+      var 첫 = 빈칸들()[0];
+      if (첫) 첫.focus();           /* 고칠 자리로 데려다 준다 */
+      return;
+    }
+    검사켬 = false;                  /* 넘어갔으면 도로 끈다 */
+    적용상태();
+    적용표시(true);
+    펴기(false);      /* 적용했으면 판을 접는다 — 볼일이 끝났고, 머리 줄이 결과를 말한다
+                         (2026-09-23 사용자 「적용 누르면 창 최소화하지」) */
+  });
+
+  /* 조건을 고치면 「적용 전」이 다시 뜬다 */
+  document.querySelector(".js-항목목록").addEventListener("input", function () {
+    적용표시(false);
+  });
+
+  /* 항목 지우기 — 요약 글자도 같이 고친다 */
+  document.querySelector(".js-항목목록").addEventListener("click", function (e) {
+    var 지움 = e.target.closest(".js-지움");
+    if (!지움) return;
+    지움.closest(".항목").remove();
+    요약고치기();
+    적용상태();
+  });
+
+  function 요약고치기() {
+    var 칩 = document.querySelectorAll(".js-항목목록 .갈래말");   /* 칩 → 글자 라벨로 바뀌었다 */
+    var 형식 = 0, 조건 = 0;
+    Array.prototype.forEach.call(칩, function (c) {
+      if (c.textContent === "형식") 형식++; else 조건++;
+    });
+    var 말 = [];
+    if (형식) 말.push("형식 " + 형식);
+    if (조건) 말.push("조건 " + 조건);
+    document.querySelector(".js-전처리덧").textContent = 말.join(" · ");
+    적용표시();                                  /* 줄 수가 달라지면 ①↔② 가 갈린다 */
+  }
+
+  /* ── 「+ 조건 추가」 · 「+ 형식 변경」 · 「초기화」 ────────────────────────
+     이 셋은 **여태 아무 동작도 없었다** `확인함 2026-09-23` — 핸들러가 아예 없었다.
+     목록을 빈 채로 시작하게 바꾸면서(사용자: 「적용 전에는 아예 추가된 항목이 없던지」)
+     줄을 만들 본이 필요해져 여기서 짓는다. 마크업은 걷어낸 데모 줄과 같은 것이다. */
+  /* ★ 칸 사이 **조사를 쓰지 않는다** (2026-09-23 사용자 「을,로 이 이건좀 아닌듯」 · 랩 J-1).
+     조사를 고정 글자로 두면 고른 값에 따라 **계속 틀린다** — 「시료번호**을**」이 실제로 그랬다
+     (받침이 없으니 「를」이 맞다). 조건 빌더(엑셀 필터·노션·에어테이블)는 `[열] [연산자] [값]` 만 나열한다. */
+  function 줄만들기(갈래) {
+    var 지움 = '<span class="지움 js-지움"><i data-ico="지움" data-크기="14"></i></span>';
+    /* 연산자는 **기호 + 한글** (2026-09-23 사용자 K-1 채택 · 랩 `랩/조건줄` 무리 K).
+       「초과」와 「이상」은 한 글자 차이라 훑다가 헷갈리는데, 기호가 맨 앞에 세로로 정렬돼 먼저 걸린다.
+       뜻은 한글이 말해 주므로 기호를 몰라도 된다 — 기호만 쓰는 안(K-2)은 `≠ · ≤` 를 모르는 사람이 있어 버렸다. */
+    var 연산자 = '<option>&gt; 초과</option><option>&ge; 이상</option>' +
+                 '<option>&lt; 미만</option><option>&le; 이하</option>' +
+                 '<option>= 같다</option><option>&ne; 같지 않다</option>';
+    /* 갈래 표시는 **글자 라벨**이고, 화살표는 **형식 줄에만** 붙는다 (사용자 J-3b 채택).
+       형식은 「이걸 저걸로 바꾼다」라 → 가 딱 맞지만, 조건은 「~보다 크다」라 → 가 뜻과 어긋난다.
+       같은 기호를 두 갈래에 쓰면 형식과 조건의 차이가 뭉갠다. */
+    var 속 = 갈래 === "형식"
+      ? '<span class="갈래말">형식</span>' +
+        셀렉트감싸기('<option>시료번호</option><option>측정값</option><option>기준값</option>') +
+        '<span class="화살">&#8594;</span>' +
+        셀렉트감싸기('<option>숫자</option><option>글자</option><option>날짜</option>', '좁게')
+      : '<span class="갈래말">조건</span>' +
+        셀렉트감싸기('<option>측정값</option><option>기준값</option><option>물질군</option>') +
+        셀렉트감싸기(연산자, '좁게') +
+        '<input class="js-값" placeholder="값">';
+    var el = document.createElement("div");
+    el.className = "항목";
+    el.innerHTML = 지움 + 속;
+    return el;
+  }
+
+  function 줄더하기(갈래) {
+    var 새줄 = 줄만들기(갈래);
+    document.querySelector(".js-항목목록").appendChild(새줄);
+    if (window.PX_ICO_채우기) PX_ICO_채우기(새줄);
+    요약고치기();
+    적용상태();
+  }
+
+  /* 머리 줄의 더하는 버튼은 여닫는 버튼과 **형제**라 클릭이 안 섞인다(중첩 버튼이 아니다).
+     비었을 때는 속이 접혀 있으므로 더한 뒤 **펴 준다** — 더해 놓고 안 보이면 안 되니까 */
+  function 더하고펴기(갈래) { 줄더하기(갈래); 펴기(true); }   /* 더해 놓고 안 보이면 안 되니 편다 */
+  document.querySelector(".js-조건추가").addEventListener("click", function () { 더하고펴기("조건"); });
+  document.querySelector(".js-형식추가").addEventListener("click", function () { 더하고펴기("형식"); });
+  document.querySelector(".js-초기화").addEventListener("click", function () {
+    검사켬 = false;   /* 다 지웠으면 검사도 끈다 — 알릴 것이 없어졌다 */
+    document.querySelector(".js-항목목록").innerHTML = "";
+    적용표시(false);
+    요약고치기();
+    적용상태();
+  });
+
+  적용상태();
+  요약고치기();
+  적용표시(false);            /* 첫 상태 — 「적용 전」, 덧말 없음, 더하기 버튼만 */
+
+  /* ── 변수 고르기 — 축 V 의 V-2 (역할마다 드롭다운) ──────────────────────
+     **방법마다 받는 것이 다르다**(예전안 2026-08). 그래서 역할표를 두고 방법에 맞춰 칸을 그린다.
+     열을 여러 개 받는 역할은 `여러:true` — 「+ 열 추가」로 칸이 늘어난다
+     (전처리의 「+ 조건 추가」와 같은 늘리는 방식). */
+  var 열들 = ["시료번호", "물질군", "시험항목", "측정값", "기준값", "판정"];
+  /* `여러:true` 는 이제 **체크 목록**으로 그린다(축 V2 · V2-3 · 2026-09-24 사용자).
+     `최소` 는 그 역할이 **몇 개 이상** 받아야 하는가 — 방법 칸에 적힌 것과 같은 값이다
+     (기술통계 1 · 상관분석 2 · 선형회귀 설명 변수 2). 실행 검사가 이 값을 본다. */
+  var 역할표 = {
+    "기술통계": [{ 이름: "분석할 열", 여러: true, 최소: 1 }],
+    "상관분석": [{ 이름: "분석할 열", 여러: true, 최소: 2, 덧: "2개 이상" }],
+    "그룹 비교": [{ 이름: "그룹 열" }, { 이름: "값 열" }],
+    "분포":     [{ 이름: "분석할 열" }],
+    "선형회귀": [{ 이름: "설명 변수", 여러: true, 최소: 2, 덧: "2개 이상" }, { 이름: "결과 변수" }],
+    "정규성":   [{ 이름: "분석할 열" }],
+    "교차표":   [{ 이름: "행 열" }, { 이름: "열 열" }],
+    "이상치":   [{ 이름: "분석할 열" }],
+    "추세":     [{ 이름: "시간축 열" }, { 이름: "값 열" }]
+  };
+
+  /* ★ 기본값을 **넣지 않는다** (2026-09-22 고침).
+     전에는 열 순서에서 아무거나 집었다(`열들[i+1]`) — 그래서 「추세」의 **시간축 열에 「물질군」**,
+     **값 열에 「시험항목」** 같은 말이 안 되는 짝이 들어갔고, 채워져 있으니 「분석 실행」까지 켜졌다.
+     열의 자료형을 판별하기 전에는 **무엇이 맞는 짝인지 알 수 없다** → 사람이 고르게 둔다. */
+  /* 화살표는 브라우저 기본을 끄고 우리 것으로 — 기본 화살표는 테두리에 붙어 여백을 못 준다.
+     규격은 자동화 화면②의 `.sel-wrap` 선례(8×5 · right:10px). */
+  /* 화살표는 부품에서 받아 쓴다 — 아이콘을 시안에 베껴 넣지 않는다(규약 2).
+     12px 이므로 획은 24÷12 = 2 가 부품 안에서 계산된다 */
+  var 화살 = '<span class="열화살">' + PX_ICO("캐럿", 14) + '</span>';
+  /* 조건 줄의 드롭다운도 같은 껍데기를 쓴다 — 기본 화살표를 끄고 부품 캐럿을 얹는다 */
+  function 셀렉트감싸기(속, 덧) {
+    return '<span class="열칸"><select' + (덧 ? ' class="' + 덧 + '"' : '') + '>' + 속 + '</select>' + 화살 + '</span>';
+  }
+
+  /* 열을 고르는 칸은 **비어 있게** 시작한다(「열 고르기」) — 규칙 없이 채우면 말이 안 되는 짝이 생긴다.
+     「빈 값」처럼 **고를 것이 정해진 칸**은 빈 선택지도 `js-열` 표시도 붙이지 않는다
+     — 그건 실행을 막는 조건이 아니다(2026-09-22 고침). */
+  function 셀렉트(목록) {
+    var 열고르기 = !목록;
+    var 옵 = (목록 || 열들).map(function (n) { return "<option>" + n + "</option>"; }).join("");
+    return '<span class="열칸"><select class="열셀렉트' + (열고르기 ? " js-열" : "") + '">' +
+           (열고르기 ? '<option value="">열 고르기</option>' : "") + 옵 + "</select>" + 화살 + "</span>";
+  }
+
+  /* ★ 열을 **여러 개** 받는 역할은 **체크 목록**이다 (축 V2 · V2-3 · 2026-09-24 사용자).
+     앞서는 드롭다운을 「＋ 열 추가」로 늘렸는데, 재 보니 문제가 넷이었다 `실측 확인함`
+       ① 「＋ 열 추가」가 **1번과 2번 칸 사이**에 끼어 있었다(279~339) — 더해도 거기 남는다
+       ② ✕ 가 **칸 뒤**였다  ③ **첫 칸만 못 지웠다**  ④ **가로로 뻗었다**(셋에 761px · 여섯이면 1400 넘음)
+     체크 목록으로 가면 **넷이 한꺼번에 없어진다** — 더할 버튼도 ✕ 도 없다.
+     덤으로 **고르는 횟수가 준다** — 넷을 고르려고 드롭다운을 네 번 열 일이 없다.
+     ★ **하나만 받는 역할은 드롭다운 그대로**다. 생긴 꼴이 **개수를 말해 준다** —
+       체크 목록이면 여러 개, 드롭다운이면 하나. 섞인 것이 아니라 **구분된 것**이다.
+     ★ 열이 많을 때 대비(사용자: 「엄청 많을 경우만 대비하면」) — 상자에 **높이 상한 + 스크롤**을 두고,
+       열이 **열 개를 넘으면 찾기 칸**을 붙인다. 적을 때는 상한에 안 닿아 **그냥 펼쳐 보인다** —
+       한 가지 모양으로 둘 다 된다. */
+  function 체크목록(역할, 번호) {
+    var 찾기 = 열들.length > 10
+      ? '<span class="찾기칸">' + PX_ICO("검색", 14) + '<span class="찾기글">열 찾기</span></span>' : "";
+    var 목 = 열들.map(function (c, i) {
+      return '<label class="체크"><input type="checkbox" class="js-체크" data-역할="' + 번호 + '">' +
+             '<span class="네모">' + PX_ICO("체크", 12) + '</span>' + c + "</label>";
+    }).join("");
+    /* 열이 열 개를 넘으면 **상자에 담고 찾기 칸을 붙인다**(`많음`). 적으면 그냥 늘어놓는다 */
+    return '<span class="고르는틀' + (열들.length > 10 ? " 많음" : "") +
+           '" data-역할="' + 번호 + '" data-최소="' + (역할.최소 || 1) + '">' +
+           찾기 + '<span class="체크칸 js-체크칸">' + 목 + "</span>" +
+           '<span class="고른수 js-고른수"></span></span>';
+  }
+
+  function 변수그리기(방법) {
+    var 역할들 = 역할표[방법] || [{ 이름: "분석할 열", 여러: true, 최소: 1 }];
+    var 판 = document.querySelector(".js-변수판");
+    var 줄 = 역할들.map(function (r, i) {
+      var 속 = r.여러 ? 체크목록(r, i) : 셀렉트();
+      /* ★ 「2개 이상」 곁말을 **뺐다** (2026-09-24 사용자 그림) — 아래 「N개 고름 · N개 이상
+         골라야 합니다」가 이미 같은 말을 하고, `실측` 이 곁말은 체크 목록 뒤(489~522)에
+         **어중간하게 떠** 있었다. 역할표의 `덧` 값은 남겨 둔다 — `최소` 와 짝이라 기록이다 */
+      return '<div class="역할줄' + (r.여러 ? " 여럿" : "") + '">' +
+             '<span class="역할이름">' + r.이름 + "</span>" +
+             '<span class="역할칸">' + 속 + "</span></div>";
+    }).join("");
+    줄 += '<div class="역할줄"><span class="역할이름">빈 값</span>' +
+          '<span class="역할칸">' + 셀렉트(["빼고 계산", "0 으로"]) + "</span></div>";
+    판.innerHTML = 줄;
+    고른수고치기();
+  }
+
+  /* 고른 수를 적는다 — 「수치형 2개 이상」 같은 조건을 **맞춰 가며** 고를 수 있게 */
+  function 고른수고치기() {
+    document.querySelectorAll(".js-변수판 .고르는틀").forEach(function (틀) {
+      var 수 = 틀.querySelectorAll(".js-체크:checked").length;
+      var 최소 = +틀.dataset["최소"] || 1;
+      틀.querySelector(".js-고른수").textContent =
+        수 + "개 고름" + (수 < 최소 ? " · " + 최소 + "개 이상 골라야 합니다" : "");
+      틀.querySelector(".js-고른수").classList.toggle("모자람", 수 < 최소);
+    });
+  }
+  document.querySelector(".js-변수판").addEventListener("change", 고른수고치기);
+
+
+  /* 분석 방법 — 고르면 그 방법의 변수 칸이 그려지고 「분석 실행」이 켜진다 */
+  document.querySelector(".js-방법").addEventListener("click", function (e) {
+    var 칸 = e.target.closest(".방법칸");
+    if (!칸) return;
+    if (칸.classList.contains("is-off")) return;   /* 못 쓰는 방법은 안 골라진다 (F-2) */
+    document.querySelectorAll(".방법칸").forEach(function (x) { x.classList.remove("is-selected"); });
+    칸.classList.add("is-selected");
+    변수그리기(칸.querySelector("b").textContent.trim());
+    document.querySelector(".js-변수").hidden = false;
+    실행상태();
+  });
+
+  /* ── 「분석 실행」 — **누른 뒤부터** 말한다 (축 Y 를 이 자리에도 옮김 · 2026-09-24) ──
+     앞서는 전처리와 **다른 규칙**으로 돌고 있었다 — 늘 비활성 + 「변수를 다 고르면 실행할 수 있습니다」가
+     **상시**로 떠 있었다. 2026-09-23 에 전처리에서 **정확히 그 꼴을 걷어냈는데**(축 Y · Y-1)
+     여기만 남아 **한 화면에서 두 규칙이 돌았다.**
+     이제 같은 규칙이다 — **처음엔 조용하고, 비활성인 채로 눌러 보면 모자란 자리를 짚어 준다.** */
+  var 실행검사켬 = false;
+
+  function 모자란것() {
+    var 것 = [];
+    if (!document.querySelector(".방법칸.is-selected")) 것.push({ 왜: "방법" });
+    document.querySelectorAll(".js-변수판 .js-열").forEach(function (el) {
+      if (!el.value) 것.push({ 왜: "칸", 곳: el });
+    });
+    document.querySelectorAll(".js-변수판 .고르는틀").forEach(function (틀) {
+      var 수 = 틀.querySelectorAll(".js-체크:checked").length;
+      if (수 < (+틀.dataset["최소"] || 1)) 것.push({ 왜: "목록", 곳: 틀.querySelector(".js-체크칸") });
+    });
+    return 것;
+  }
+
+  function 실행상태() {
+    /* `is-empty` 는 **글자만 옅게** 한다(플레이스홀더라는 표시). 테두리 파랑은 걷었다 —
+       까닭은 `_데이터.css` 의 같은 자리 주석 */
+    document.querySelectorAll(".js-변수판 .열셀렉트").forEach(function (el) {
+      var 찼나 = !!el.value;
+      el.classList.toggle("is-empty", !찼나);
+    });
+    고른수고치기();
+    var 모자 = 모자란것();
+    document.querySelector(".js-실행").classList.toggle("state-disabled",모자.length > 0);
+    /* ★ 곁말과 빨간 표시는 **검사가 켜진 뒤에만** */
+    var 곁 = document.querySelector(".js-실행곁");
+    document.querySelectorAll(".js-변수판 .틀림").forEach(function (el) { el.classList.remove("틀림"); });
+    if (!실행검사켬 || !모자.length) { 곁.textContent = ""; return; }
+    모자.forEach(function (m) { if (m.곳) m.곳.classList.add("틀림"); });
+    곁.textContent = 모자[0].왜 === "방법" ? "분석 방법을 고르세요." : "변수를 다 고르면 실행할 수 있습니다.";
+  }
+  document.querySelector(".js-변수판").addEventListener("change", 실행상태);
+
+  document.querySelector(".js-실행").addEventListener("click", function () {
+    if (this.classList.contains("state-disabled")) {
+      실행검사켬 = true;          /* 비활성인 채로 눌러 보면 — 여기서 검사가 켜진다 */
+      실행상태();
+      var 첫 = document.querySelector(".js-변수판 .틀림");
+      if (첫) 첫.scrollIntoView({ block: "center" });
+      return;
+    }
+    실행검사켬 = false;
+    location.href = 결과;
+  });
+
+  /* ── 다시 분석(⑤ 결과 「다시 분석」에서 · 2026-09-29 사용자 「미리 채워진 화면으로」) ──
+     `?redo=trend|cross` 로 오면 **지금 결과의 조건을 채운 채로** 분석 기법 탭을 연다 — 파일 · 방법 · 변수.
+     시안 값: 결과 쪽 파일(chem_safety_sample_KR.csv)은 이 화면의 시안 파일(안전점검_2026상반기)과 **다른 파일**이라
+     열 목록을 그 파일 꼴로 바꿔 끼운다(연도 · 품목 · 제형이 있어야 결과의 변수를 고를 수 있다) `추정` — 실제로는 결과가 쓴 파일 · 열을 서버가 준다.
+     추세의 「이동평균 7」 같은 **옵션은 이 화면에 칸이 없어** 채우지 못한다(남은 것) */
+  var 다시 = (location.search.match(/[?&]redo=(trend|cross)/) || [])[1];
+  if (다시) {
+    열들 = ["시료번호", "연도", "품목", "제형", "물질군", "시험항목", "측정값", "기준값", "판정"];
+    var 덧 = document.querySelector(".파일덧");
+    if (덧) { 덧.textContent = "측정 결과 · 420행 × " + 열들.length + "열 · 전처리 없음"; if (덧.previousElementSibling) 덧.previousElementSibling.textContent = "chem_safety_sample_KR.csv"; }
+    var 끝조각 = document.querySelector(".crumb .cur"); if (끝조각) 끝조각.textContent = "chem_safety_sample_KR.csv";
+    var 방법이름 = 다시 === "cross" ? "교차표" : "추세";
+    /* 이 화면의 시안 파일은 시간 열이 없어 「추세」가 꺼져 있다(is-off · 「시간 열이 없습니다」) — 결과 쪽 파일은 「연도」가 있어 켠다 */
+    document.querySelectorAll(".방법칸.is-off").forEach(function (c) { c.classList.remove("is-off"); var 꼬리 = c.querySelector(".방법꼬리"); if (꼬리) 꼬리.innerHTML = '<i class="필요">시간 열 1 + 수치형 1</i>'; });   /* 다른 칸처럼 「필요」 칩으로 */
+    var 방법칸 = Array.prototype.find.call(document.querySelectorAll(".방법칸"), function (c) { return c.querySelector("b").textContent.trim() === 방법이름; });
+    if (방법칸) 방법칸.click();
+    var 고를값 = 다시 === "cross" ? ["품목", "제형"] : ["연도", "측정값"];
+    document.querySelectorAll(".js-변수판 .js-열").forEach(function (s, i) { if (고를값[i]) s.value = 고를값[i]; });
+    실행상태();
+    결과 = "../데이터분석/정본/화면05_결과/화면05_결과.html?view=" + 다시;   /* 실행하면 같은 보기로 돌아간다 */
+  }
+
+  탭보이기(/tab=method|redo=/.test(location.search) ? "method" : "data");
+})();
+/* @끝 _데이터.js */
+
+/* 경로 줄 맨 앞 ‹ — 자동화 결정 6008(공용 상단 바). 이 화면의 한 단계 위는 「새 분석」(화면①).
+   <base> 가 걸려 있어 주소는 지금 문서 기준으로 푼다 */
+document.addEventListener("click", function (e) {
+  if (e.target.closest(".js-crumb-up") || e.target.closest(".js-crumb-home")) location.href = new URL("../화면01_새분석/화면01_새분석.html", location.href).href;
+});
+/* @끝 _데이터.js */
+</script>
+</body></html>

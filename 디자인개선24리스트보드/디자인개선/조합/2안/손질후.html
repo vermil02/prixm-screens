@@ -1,0 +1,241 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>2안 손질 후</title>
+<!-- 1안 손질 후만 창 전체로 — 눌러서 써 보기용 (2026-10-01 사용자 「손질 후 된 거만 눌러서 볼 수 있는 걸로」「전체화면으로」).
+     틀(상단 바 · GNB)은 한 번만 불러 두고, GNB 를 누르면 안쪽 화면(LNB · 본문)만 미리 불러 둔 것끼리 갈아 끼운다
+     — 화면을 통째로 다시 불러 깜빡이던 것 고침(사용자 「화면 엄청 껌뻑거리는데」「내부 화면도 같이 바뀌어야지」).
+     안쪽 화면: 자동화 · 데이터 분석 = 우리 정본(1안 덧입힘 얹음) · 나머지 일곱 = _시연용_소스/ 실제 사이트 저장본(보기만 · 덧입힘 안 먹음).
+     안에서 다른 페이지로 넘어갈 때(LNB 줄 · 카드 → 상세)는 새 판을 뒤에서 다 얹은 뒤 갈아 끼움 — 덧입힘 전 정본이 비치던 번쩍임 고침(2026-10-02 「화면들 누를 때 번쩍거리지 않게」).
+     빛 켬/끔 · 빛 높이 슬라이더는 뺌(2026-10-02 「1안에서는 빛 끔 켬 이거 필요 없을 듯」 · GNB.css 「레일 빛 끔」 이 덮어 효과도 없었음). -->
+<style>
+  html,body{margin:0; height:100%; background:#fff; font-family:"Pretendard Variable","Pretendard",-apple-system,sans-serif; letter-spacing:-.3px; font-size:12px; overflow:hidden;}
+  .top{position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:5; display:flex; gap:5px; align-items:center; padding:5px 8px; background:rgba(30,32,48,.84); backdrop-filter:blur(8px); border-radius:18px; box-shadow:0 4px 14px rgba(0,0,0,.18); color:#e6e8f2; opacity:.4; transition:opacity .2s; white-space:nowrap;}
+  .top:hover{opacity:1;}
+  .top b{margin:0 6px 0 4px;}
+  .top button{height:24px; padding:0 10px; border:0; background:transparent; color:#e6e8f2; border-radius:12px; font:inherit; cursor:pointer;}
+  .top button.on{background:#fff; color:#1e2030;}
+  .top .k{color:#9ea3b8; margin:0 4px 0 6px;}
+  body.숨김 .top{display:none;}
+  #판{position:fixed; inset:0; width:100%; height:100%; border:0; display:block; background:#fff; visibility:hidden;}
+  #판.보임{visibility:visible;}
+</style></head><body>
+<div class="top"><b>2안 · 손질 후</b><span id="단추"></span>
+  <span class="k">1~7 · H 숨김 · R 다시 읽기</span></div>
+<iframe id="판"></iframe>
+<script>
+var 때 = Date.now(), 판 = document.getElementById("판");
+/* 2안 = 카드 전 틀 (2026-10-02 사용자 「1안 2안 해 보자 그냥 깔끔하게」). 공통 부품은 ../1안/부품/ 을 같이 씀(랩 수십 곳이 그 경로를 가리킴) · 2안만의 부품 = 이안부품 → ./부품/
+   1안과 다른 것: 틀 · 본문머리(카드 몫) 대신 본문머리안쪽 · 펼치기 · 틀(카드 전) 을 맨 뒤에 */
+var 부품 = ["본문판", "GNB", "GNB움직임", "LNB", "콘텐츠", "전환", "톤", "둥글기", "본문머리안쪽", "펼치기", "틀", "자리이동", "핵심버튼", "주색", "도구줄", "카드", "템플릿"];
+var 부품js = ["GNB", "LNB", "본문머리", "전환", "펼치기", "자리이동", "핵심버튼", "주색", "도구줄", "카드", "템플릿"];   /* 짝 스크립트가 있는 부품 — CSS 를 다 얹은 뒤 차례대로 (2026-10-01 LNB 부품) · 얹는 순서 = 이기는 순서 · 새 부위는 여기에 이름만 (부품/README.md) */
+
+var 이안부품 = ["본문머리안쪽", "펼치기", "틀", "본문판"];
+function 부품주소(n) { return "/prixm-screens/디자인개선24리스트보드/디자인개선/조합/" + (이안부품.indexOf(n) >= 0 ? "2안" : "1안") + "/부품/" + n; }
+var CSS = ["/prixm-screens/디자인개선24리스트보드/디자인개선/조합/1안/덧입힘.css"].concat(부품.map(function (n) { return 부품주소(n) + ".css"; }));
+var 틀 = { 왼: 68, 위: 45 };   /* 안쪽 화면에서 잘라 낼 자기 상단 바 · GNB (우리 정본 · 저장본 둘 다 68 · 45 실측) */
+
+/* 안쪽 화면 — 키: [이름, 주소, 우리 것인가] */
+var 안 = {
+  s0: ["자동화① 목록", "/prixm-screens/디자인개선24리스트보드/화면/화면01_전체목록.html", 1],
+  s1: ["자동화② 생성", "/prixm-screens/디자인개선24리스트보드/화면/화면02_자동화생성.html?tpl=report", 1],
+  /* 2026-10-04 사용자 「새 자동화를 누르면 템플릿 창이 나와야」 — 정본 화면02 는 주소에 tpl 이 없으면 템플릿 목록(show('pick') · 결정 121 · 133). 전엔 같은 파일이라고 s1(?tpl=report 작성 화면)으로 갈아 끼워 작성 화면이 나왔음.
+     넷째 값 = 갈아 끼울 때 그 판을 첫 모습으로(템플릿 고른 뒤 다시 「새 자동화」를 누르면 다시 목록 — 정본 js-to-entry 와 같은 길) */
+  s1t: ["자동화② 템플릿", "/prixm-screens/디자인개선24리스트보드/화면/화면02_자동화생성.html", 1, function (w) { if (!w.show) return; try { w.railMode("template"); w.markRail(null); } catch (e) {} w.show("pick"); }],
+  s2: ["자동화③ 상세", "/prixm-screens/디자인개선24리스트보드/화면/화면03_자동화상세.html", 1],
+  s3: ["분석① 새 분석", "/prixm-screens/디자인개선24리스트보드/데이터분석/정본/화면01_새분석/화면01_새분석.html", 1],
+  s4: ["분석② 데이터", "/prixm-screens/디자인개선24리스트보드/데이터분석/정본/화면02_데이터/화면02_데이터.html?tab=data", 1],
+  s5: ["분석⑤ 결과", "/prixm-screens/디자인개선24리스트보드/데이터분석/정본/화면05_결과/화면05_결과.html", 1],
+  /* 나머지 일곱 = test-crew 실서비스 2026-10-01 저장본(뼈대 기준 · 이전 09-17 저장본은 _시연용_소스/ 바로 아래 그대로) */
+  d01: ["AI 채팅", "/prixm-screens/디자인개선24리스트보드/_시연용_소스/test-crew_261001/01_AI채팅.html", 0], d02: ["협업", "/prixm-screens/디자인개선24리스트보드/_시연용_소스/test-crew_261001/02_협업.html", 0],
+  d03: ["지식/문서", "/prixm-screens/디자인개선24리스트보드/_시연용_소스/test-crew_261001/03_지식문서.html", 0], d04: ["이메일", "/prixm-screens/디자인개선24리스트보드/_시연용_소스/test-crew_261001/04_이메일.html", 0],
+  d06: ["프로젝트", "/prixm-screens/디자인개선24리스트보드/_시연용_소스/test-crew_261001/06_프로젝트.html", 0], d09: ["설정", "/prixm-screens/디자인개선24리스트보드/_시연용_소스/test-crew_261001/09_시스템.html", 0]
+};
+var LNB없음 = {}, 떼어둔LNB = null;   /* test-crew 10-01 실측: 프로젝트도 LNB(240)가 생겨 LNB 없는 화면 없음 (09-17 저장본 땐 d06 만 없었음) */
+var 단추키 = ["s0", "s1", "s2", "s3", "s4", "s5", "s1t"];
+var 메뉴키 = { "AI 채팅": "d01", "협업": "d02", "지식/문서": "d03", "이메일": "d04", "자동화": "s0", "프로젝트": "d06", "데이터 분석": "s3", "설정": "d09" };   /* 2026-10-06 GNB 관리 · 시스템 → 설정(제품과 같게) — 설정 = 저장본 09(설정 · 운영 대시보드) */
+var 키메뉴 = function (k) { return k[0] === "s" ? (+k[1] < 3 ? "자동화" : "데이터 분석") : 안[k][0]; };
+
+(function () { var b = document.createElement("button"); b.textContent = "→ 1안 카드"; b.title = "같은 화면을 1안 카드으로";
+  b.onclick = function () { location.href = "/prixm-screens/디자인개선24리스트보드/디자인개선/조합/1안/손질후.html" + location.search; }; 단추.parentNode.insertBefore(b, 단추); })();
+단추키.forEach(function (k) { var b = document.createElement("button"); b.textContent = 안[k][0]; b.onclick = function () { 보기(k); }; 단추.appendChild(b); });
+
+/* 덧입힘 얹기 — 얹는 동안만 전환 · 움직임 끔(번쩍임 방지) */
+function 얹기(d, 끝) {
+  if (!d || !d.head) return;
+  if (d.getElementById("손질css")) { 끝 && 끝(); return; }
+  var 멈춤 = d.createElement("style"); 멈춤.textContent = "*,*::before,*::after{transition:none!important;animation:none!important}"; d.head.appendChild(멈춤);
+  var 남은 = CSS.length;
+  CSS.forEach(function (u, i) { var l = d.createElement("link"); l.rel = "stylesheet"; if (!i) l.id = "손질css"; l.href = u + "?t=" + 때;
+    l.onload = l.onerror = function () { if (--남은 === 0) {
+      /* 짝 스크립트까지 다 돈 뒤에 「다 됨」 — CSS 만 보고 보여 주면 LNB 제목 · 아이콘이 그 뒤에 바뀌어 번쩍임(2026-10-02 사용자 「화면들 누를 때 번쩍거리지 않게」) */
+      /* 멈춤을 먼저 풀고 그다음 「다 됨」 — 보인 뒤에 풀면 카드가 다 된 모습으로 보였다가 덩이 떠오름이 투명부터 다시 시작(2026-10-02 사용자 「카드가 처음부터 있는 상태에서 효과가 동작하는 느낌」) */
+      var 남은js = 부품js.length, js끝 = function () { if (--남은js > 0) return; setTimeout(function () { 멈춤.remove(); 끝 && (d.defaultView || window).requestAnimationFrame(function () { 끝(); }); }, 120); };
+      if (!남은js) { 남은js = 1; js끝(); }
+      /* 본문이 아직 없으면(불러오는 순서가 어긋날 때 · 2026-10-02 「Cannot read properties of null (reading 'appendChild')」 한 번 실측) 본문이 생긴 뒤에 붙인다 */
+      var 붙이기 = function () { 부품js.forEach(function (n) { var k = d.createElement("script"); k.async = false; k.src = 부품주소(n) + ".js?t=" + 때; k.onload = k.onerror = js끝; d.body.appendChild(k); }); };
+      if (d.body) 붙이기(); else d.addEventListener("DOMContentLoaded", 붙이기); } };
+    d.head.appendChild(l); });
+  d.addEventListener("keydown", 키);
+}
+
+/* 저장본(test-crew · 우리=0) 틀 얹기 — 덧입힘 · 부품은 마크업이 달라 안 얹고, 틀(바닥 · GNB · LNB · 본문 카드 · LNB 줄)만 저장본 전용 부품으로 (2026-10-03 사용자 「1안 2안 다른 페이지들도 1안 2안 레이아웃으로」)
+   html.lab-저장본 을 먼저 붙이고 CSS 를 다 읽은 뒤 「다 됨」 — 규칙은 모두 그 아래라 우리 화면 · 바깥 틀엔 안 먹음 · 짝 스크립트 없음 (부품/README.md · 저장본.css) */
+var 저장본CSS = ["/prixm-screens/디자인개선24리스트보드/디자인개선/조합/1안/부품/저장본.css", "/prixm-screens/디자인개선24리스트보드/디자인개선/조합/2안/부품/저장본.css"];
+function 저장본얹기(d, 끝) {
+  if (!d || !d.head) { 끝 && 끝(); return; }
+  d.documentElement.classList.add("lab-저장본"); d.documentElement.style.setProperty("--저장본위", 틀.위 + "px");   /* 저장본 상단 바(45)를 우리가 잘라 내는 높이(실측 1안 40 · 2안 50)에 맞춤 */
+  var 남은 = 저장본CSS.length;
+  저장본CSS.forEach(function (u) { var l = d.createElement("link"); l.rel = "stylesheet"; l.href = u + "?t=" + 때;
+    l.onload = l.onerror = function () { if (--남은 === 0) 끝 && 끝(); }; d.head.appendChild(l); });
+}
+
+/* 화면이 보이는 순간 덩이 떠오름(덧입힘 .content > *)을 처음부터 — 뒤에서 미리 불러 둔 화면은 이미 끝나 있어서 */
+/* 숨김 · 등장 = 부품 「전환」(2026-10-04 17 랩 E-5 + LNB 줄도 차르르 · 사용자 「이런 식으로 촤르륵 반영해 볼까?」) — 보이기 직전 들어올 것을 숨기고, 보인 뒤 차르르.
+   GNB바뀜(자동화 ↔ 분석 · 저장본)이면 LNB 줄도 왼쪽에서. 부품이 없는 화면(저장본)은 옛 길 그대로 */
+/* LNB 핵심 버튼(모든 자동화 · 새 자동화 / 새 분석)으로 넘어가는지 — 핵심버튼 부품이 누른 버튼에 lab-켬 을 붙여 둠. 그러면 새 화면 LNB 줄도 차르르(2026-10-05 사용자 「핵심 버튼을 눌러 화면이 바뀔 때도 촤르륵」) · 핵심 버튼 묶음 자체는 버튼 효과 몫이라 안 움직임 */
+function 핵심눌림(f) { try { return !!f.contentDocument.querySelector(".lnb-wrap > .lnb-group:first-child .lnb-list > .channel-text-demo.lab-켬"); } catch (e) { return false; } }
+var 다음LNB = false;   /* 보기() 한 번에만 — 핵심 버튼으로 넘어갈 때 */
+function 숨김(f, 정보) { try { var w = f.contentWindow; if (w.__전환숨김) w.__전환숨김(정보 || {}); } catch (e) {} }
+function 등장(f, 정보) {
+  try { var w0 = f.contentWindow; if (w0.__전환등장) { w0.__전환등장(정보 || {}); return; } } catch (e) {}
+  try { var w = f.contentWindow; if (w.__1안등장) w.__1안등장(); } catch (e) {}   /* 카드 등장(부품/등장) — 대각선 순서 다시 재고 처음부터 */
+  try { var d = f.contentDocument, 덩이 = d.querySelectorAll(".content > *");
+    덩이.forEach(function (x) { x.style.animation = "none"; }); void d.body.offsetWidth; 덩이.forEach(function (x) { x.style.animation = ""; }); } catch (e) {}
+}
+
+/* ── 틀 ── */
+var 틀문서 = null, 칸집 = null, 프레임 = {}, 지금 = null, 자동화마지막 = "s0", 분석마지막 = "s3";
+판.addEventListener("load", function () {
+  var d = 판.contentDocument; 틀문서 = d;
+  얹기(d, function () {
+    /* 상단바 높이를 재서 자름(2026-10-02 상단바 45 → 40) — 숫자를 박아 두면 높이를 바꿀 때마다 안쪽 화면 위가 어긋난다 */
+    var 머리 = d.querySelector(".hd"); if (머리) 틀.위 = Math.round(머리.getBoundingClientRect().height) || 틀.위;
+    칸집 = d.createElement("div"); 칸집.className = "칸집";   /* 틀이전.css 가 둥글기 · 그림자를 거는 자리 — 안쪽 화면은 왼쪽 68 · 위 45 를 잘라 내서, 안쪽에 건 그림자는 GNB · 상단 바 쪽으로 번지지 못함 */
+    칸집.style.cssText = "position:fixed;left:" + 틀.왼 + "px;top:" + 틀.위 + "px;right:0;bottom:0;z-index:5;overflow:hidden;background:#fff;";
+    d.body.appendChild(칸집);
+    /* GNB 누르기 — 켜진 칸을 옮기고(전환 효과는 틀에서 그대로) 안쪽 화면만 바꾼다 */
+    d.addEventListener("click", function (e) {
+      var 칸 = e.target.closest && e.target.closest(".g-item"); if (!칸) return;
+      var 이름 = 칸.textContent.trim(), k = 메뉴키[이름]; if (!k) return;
+      if (이름 === "자동화") k = 자동화마지막; if (이름 === "데이터 분석") k = 분석마지막;
+      보기(k);
+    });
+    var 처음 = "s0"; try { 처음 = localStorage.getItem("2안-손질후-안") || "s0"; } catch (e) {}
+    보기(안[처음] ? 처음 : "s0", function () { 판.classList.add("보임"); 미리불러오기(); });
+  });
+});
+판.src = "/prixm-screens/디자인개선24리스트보드/화면/화면01_전체목록.html?b=" + 때;
+
+/* ── 안쪽 화면 ── */
+function 만들기(k, 끝) {
+  if (프레임[k]) { if (프레임[k].준비) 끝 && 끝(); else 프레임[k].기다림.push(끝); return 프레임[k]; }
+  var f = 새판(k, 안[k][1] + (안[k][1].indexOf("?") < 0 ? "?" : "&") + "b=" + 때, 끝);
+  프레임[k] = f; return f;
+}
+/* 안쪽 화면 하나(iframe) — 우리 화면은 안에서 다른 페이지로 넘어가려 하면(LNB 줄 · 카드 → 상세) 그 자리에서 넘어가지 않고,
+   새 판을 뒤에서 불러 덧입힘 · 짝 스크립트까지 다 얹은 뒤 갈아 끼운다 — 덧입힘 전 정본 모습이 한두 장 보이던 번쩍임 없앰(2026-10-02) */
+function 새판(k, 주소, 끝) {
+  var f = 틀문서.createElement("iframe"), 우리 = 안[k][2];
+  f.style.cssText = "position:absolute;left:-" + 틀.왼 + "px;top:-" + 틀.위 + "px;width:calc(100% + " + 틀.왼 + "px);height:calc(100% + " + 틀.위 + "px);border:0;background:#fff;visibility:hidden;";
+  f.준비 = false; f.기다림 = [끝];
+  f.addEventListener("load", function () {
+    var d = f.contentDocument; d.addEventListener("keydown", 키);
+    var 다됨 = function () { if (!f.준비) { f.준비 = true; f.기다림.forEach(function (c) { c && c(); }); f.기다림 = []; } };
+    if (우리) { 얹기(d, 다됨); 넘김잡기(k, f); }
+    else { /* 저장본은 보기만 — 안의 링크가 실제 사이트로 나가지 않게 · 틀만 1안/2안 꼴로(저장본얹기) */
+      d.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("a"); if (a) e.preventDefault(); }, true);
+      저장본얹기(d, 다됨); }
+  });
+  f.src = 주소;
+  칸집.appendChild(f); return f;
+}
+var 갈판 = {};   /* 뒤에서 불러오는 중인 새 판 — 화면마다 하나(다시 누르면 앞 것은 버림) */
+/* 주소 → 미리 불러 두는 우리 화면 키(경로만 견줌) · 핵심 버튼 효과 이어 가기 부르개(부품/핵심버튼.js) */
+function 같은화면(u) {
+  var 꼬리 = function (s) { var p = new URLSearchParams(s); p.delete("b"); return p.toString(); };
+  var 후보 = Object.keys(안).filter(function (j) { return 안[j][2] && new URL(안[j][1], location.origin).pathname === u.pathname; });
+  /* 주소 꼬리(?tpl= 등 · b 빼고)까지 같은 판을 먼저 — 없으면 예전처럼 경로만 같은 판(2026-10-04 「새 자동화」 → 템플릿 목록 s1t) */
+  return 후보.filter(function (j) { return 꼬리(new URL(안[j][1], location.origin).search) === 꼬리(u.search); })[0] || 후보[0];
+}
+function 핵심(f, 이름, 값) { try { var w = f.contentWindow; return w && w[이름] ? w[이름](값) : null; } catch (e) { return null; } }
+function 넘김잡기(k, f) {
+  var w = f.contentWindow; if (!w || !w.navigation) return;   /* Navigation API 없는 브라우저는 예전처럼 그 자리에서 넘어감 */
+  w.navigation.addEventListener("navigate", function (e) {
+    if (!e.cancelable || e.hashChange || e.downloadRequest || e.navigationType === "reload" || e.navigationType === "traverse") return;
+    var u = new URL(e.destination.url); if (u.origin !== location.origin || e.destination.sameDocument) return;
+    e.preventDefault();
+    /* 이미 미리 불러 둔 화면이면(LNB 핵심 버튼 · 줄 → 그 화면) 다시 부르지 않고 바로 갈아 끼움 — 버튼 효과와 오른쪽 화면이 같이 바뀌게(2026-10-02 사용자 「버튼 효과와 동시에 우측 화면이 변경되어야」)
+       전엔 새 판을 다시 불러(파일 39개 · 0.10초) 덧입힘 뒤 0.12초 더 기다려 0.24초에 보였음(실측). 버튼 효과는 핵심버튼.js 가 앞 화면 판 크기를 넘겨받아 이어 감 */
+    var 눌림 = false;   /* 2026-10-05 사용자 「모든 자동화하고 새 자동화 왔다 갔다 할 때 자동 실행 · 수동 실행 리스트는 다시 로드될 필요 없잖아」 — 핵심 버튼으로 넘어갈 때 LNB 줄 차르르 끔(본문만) · 되살리려면 핵심눌림(f) · 이전 판 판/손질후_*_핵심LNB끔전.html */
+    var j = 같은화면(u);
+    if (j && j !== k && 프레임[j] && 프레임[j].준비) { var 넘김 = 핵심(f, "__핵심상태"); if (안[j][3]) try { 안[j][3](프레임[j].contentWindow); } catch (e2) {} 다음LNB = 눌림; 보기(j); 핵심(프레임[j], "__핵심이어받기", 넘김); 핵심(f, "__핵심정리"); return; }
+    if (갈판[k]) 갈판[k].remove();
+    var g = 갈판[k] = 새판(k, u.pathname + u.search + u.hash, function () {
+      if (갈판[k] !== g) return; 갈판[k] = null;
+      if (프레임[k] !== f) { g.remove(); return; }
+      핵심(g, "__핵심이어받기", 핵심(f, "__핵심상태"));
+      if (지금 === k) 올림넘김(f, g);
+      if (지금 === k) 숨김(g, { LNB줄: 눌림 });
+      g.style.visibility = 지금 === k ? "visible" : "hidden"; if (지금 === k) 등장(g, { LNB줄: 눌림 });
+      f.remove(); 프레임[k] = g;
+    });
+  });
+}
+/* 안쪽 화면 안에서 다른 페이지로 넘어가도(카드 → 상세) 덧입힘이 다시 얹히게 */
+setInterval(function () { Object.keys(프레임).forEach(function (k) { if (!안[k][2]) return; try { var d = 프레임[k].contentDocument; if (d && d.head && d.URL !== "about:blank" && !d.getElementById("손질css")) 얹기(d); } catch (e) {} }); }, 300);
+/* 2026-10-05 빈 문서(about:blank · 판을 막 만들어 아직 주소가 안 들어온 때)엔 안 얹음 — 얹으면 window 에 「이미 돎」 을 남기는 부품(카드 · 자리이동 등)이 진짜 화면이 같은 창으로 들어온 뒤 건너뛰어
+   카드 꼴이 빠졌음(GitHub 공개본 실측 · 느린 곳에서 잘 터짐). 이전 판 판/손질후_*_빈문서전.html */
+
+function 보기(k, 끝) {
+  if (!칸집) return;
+  /* GNB 켜진 칸 — 바로 옮김(톡 · 빛 전환이 화면 바뀜과 함께) */
+  var 메뉴 = 키메뉴(k);
+  var GNB바뀜 = !!지금 && 키메뉴(지금) !== 메뉴;   /* 부품 전환 — GNB 가 바뀌면 LNB 줄도 차르르 */
+  var LNB줄 = 다음LNB; 다음LNB = false;   /* 핵심 버튼으로 왔으면 LNB 줄도 */
+  틀문서.querySelectorAll(".g-item").forEach(function (x) { x.classList.toggle("on", x.textContent.trim() === 메뉴); });
+  if (k[0] === "s") { if (+k[1] < 3) 자동화마지막 = k; else 분석마지막 = k; }
+  [].forEach.call(단추.children, function (b, i) { b.classList.toggle("on", 단추키[i] === k); });
+  try { localStorage.setItem("2안-손질후-안", k); } catch (e) {}
+  지금 = k;
+  /* LNB 없는 화면(프로젝트)이면 틀의 LNB 를 잠깐 떼어 둔다 — 「LNB 없으면 GNB 오른쪽 선」 규칙이 그대로 먹는지 보려고 */
+  var 틀LNB = 틀문서.querySelector(".lnb-panel");
+  if (LNB없음[k] && 틀LNB) { 떼어둔LNB = [틀LNB, 틀LNB.parentNode, 틀LNB.nextSibling]; 틀LNB.remove(); }
+  else if (!LNB없음[k] && 떼어둔LNB) { 떼어둔LNB[1].insertBefore(떼어둔LNB[0], 떼어둔LNB[2]); 떼어둔LNB = null; }
+  /* 다 불러온 뒤에 바꿔 끼움 — 그 전까지는 이전 화면이 그대로 보인다 */
+  만들기(k, function () {
+    if (지금 !== k) return;
+    var 이미 = 프레임[k].style.visibility === "visible";
+    if (!이미) 올림넘김(Object.keys(프레임).map(function (j) { return 프레임[j]; }).filter(function (x) { return x.style.visibility === "visible"; })[0], 프레임[k]);
+    if (!이미) 숨김(프레임[k], { GNB바뀜: GNB바뀜, LNB줄: LNB줄 });
+    Object.keys(프레임).forEach(function (j) { 프레임[j].style.visibility = j === k ? "visible" : "hidden"; });
+    if (!이미) 등장(프레임[k], { GNB바뀜: GNB바뀜, LNB줄: LNB줄 });
+    끝 && 끝();
+  });
+}
+/* LNB 올림 넘김(2026-10-04 사용자 「lnb에서 메뉴 바꿀 때 우측 상단에 호버하면 나오는 아이콘들이 깜빡거리고」) — 미리 불러 둔 판으로 갈아 끼우면 새 판은 마우스가 LNB 위에 있어도
+   다음 움직임까지 :hover 를 몰라 돋보기 · 접기가 1 → 0 → (움직이면) 0.2초에 걸쳐 1 로 깜빡였음(실측). 앞 판 LNB 가 올려져 있었으면 새 판 html 에 lab-lnb올림(부품/LNB.css 끝 · 그대로 보임 · 전환 없음)
+   → 새 판이나 바깥 틀에서 마우스가 처음 움직이면 뗌(그때부터 진짜 :hover). 저장본(우리=0)은 LNB 부품이 없어 붙여도 아무 일 없음 */
+function 올림넘김(옛, 새) {
+  try {
+    var nd = 새 && 새.contentDocument; if (!nd || !nd.documentElement) return;
+    var od = 옛 && 옛 !== 새 && 옛.contentDocument, r = nd.documentElement;
+    var 올림 = !!(od && (od.querySelector(".lnb-panel:hover") || od.documentElement.classList.contains("lab-lnb올림")));
+    if (!올림) { r.classList.remove("lab-lnb올림"); return; }
+    r.classList.add("lab-lnb올림");
+    var 떼기 = function () { r.classList.remove("lab-lnb올림"); nd.removeEventListener("pointermove", 떼기, true); 틀문서.removeEventListener("pointermove", 떼기, true); };
+    nd.addEventListener("pointermove", 떼기, true); 틀문서.addEventListener("pointermove", 떼기, true);
+  } catch (e) {}
+}
+/* 나머지 화면은 하나씩 뒤에서 미리 불러 둔다(저장본은 한 장 8MB 라 동시에 안 부름) */
+function 미리불러오기() {
+  var 줄 = Object.keys(안).filter(function (k) { return !프레임[k]; });
+  (function 다음() { var k = 줄.shift(); if (!k) return; if (프레임[k]) return 다음(); 만들기(k, function () { setTimeout(다음, 50); }); })();
+}
+
+function 키(e) {
+  if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName) && e.target.type !== "range") return;
+  if (e.key >= "1" && e.key <= "7") 보기(단추키[+e.key - 1]);
+  else if (e.key === "r" || e.key === "R") location.reload();
+  else if (e.key === "h" || e.key === "H") document.body.classList.toggle("숨김");
+}
+addEventListener("keydown", 키);
+</script></body></html>

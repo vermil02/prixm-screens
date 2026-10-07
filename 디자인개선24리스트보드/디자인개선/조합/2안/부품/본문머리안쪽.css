@@ -1,0 +1,24 @@
+/* 조합 2안 · 부품/본문머리안쪽.css — 본문머리.css 에서 「흰 카드」 몫을 뺀 안쪽 요소만(2026-10-02 사용자 「콘텐츠 영역은 이전에 1안에 반영된 걸로 들어가야 할 것 같은데 내부 요소들은?」).
+   카드 전 틀(손질후 기본)에서만 얹음 — 본문머리.css(카드 · 바닥 #fafafd · 사방 12 띄움 · 모서리 · 테)는 틀과 함께 빠지므로. 짝 스크립트는 본문머리.js 그대로.
+   뺀 것: .main 바닥 · page-hd / head-zone / content 의 흰 바탕 · margin · border-radius · box-shadow · page-hd 위 12 */
+/* 제목 = LNB 켜진 줄 이름(짝 본문머리.js) · 경로 대신 ‹ · 16/600 · 한 줄 */
+html{--lab-제목:1;}
+html body .body > .main > .page-hd{height:48px!important;flex:0 0 48px!important;}
+html body .body > .main > .page-hd .crumb .cur{font-size:16px!important;font-weight:600!important;color:#2a3445!important;letter-spacing:-.6px;white-space:nowrap!important;flex:0 0 auto!important;}
+html body .body > .main > .page-hd .crumb{min-width:0;}
+html body .body > .main > .page-hd .crumb .crumb-link,html body .body > .main > .page-hd .crumb .arw{display:none!important;}
+html body .body > .main > .page-hd .crumb .crumb-up{margin-right:4px!important;}
+html body .lab-새로고침{margin-left:6px!important;}
+/* 본문 큰 이름 뺌 · 상세 꼬리표는 제목 옆 */
+html body .body > .main > .head-zone .page-ttl{display:none!important;}
+html body .body > .main .bh-head .bh-name{display:none!important;}
+html body .page-hd .lab-옮긴꼬리표{margin-left:6px;flex:0 0 auto;align-self:center!important;}
+html body .page-hd .lab-옮긴꼬리표 + .lab-옮긴꼬리표{margin-left:4px;}
+html body .body > .main > .head-zone .tools{padding-top:10px!important;}
+/* 상세 / 요약 보기 토글 — 켠 칸 반전 */
+html body .body > .main > .head-zone .view-toggle{background:#f1f1fb;border:0;border-radius:9px;padding:2px;height:32px;}
+html body .body > .main > .head-zone .view-toggle .vt{border-radius:7px;height:28px;}
+html body .body > .main > .head-zone .view-toggle .vt.on{background:linear-gradient(135deg,#8789f6,#6c69f0)!important;color:#fff!important;box-shadow:none;}
+html body .body > .main > .head-zone .view-toggle .vt.on svg{color:#fff;}
+/* 2026-10-06 자동화③ 상세 요약 칸 위 빈 머리(.bh-head · 큰 이름 숨김) 아래 선 없앰 — 1안은 부품/상세.css(19 랩 1안반영.py) */
+html body .body > .main > .content .bh-head{border-bottom-color:transparent!important;}

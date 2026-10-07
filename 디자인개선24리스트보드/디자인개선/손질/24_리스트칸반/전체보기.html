@@ -1,0 +1,132 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>리스트 칸반 랩</title>
+<!-- 24 리스트 · 칸반 — 자동화① 를 카드 대신 리스트(표) · 칸반으로 (2026-10-07 · 노션 Workflow Tracker 참고)
+     21 랩 전체보기를 떠 옴. 바탕 = 1안(?바탕=2안) 손질후.html 그대로 · 화면01 문서에만 보기_안.json 의 CSS + 엔진을 얹음.
+     주소: ?바탕=1안&안=L-1 리스트&덧=<켠 항목 이름|…> · 키: ← → 안 · C 지금과 견주기 · H 막대 숨김 -->
+<style>
+html,body{margin:0;height:100%;overflow:hidden;font-family:"Pretendard Variable","Pretendard",-apple-system,sans-serif;letter-spacing:-.4px;}
+#바탕{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff;}
+.바{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9;display:flex;flex-direction:column;gap:6px;max-width:calc(100vw - 32px);padding:8px 10px;background:rgba(42,52,69,.94);color:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.28);font-size:12px;}
+.줄{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.이름{min-width:44px;color:#a8afbc;flex:0 0 auto;}
+.바 button{height:28px;border:0;border-radius:7px;padding:0 10px;font:inherit;font-size:12px;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;white-space:nowrap;}
+.바 button:hover{background:rgba(255,255,255,.22);}
+.바 button.켬{background:#fff;color:#2a3445;font-weight:600;}
+.바 .라디오 button::before{content:"○ ";opacity:.7;}.바 .라디오 button.켬::before{content:"● ";opacity:1;}
+.바 .가름{width:1px;height:16px;background:rgba(255,255,255,.2);margin:0 4px;}
+.바 .도움{color:#a8afbc;font-size:11px;margin-left:auto;padding-left:8px;}
+.바 button.견줌{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);background:transparent;}
+.바 button.견줌.켬{background:#f5b70a;color:#2a3445;box-shadow:none;}
+.바 .기준{color:#a8afbc;}
+.바.숨김{display:none;}
+.알림{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:9;padding:6px 12px;border-radius:8px;background:#f5b70a;color:#2a3445;font-size:12px;font-weight:600;display:none;}
+.알림.보임{display:block;}
+</style></head><body>
+<iframe id="바탕"></iframe>
+<div class="알림" id="알림">지금(틀만)으로 보는 중 — C 를 다시 누르면 돌아감</div>
+<div class="바" id="바">
+  <div class="줄" id="바탕줄"><span class="이름">바탕</span></div>
+  <div class="줄" id="안줄"><span class="이름">안</span></div>
+  <div id="덧들"></div>
+  <div class="줄" id="화면줄"><span class="이름">화면</span><span class="도움">← → 안 · ↑ ↓ 화면 · C 지금과 견주기 · H 숨김</span></div>
+</div>
+<script>
+var q=new URLSearchParams(location.search), 판이름=q.get("바탕")==="2안"?"2안":"1안", J=null, 안="", 켠=[], 견줌=false, 화면키=q.get("화면")||"s0", 이름id={}, id이름={}, 묶음={};
+var 바탕=document.getElementById("바탕"), 손질후=null;
+/* 손질후가 마지막 화면을 localStorage 에 적음 — 랩에서 돌려 본 화면이 손질후 첫 화면을 바꾸지 않게 처음 값으로 되돌려 둠 */
+var 열쇠=판이름+"-손질후-안", 처음값=null; try{ 처음값=localStorage.getItem(열쇠); }catch(e){}
+addEventListener("pagehide",function(){ try{ if(처음값===null) localStorage.removeItem(열쇠); else localStorage.setItem(열쇠,처음값); }catch(e){} });
+
+function 묶음찾기(이름){ var i=이름.indexOf(" · "); return i>0?이름.slice(0,i):""; }
+function 지금목록(){ return 견줌?[]:켠.map(function(n){ return 이름id[n]; }).filter(Boolean); }
+
+/* 손질후 안의 안쪽 화면(iframe)들 — 화면01 에만 얹음 */
+function 칸집판들(){ try{ var 판=손질후.document.getElementById("판").contentDocument; return [].slice.call(판.querySelectorAll(".칸집 iframe")); }catch(e){ return []; } }
+function 얹기(f){
+  var d; try{ d=f.contentDocument; }catch(e){ return; }
+  if(!d||!d.documentElement||!f.준비||!d.body) return;
+  if(!대상(d)){ if(!d.__lab24키) { d.__lab24키=1; d.addEventListener("keydown",키,true); } return; }
+  문서얹기(d);
+}
+function 대상(d){ try{ return /화면01_전체목록\.html/.test(decodeURIComponent(d.location.pathname)); }catch(e){ return false; } }
+function 문서얹기(d){
+  if(!J||!d.body||!대상(d)) return;
+  if(!d.getElementById("lab24-css")){
+    var s=d.createElement("style"); s.id="lab24-css"; s.textContent=J.__css; d.head.appendChild(s);
+    var k=d.createElement("script"); k.textContent=J.__js; d.body.appendChild(k);
+    d.addEventListener("keydown",키,true);
+  }
+  var 값=지금목록().join("|");
+  if(d.__lab24값!==값){ try{ d.defaultView.__lab24적용(지금목록()); d.__lab24값=값; }catch(e){} }
+}
+/* 손질후 얹기 감싸기 — 우리 화면(자동화 ③ · 분석 ⑤)이 「다 됨」 되기 전에 랩 CSS · 엔진을 얹음(처음 보일 때 지금 모습이 한 번 비치지 않게) */
+function 손질후감싸기(){ var w=손질후; if(!w||!w.얹기||w.얹기.__lab24) return !!(w&&w.얹기&&w.얹기.__lab24);
+  var 원래=w.얹기;
+  w.얹기=function(d,끝){ 원래(d,function(){ var 기다림=function(){ if(!J) return setTimeout(기다림,30); try{ 문서얹기(d); }catch(e){} 끝&&끝(); }; 기다림(); }); };
+  w.얹기.__lab24=1; return true; }
+var 감쌈틀=setInterval(function(){ try{ 손질후=바탕.contentWindow; if(손질후감싸기()) clearInterval(감쌈틀); }catch(e){} },5);
+function 모두얹기(){ if(!J||!손질후) return; 칸집판들().forEach(얹기);
+  try{ var 판=손질후.document.getElementById("판").contentDocument; if(판&&!판.__lab24키){ 판.__lab24키=1; 판.addEventListener("keydown",키,true); } }catch(e){}
+  try{ 손질후.document.body.classList.add("숨김"); }catch(e){} }
+setInterval(모두얹기,200);
+
+/* 화면 — 손질후 보기(키) 를 그대로 부름(GNB 켜진 칸 · 전환 · 미리 불러 둔 판) */
+function 화면바꾸기(k){ 화면키=k; try{ if(손질후&&손질후.보기) 손질후.보기(k); }catch(e){} 주소남김(); }
+function 손질후준비(){ try{ var 판=손질후.document.getElementById("판"); return 판&&판.classList.contains("보임"); }catch(e){ return false; } }
+바탕.addEventListener("load",function(){ 손질후=바탕.contentWindow; 손질후.addEventListener("keydown",키,true);
+  var t=setInterval(function(){ if(!손질후준비()) return; clearInterval(t); 화면바꾸기(화면키); },100); });
+바탕.src="/prixm-screens/디자인개선24리스트보드/디자인개선/조합/"+판이름+"/손질후.html";
+
+function 안바꾸기(k){ if(!(k in J.__안)) return; 안=k; 켠=J.__안[k].map(function(i){ return id이름[i]; }); 다시칠(); }
+function 토글(이름){ var i=켠.indexOf(이름), g=묶음찾기(이름);
+  if(i<0){ if(g) 켠=켠.filter(function(x){ return 묶음찾기(x)!==g; }); 켠.push(이름); } else 켠.splice(i,1);
+  /* 켠 것이 어떤 안과 똑같으면 그 안을 켬 · 아니면 안 표시 없음 */
+  var 같은=Object.keys(J.__안).filter(function(k){ var a=J.__안[k].map(function(x){ return id이름[x]; }); return a.length===켠.length&&a.every(function(x){ return 켠.indexOf(x)>=0; }); })[0];
+  안=같은||""; 다시칠(); }
+function 견주기(){ 견줌=!견줌; document.getElementById("알림").classList.toggle("보임",견줌); 다시칠(); }
+function 다시칠(){ 모두얹기(); 주소남김(); }
+function 주소남김(){
+  history.replaceState(null,"","?바탕="+판이름+"&안="+encodeURIComponent(안)+"&덧="+encodeURIComponent(켠.join("|"))+"&화면="+화면키);
+  var 화면이름=(J.__화면.filter(function(x){ return x[1]===화면키; })[0]||[""])[0];
+  document.title="보기 "+(안||"직접")+" · "+화면이름;
+  document.querySelectorAll("#안줄 button").forEach(function(b){ b.classList.toggle("켬",b.dataset.k===안); });
+  document.querySelectorAll("#덧들 button").forEach(function(b){ b.classList.toggle("켬",켠.indexOf(b.dataset.t)>=0); });
+  document.querySelectorAll("#화면줄 button").forEach(function(b){ b.classList.toggle("켬",b.dataset.k===화면키); });
+  document.querySelectorAll("#바탕줄 button").forEach(function(b){ b.classList.toggle("켬",b.dataset.k===판이름); });
+  var 견=document.getElementById("견줌단추"); if(견) 견.classList.toggle("켬",견줌);
+}
+function 키(e){ if(e.metaKey||e.ctrlKey||e.altKey) return; if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  var 안들=Object.keys(J.__안), i=안들.indexOf(안), 화들=J.__화면.map(function(x){ return x[1]; }), j=화들.indexOf(화면키);
+  if(e.key==="ArrowRight"){ 안바꾸기(안들[(i+1)%안들.length]); e.preventDefault(); e.stopPropagation(); }
+  else if(e.key==="ArrowLeft"){ 안바꾸기(안들[(i-1+안들.length)%안들.length]); e.preventDefault(); e.stopPropagation(); }
+  else if(e.key==="ArrowDown"){ 화면바꾸기(화들[(j+1)%화들.length]); e.preventDefault(); e.stopPropagation(); }
+  else if(e.key==="ArrowUp"){ 화면바꾸기(화들[(j-1+화들.length)%화들.length]); e.preventDefault(); e.stopPropagation(); }
+  else if(e.key==="c"||e.key==="C"||e.key==="ㅊ"){ 견주기(); e.stopPropagation(); }
+  else if(e.key==="h"||e.key==="H"||e.key==="ㅗ"){ document.getElementById("바").classList.toggle("숨김"); e.stopPropagation(); }
+  else if(/^[1-7]$/.test(e.key)) e.stopPropagation();   /* 손질후 1~7 키(자동화 화면 단추)는 이 랩에선 막음 */
+}
+document.addEventListener("keydown",키);
+
+fetch("보기_안.json?b="+Date.now()).then(function(r){ return r.json(); }).then(function(j){ J=j;
+  j.__항목.forEach(function(x){ 이름id[x.이름]=x.id; id이름[x.id]=x.이름; });
+  /* 바탕 */
+  var 바탕줄=document.getElementById("바탕줄"); ["1안","2안"].forEach(function(k){ var b=document.createElement("button"); b.dataset.k=k; b.textContent=k+(k==="1안"?" 카드":" 카드 전");
+    b.onclick=function(){ if(k===판이름) return; location.search="?바탕="+k+"&안="+encodeURIComponent(안)+"&덧="+encodeURIComponent(켠.join("|"))+"&화면="+화면키; }; 바탕줄.appendChild(b); });
+  /* 안 */
+  var 안줄=document.getElementById("안줄"); Object.keys(j.__안).forEach(function(k){ var b=document.createElement("button"); b.dataset.k=k; b.textContent=k; b.onclick=function(){ 안바꾸기(k); }; 안줄.appendChild(b); });
+  var 견=document.createElement("button"); 견.id="견줌단추"; 견.className="견줌"; 견.textContent="C · 지금과 견주기"; 견.onclick=견주기; 안줄.appendChild(견);
+  /* 덧붙임 — 칸(LNB · 주색 · 콘텐츠)마다 한 줄 · 「묶음 · 값」 은 그 칸 안 라디오 줄 */
+  var 덧들=document.getElementById("덧들"), 칸줄={}, 라디오줄={};
+  j.__항목.forEach(function(x){ if(x.숨김) return; var g=묶음찾기(x.이름), 줄;
+    if(g){ 줄=라디오줄[g]; if(!줄){ 줄=document.createElement("div"); 줄.className="줄 라디오"; 줄.innerHTML='<span class="이름" title="하나만 켜짐">'+g+'</span>'; 덧들.appendChild(줄); 라디오줄[g]=줄; } }
+    else { 줄=칸줄[x.칸]; if(!줄){ 줄=document.createElement("div"); 줄.className="줄"; 줄.innerHTML='<span class="이름">'+x.칸+'</span>'; 덧들.appendChild(줄); 칸줄[x.칸]=줄; } }
+    var b=document.createElement("button"); b.dataset.t=x.이름; b.textContent=g?x.이름.slice(g.length+3):x.이름; b.title=x.이름; b.onclick=function(){ 토글(x.이름); }; 줄.appendChild(b); });
+  /* 화면 */
+  var 화면줄=document.getElementById("화면줄"), 도움=화면줄.querySelector(".도움");
+  j.__화면.forEach(function(x,i){ if(i===2){ var s=document.createElement("span"); s.className="가름"; 화면줄.insertBefore(s,도움); }
+    var b=document.createElement("button"); b.dataset.k=x[1]; b.textContent=x[0]; if(x[2]) b.className="기준"; b.onclick=function(){ 화면바꾸기(x[1]); }; 화면줄.insertBefore(b,도움); });
+  /* 처음 — 주소의 덧이 있으면 그대로, 없으면 안의 기본 */
+  var 덧=q.get("덧"), 안값=q.get("안");
+  if(덧!==null&&덧!==""){ 켠=덧.split("|").filter(function(n){ return n in 이름id; }); 안=(안값 in j.__안)?안값:""; 주소남김(); 모두얹기(); }
+  else 안바꾸기((안값 in j.__안)?안값:Object.keys(j.__안).slice(-1)[0]);
+});
+</script></body></html>

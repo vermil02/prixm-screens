@@ -1,0 +1,17 @@
+/* 조합 2안 · 부품/펼치기.css — 카드 전 틀에서 LNB 를 접으면 GNB 맨 위 「다시 열기」(2026-10-02 사용자 「lnb 줄이기 누르면 gnb 에 펼치기 아이콘 생기는 게 나을 듯 · 이것도 1안 카드 방식」).
+   틀.css 의 다시 열기 규칙만 그대로 떠 옴(카드 몫 — 접힌 GNB 모서리 · 테 — 은 뺌). 짝 펼치기.js = 틀.js 그대로.
+   평소 #b4b5c6 → GNB 에 올리면 #111 · 메뉴 칸 위에선 다시 연하게 · 단추를 눌러야 펼침(GNB 빈 곳 누름 · 손가락 커서는 뺌 — 2026-10-02 「역 ㄱ자 구조라 섹션 느낌이 약해서 버튼으로만」) · 경로 줄 맨 앞 열기 단추는 숨김 */
+html body .gnb .lab-gnb열기{display:grid;place-items:center;order:-1;width:24px;height:0;margin:0 auto;padding:0;border:0;border-radius:7px;background:none;opacity:0;overflow:hidden;pointer-events:none;cursor:pointer;color:#b4b5c6;transition:height .22s cubic-bezier(.2,.8,.2,1),margin .22s cubic-bezier(.2,.8,.2,1),opacity .18s,background-color .15s,color .15s;}
+html body .gnb .lab-gnb열기 svg{width:16px;height:16px;}
+html body.lnb-접힘 .gnb .lab-gnb열기{height:24px;margin:0 auto 6px;opacity:1;pointer-events:auto;}
+html body.lnb-접힘 .gnb .lab-gnb열기{opacity:1;}
+html body.lnb-접힘 .page-hd .lnb-열기,html body.lnb-접힘 .page-hd .lnb-열기 + .lab-구분선{display:none!important;}
+/* 접힌 LNB 가 13px 띠로 남던 것(실측 2026-10-02) — 틀이전.css 의 LNB 오른쪽 여백 12 + 선 1 이 접힘(LNB.css 폭 0)보다 세서 → 접혔을 땐 0 */
+html body.lnb-접힘 .app .lnb-panel.lnb-panel{padding-right:0!important;border-right-width:0!important;}
+/* 2026-10-02 사용자 「gnb 섹션 버튼 위든 어디든 · gnb 섹션 혹은 탑 섹션에 있으면 펼치기 아이콘 조금 진해지고 · 버튼 위에 호버하면 은은한 배경 + 효과」
+   평소 #b4b5c6 → GNB · 상단 바 어디든(메뉴 칸 위 포함) #7d7f8f → 단추 위 = 은은한 바탕 + 진한 글자 · 누르면 살짝 눌림 */
+html body .gnb:hover .lab-gnb열기,html body:has(.hd:hover) .gnb .lab-gnb열기{color:#7d7f8f;}
+/* 2026-10-02 사용자 「gnb 메뉴 호버색하고 똑같은 걸로」 — GNB 메뉴 칸 올림 실측: 타일 #e2e4fb · 아이콘 #111 · 0.25s (전: 회색 rgba(15,23,42,.06) · #1d1c1d) */
+html body .gnb .lab-gnb열기:hover{background:#e2e4fb!important;color:#111!important;}
+html body .gnb .lab-gnb열기:active{background:#d6d9f8!important;transform:scale(.92);}
+html body .gnb .lab-gnb열기{transition:height .22s cubic-bezier(.2,.8,.2,1),margin .22s cubic-bezier(.2,.8,.2,1),opacity .18s,background-color .25s cubic-bezier(.2,.8,.2,1),color .25s cubic-bezier(.2,.8,.2,1),transform .12s!important;}
