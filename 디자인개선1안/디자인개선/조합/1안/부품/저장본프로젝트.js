@@ -1,6 +1,6 @@
 /* 조합 1안 · 부품/저장본프로젝트 — 손질/32_프로젝트/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-11
-   프로젝트(d06 · test-crew 로컬 복제 / 사진본)에만: 32 랩 안 「9 = 8 + 업무 추가 · 줄 끝 ⋯ 메뉴」.
-   켠 항목: 도구 줄 = 글 드롭다운, 거름 │ 정렬 · 표 = 자동화 리스트 표 꼴 · AI 도우미 = 이메일 도우미 카드 꼴 · 요약 칸 넷(누르면 거름) · 프로젝트별 내 업무 펼침 · LNB = 모든 프로젝트 + 프로젝트 목록 · LNB 내 업무 뺌(모든 프로젝트로 합침) · 프로젝트 표시 = 머리글자 타일 · AI 도우미 여닫기(× · 오른쪽 아래 얼굴) · 프로젝트 누르면 상세(실서비스 손저장) · 업무 누르면 태스크 상세 팝업(실서비스 간트 부품) · 펼친 끝 「+ 업무 추가」(간트 부품 새 행 → 팝업) · 줄 끝 ⋯ 메뉴(고정 · 열기 · 간트) */
+   프로젝트(d06 · test-crew 로컬 복제 / 사진본)에만: 32 랩 안 「13 = 10 + 빈 줄 순서 · 업무 줄 ⋯」.
+   켠 항목: 도구 줄 = 글 드롭다운, 거름 │ 정렬 · 표 = 자동화 리스트 표 꼴 · AI 도우미 = 이메일 도우미 카드 꼴 · 요약 칸 넷(누르면 거름) · 프로젝트별 내 업무 펼침 · LNB = 모든 프로젝트 + 프로젝트 목록 · LNB 내 업무 뺌(모든 프로젝트로 합침) · 프로젝트 표시 = 머리글자 타일 · AI 도우미 여닫기(× · 오른쪽 아래 얼굴) · 프로젝트 누르면 상세(실서비스 손저장) · 업무 누르면 태스크 상세 팝업(실서비스 간트 부품) · 펼친 끝 「+ 업무 추가」(간트 부품 새 행 → 팝업) · 줄 끝 ⋯ 메뉴(고정 · 열기 · 간트) · 업무 줄 끝 ⋯(프로젝트 열기 · 간트에서 열기) · 업무줄 · 불릿 없이 같은 자리 */
 
 /* 32 실데이터 — 로컬 복제(test-crew_app · window.__복제)면 녹화된 /api/projects/dashboard 에서 프로젝트 · 지연 수 · 내 업무(my_tasks)를 읽음(없으면 null → 사진본용 고정값) */
 window.__lab32실=window.__lab32실||function(){ var b=window.__복제; if(!b||!b.표) return null;
@@ -118,7 +118,8 @@ window.__lab32실=window.__lab32실||function(){ var b=window.__복제; if(!b||!
       맞.slice(0,몇).forEach(function(t){ var r=업무줄(t); 뒤.parentNode.insertBefore(r,뒤.nextSibling); 뒤=r; });
       if(몇<맞.length){ var m=d.createElement('tr'); m.className='lab32더'; m.innerHTML='<td></td><td colspan="9"><button type="button">'+(맞.length-몇)+'개 더 보기</button></td>'; m.querySelector('button').addEventListener('click',function(){ 펼침[이+'#다']=true; 그림(); }); 뒤.parentNode.insertBefore(m,뒤.nextSibling); 뒤=m; }
       if(추가){ var a=d.createElement('tr'); a.className='lab32추가'; a.dataset.pid=이름id[이];
-        a.innerHTML='<td></td><td colspan="9">'+(맞.length?'':'<span class="빈">이 프로젝트에 내 업무가 없어요</span>')+'<button type="button" class="lab32추가단추"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>업무 추가</button></td>';
+        /* 2026-10-12 사용자 「이 프로젝트에 내 업무가 없어요 · 업무 추가 이거는 좌우 바꿔 줘」 — 단추 먼저(업무 글자 자리) · 안내 글 뒤 */
+        a.innerHTML='<td></td><td colspan="9"><button type="button" class="lab32추가단추"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>업무 추가</button>'+(맞.length?'':'<span class="빈">이 프로젝트에 내 업무가 없어요</span>')+'</td>';
         뒤.parentNode.insertBefore(a,뒤.nextSibling); }
     });
   }
@@ -270,7 +271,7 @@ window.__lab32실=window.__lab32실||function(){ var b=window.__복제; if(!b||!
       var 오=new Date(); 오.setHours(0,0,0,0); t.name='새 업무'; t.start=오; t.end=new Date(오.getTime()); t.assignee=나()||t.assignee; t.progress=0;
       try{ el.renderPreserve(); }catch(x){} 다시셈(pid,el);
       h.classList.add('lab32-팝업'); setTimeout(function(){ 숨김(el); el.openDetail(새); setTimeout(function(){ var n=el.shadowRoot.querySelector('.detail-drawer .dd-name'); if(n){ n.focus(); n.select(); } },60); },220); }); },true);
-  d.addEventListener('click',function(e){ if(!켬()||!w.__복제||!e.target.closest) return; var tr=e.target.closest('tr.lab32업무[data-tid]'); if(!tr) return;
+  d.addEventListener('click',function(e){ if(!켬()||!w.__복제||!e.target.closest) return; if(e.target.closest('.lab32점점,.lab32줄판')) return; var tr=e.target.closest('tr.lab32업무[data-tid]'); if(!tr) return;
     e.preventDefault(); e.stopPropagation(); var pid=tr.dataset.pid, tid=tr.dataset.tid;
     준비(pid).then(function(el){ h.classList.add('lab32-팝업'); requestAnimationFrame(function(){ requestAnimationFrame(function(){ 숨김(el); el.openDetail(tid); }); }); }); },true);
   function 숨김(el){ if(el.shadowRoot.querySelector('style[data-lab32]')) return; var st=d.createElement('style'); st.dataset.lab32='1';
@@ -290,15 +291,18 @@ window.__lab32실=window.__lab32실||function(){ var b=window.__복제; if(!b||!
   function 닫기(){ if(판){ 판.remove(); 판=null; } if(지금단){ 지금단.classList.remove('열림'); 지금단=null; } }
   function 길(){ var a=d.getElementById('app'); return a&&a.__vue_app__&&a.__vue_app__.config.globalProperties.$router; }
   function 아이디(tr){ var b=tr.querySelector('.pj-name-btn'), 이=b&&b.textContent.trim(), 실=w.__lab32실&&w.__lab32실(); if(!실) return null; var p=실.프.filter(function(x){ return x[0]===이; })[0]; return p&&p[3]; }
-  function 붙임(){ if(!켬()||!d.querySelector('.pj-tools')) return;
+  function 붙임(){ if(!d.querySelector('.pj-tools')) return;
+    if(h.classList.contains('lab32켬-업무점점')) [].forEach.call(d.querySelectorAll('.pj-table tr.lab32업무'),function(tr){ var 끝=tr.lastElementChild; if(!끝||끝.querySelector('.lab32점점')) return;
+      var b=d.createElement('button'); b.type='button'; b.className='lab32점점 업무'; b.setAttribute('aria-label',(tr.querySelector('.업무이름')||{}).textContent+' 메뉴'); b.title='더 보기'; b.innerHTML=점; 끝.appendChild(b); });
+    if(!켬()) return;
     [].forEach.call(d.querySelectorAll('.pj-table tbody > tr:not(.lab32업무):not(.lab32더):not(.lab32추가)'),function(tr){ var 끝=tr.lastElementChild; if(!끝||끝.querySelector('.lab32점점')) return;
       var b=d.createElement('button'); b.type='button'; b.className='lab32점점'; b.setAttribute('aria-label','더 보기'); b.title='더 보기'; b.innerHTML=점; 끝.appendChild(b); }); }
   d.addEventListener('click',function(e){ if(!e.target.closest) return;
-    var b=켬()&&e.target.closest('.lab32점점');
+    var b=(켬()||h.classList.contains('lab32켬-업무점점'))&&e.target.closest('.lab32점점');
     if(b){ e.preventDefault(); e.stopPropagation(); if(지금단===b){ 닫기(); return; } 닫기();
-      var tr=b.closest('tr'), 핀=tr.querySelector('.pj-card-pin'), 고=핀&&핀.getAttribute('aria-pressed')==='true', id=아이디(tr);
+      var tr=b.closest('tr'), 업=tr.classList.contains('lab32업무'), 핀=!업&&tr.querySelector('.pj-card-pin'), 고=핀&&핀.getAttribute('aria-pressed')==='true', id=업?tr.dataset.pid:아이디(tr);
       판=d.createElement('div'); 판.className='lab32줄판'; 판.setAttribute('role','menu');
-      판.innerHTML='<button type="button" data-a="핀">'+그.핀+(고?'고정 풀기':'위로 고정')+'</button><hr><button type="button" data-a="열">'+그.열+'프로젝트 열기</button><button type="button" data-a="간">'+그.간+'간트에서 보기</button>';
+      판.innerHTML=(업?'':'<button type="button" data-a="핀">'+그.핀+(고?'고정 풀기':'위로 고정')+'</button><hr>')+'<button type="button" data-a="열">'+그.열+'프로젝트 열기</button><button type="button" data-a="간">'+그.간+'간트에서 열기</button>';   /* 업무 줄 = 실서비스와 같은 둘 */
       var 표=tr.closest('.pj-scroll')||d.body; 표.style.position=표.style.position||'relative'; 표.appendChild(판);
       var r=b.getBoundingClientRect(), q=표.getBoundingClientRect(); 판.style.top=(r.bottom-q.top+표.scrollTop+4)+'px'; 판.style.left=(r.right-q.left-판.offsetWidth)+'px';
       b.classList.add('열림'); 지금단=b;
@@ -317,6 +321,6 @@ window.__lab32실=window.__lab32실||function(){ var b=window.__복제; if(!b||!
 (function(){
   var d=document, w=window; if(!w.__lab32적용||w.__lab32고정) return;
   var 번=d.documentElement.getAttribute('data-저장본번호')||decodeURIComponent(location.pathname).split('/').pop().slice(0,2);
-  function 켜기(){ if(w.__lab32고정) return; if(번!=='06'&&!d.querySelector('.pj-main')) return; w.__lab32고정=1; w.__lab32적용(["도구꼴", "표꼴", "도우미꼴", "요약칸", "내업무펼침", "LNB프로젝트", "내업무뺌", "머리글자타일", "도우미여닫기", "상세연결", "업무상세팝업", "업무추가", "줄메뉴"]); }
+  function 켜기(){ if(w.__lab32고정) return; if(번!=='06'&&!d.querySelector('.pj-main')) return; w.__lab32고정=1; w.__lab32적용(["도구꼴", "표꼴", "도우미꼴", "요약칸", "내업무펼침", "LNB프로젝트", "내업무뺌", "머리글자타일", "도우미여닫기", "상세연결", "업무상세팝업", "업무추가", "줄메뉴", "업무같은자리", "업무점점"]); }
   켜기(); var t=setInterval(function(){ 켜기(); if(w.__lab32고정) clearInterval(t); },200); setTimeout(function(){ clearInterval(t); },8000);
 })();

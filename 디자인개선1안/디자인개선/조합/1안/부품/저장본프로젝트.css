@@ -1,6 +1,6 @@
 /* 조합 1안 · 부품/저장본프로젝트 — 손질/32_프로젝트/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-11
-   프로젝트(d06 · test-crew 로컬 복제 / 사진본)에만: 32 랩 안 「9 = 8 + 업무 추가 · 줄 끝 ⋯ 메뉴」.
-   켠 항목: 도구 줄 = 글 드롭다운, 거름 │ 정렬 · 표 = 자동화 리스트 표 꼴 · AI 도우미 = 이메일 도우미 카드 꼴 · 요약 칸 넷(누르면 거름) · 프로젝트별 내 업무 펼침 · LNB = 모든 프로젝트 + 프로젝트 목록 · LNB 내 업무 뺌(모든 프로젝트로 합침) · 프로젝트 표시 = 머리글자 타일 · AI 도우미 여닫기(× · 오른쪽 아래 얼굴) · 프로젝트 누르면 상세(실서비스 손저장) · 업무 누르면 태스크 상세 팝업(실서비스 간트 부품) · 펼친 끝 「+ 업무 추가」(간트 부품 새 행 → 팝업) · 줄 끝 ⋯ 메뉴(고정 · 열기 · 간트) */
+   프로젝트(d06 · test-crew 로컬 복제 / 사진본)에만: 32 랩 안 「13 = 10 + 빈 줄 순서 · 업무 줄 ⋯」.
+   켠 항목: 도구 줄 = 글 드롭다운, 거름 │ 정렬 · 표 = 자동화 리스트 표 꼴 · AI 도우미 = 이메일 도우미 카드 꼴 · 요약 칸 넷(누르면 거름) · 프로젝트별 내 업무 펼침 · LNB = 모든 프로젝트 + 프로젝트 목록 · LNB 내 업무 뺌(모든 프로젝트로 합침) · 프로젝트 표시 = 머리글자 타일 · AI 도우미 여닫기(× · 오른쪽 아래 얼굴) · 프로젝트 누르면 상세(실서비스 손저장) · 업무 누르면 태스크 상세 팝업(실서비스 간트 부품) · 펼친 끝 「+ 업무 추가」(간트 부품 새 행 → 팝업) · 줄 끝 ⋯ 메뉴(고정 · 열기 · 간트) · 업무 줄 끝 ⋯(프로젝트 열기 · 간트에서 열기) · 업무줄 · 불릿 없이 같은 자리 */
 
 /* ═══ 도구꼴 — 회색 알약 select → 바탕 없는 글 드롭다운(이메일 도구 줄 글 단추 실측과 같은 꼴) */
 html.lab-저장본.lab32켬-도구꼴:not(#_):not(#__):not(#___) .pj-tools .pj-pill{appearance:none;-webkit-appearance:none;field-sizing:content;width:auto!important;max-width:none!important;height:28px!important;min-height:0!important;padding:0 26px 0 8px!important;border:0!important;border-radius:6px!important;box-shadow:none!important;
@@ -87,6 +87,21 @@ html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table
 html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table tr.lab32업무:hover td{background:#f6f6fb;}
 html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름{display:flex;align-items:center;gap:8px;padding-left:8px;}   /* 펼침이 이름 칸 안으로 들어와 업무 줄도 들임 — 업무 글자 = 프로젝트 이름 글자 자리(실측 405) */
 html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름::before{content:"";width:6px;height:6px;border-radius:2px;border:1.4px solid #c4c5d4;flex:none;}
+/* 업무줄 라디오 — 불릿(::before 6 + 사이 8 = 14)을 없애고 ① 같은 자리 = 그만큼 안쪽 여백(글자 = 프로젝트 이름 글자 405) ② 한 단 더 = 거기서 20 더(425 · 하위 단계가 또렷) · 「+ 업무 추가」 · 「더 보기」 도 같은 자리로 */
+html.lab-저장본.lab32켬-업무같은자리:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름::before,html.lab-저장본.lab32켬-업무반단:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름::before,html.lab-저장본.lab32켬-업무들임:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름::before{display:none!important;}
+/* 반 단 = 이름 글자 + 10(379) */
+html.lab-저장본.lab32켬-업무반단:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름{padding-left:32px!important;}
+html.lab-저장본.lab32켬-업무반단:not(#_):not(#__):not(#___) .pj-table tr.lab32더 button{padding-left:32px!important;}
+
+html.lab-저장본.lab32켬-업무반단:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 .lab32추가단추{margin-left:24px!important;}
+
+html.lab-저장본.lab32켬-업무같은자리:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름{padding-left:22px!important;}
+html.lab-저장본.lab32켬-업무같은자리:not(#_):not(#__):not(#___) .pj-table tr.lab32더 button{padding-left:22px!important;}   /* 더 보기도 업무 글자 자리(처음엔 4 어긋남) */
+html.lab-저장본.lab32켬-업무들임:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .업무이름{padding-left:42px!important;}
+html.lab-저장본.lab32켬-업무들임:not(#_):not(#__):not(#___) .pj-table tr.lab32더 button{padding-left:42px!important;}
+
+html.lab-저장본.lab32켬-업무들임:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 .lab32추가단추{margin-left:34px!important;}
+
 html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .퍼{font:500 12.5px/1 "Pretendard Variable","Pretendard",sans-serif;color:#5e5d60;font-variant-numeric:tabular-nums;}
 html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .막대{height:4px;border-radius:2px;background:#eef0f4;overflow:hidden;}
 html.lab-저장본.lab32켬-내업무펼침:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 .막대 span{display:block;height:100%;background:#6c69f0;border-radius:2px;}
@@ -138,6 +153,11 @@ html.lab-저장본.lab32켬-도우미여닫기:not(#_):not(#__):not(#___) .lab32
   box-shadow:0 8px 24px -6px rgba(124,58,237,.28),0 2px 6px rgba(16,24,40,.08);opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .15s ease .2s,visibility 0s .2s,box-shadow .25s ease,scale .35s cubic-bezier(.34,1.56,.64,1);}
 html.lab-저장본.lab32켬-도우미여닫기.lab32-AI닫힘:not(#_):not(#__):not(#___) .lab32얼굴{opacity:1;visibility:visible;pointer-events:auto;}
+/* 2026-10-12 사용자 「프로젝트 화면 누를 때 왼쪽 상단에 AI 도우미 말풍선 나옴」 — 원인: 1안 화면 전환(촤르륵)이 본문 칸(.pj-content) 자식을 인라인 opacity · visibility 로 보이게 하는데
+   말풍선 · 얼굴 단추도 그 자식이라 같이 보였고, 말풍선은 아직 자리(top · right)를 안 잡아 왼쪽 위에 뜸 → 숨길 때는 !important 로(인라인을 이김) */
+html.lab-저장본.lab32켬-도우미여닫기:not(.lab32-AI닫힘):not(#_):not(#__):not(#___) .lab32얼굴{opacity:0!important;visibility:hidden!important;pointer-events:none!important;}
+html.lab-저장본.lab32켬-도우미여닫기:not(#_):not(#__):not(#___) .lab32말:not(.보임){opacity:0!important;visibility:hidden!important;}
+html.lab-저장본.lab32켬-도우미여닫기:not(.lab32-AI닫힘):not(#_):not(#__):not(#___) .lab32말{opacity:0!important;visibility:hidden!important;}
 html.lab-저장본.lab32켬-도우미여닫기:not(#_):not(#__):not(#___) .lab32얼굴 img{position:absolute;inset:1.5px;width:77px;height:77px;border-radius:50%;border:3px solid #fff;box-sizing:border-box;object-fit:cover;background:#eef0ff;}
 html.lab-저장본.lab32켬-도우미여닫기:not(#_):not(#__):not(#___) .lab32얼굴::before{content:"";position:absolute;inset:0;border-radius:50%;padding:1.5px;z-index:2;pointer-events:none;background:conic-gradient(from var(--lab32각),#c9b5fb,#9fd0f5 25%,#dcb4f6 50%,#b0b9fa 75%,#c9b5fb);animation:lab32프리즘 6s linear infinite;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);}
@@ -160,9 +180,9 @@ html.lab-저장본:not(.lab32-팝업) .lab32간트{visibility:hidden;pointer-eve
 
 /* + 업무 추가 줄 — 펼친 끝(더 보기와 같은 바탕 · 높이 38) · 글자 단추(주색 · + 14) · 내 업무가 없으면 앞에 흐린 안내 */
 html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 > td{height:38px!important;background:#fbfbfd;border-bottom:1px solid #f1f2f5!important;}
-html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 td .빈{margin:0 10px 0 22px;color:#9aa0ae;font:400 12.5px/1 "Pretendard Variable","Pretendard",sans-serif;}
+html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 td .빈{display:inline-flex;align-items:center;height:26px;vertical-align:middle;margin-left:10px;color:#9aa0ae;font:400 12.5px/1 "Pretendard Variable","Pretendard",sans-serif;}   /* 2026-10-12 사용자 「업무 추가 우측 멘트하고 글씨 세로 중심으로」 — 단추(26 · 가운데)와 같은 높이 · vertical-align middle */
+html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 .lab32추가단추{vertical-align:middle;}
 html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 .lab32추가단추{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;margin-left:14px;border:0;border-radius:6px;background:transparent;color:#5754d6;font:500 12.5px/1 "Pretendard Variable","Pretendard",sans-serif;cursor:pointer;}
-html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 td .빈 + .lab32추가단추{margin-left:0;}
 html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 .lab32추가단추:hover{background:rgba(108,105,240,.08);}
 html.lab-저장본.lab32켬-업무추가:not(#_):not(#__):not(#___) .pj-table tr.lab32추가 .lab32추가단추 svg{width:14px;height:14px;}
 /* 줄메뉴 — 앞 핀 칸 없앰(머리 · 줄 첫 칸 숨김) · 이름 옆 고정 핀(고정일 때만) · 줄 끝 ⋯(올리면 · 메뉴 열림 동안 보임) · 메뉴 = 흰 · 테 #eceef8 · 둥글기 10 · 그림자 · 줄 32 · 13/500 */
@@ -174,6 +194,7 @@ html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .pj-content:has
 html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32이름줄.고정 .lab32고정표{display:inline-grid;place-items:center;width:16px;height:16px;flex:none;color:#8a8b9a;}
 html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32이름줄 .lab32고정표 svg{width:13px;height:13px;}
 html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .pj-content:has(.pj-tools) .pj-table tbody tr:not(.lab32업무):not(.lab32더):not(.lab32추가) > td:last-child{position:relative;padding-right:44px!important;}
+html.lab-저장본.lab32켬-업무점점:not(#_):not(#__):not(#___) .pj-table tr.lab32업무 > td:last-child{position:relative;padding-right:44px!important;}
 html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32점점{position:absolute;right:10px;top:50%;margin-top:-13px;width:26px;height:26px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:#5e5d60;cursor:pointer;opacity:0;transition:opacity .12s,background-color .12s;}
 html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .pj-table tbody tr:hover .lab32점점,html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32점점.열림,html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32점점:focus-visible{opacity:1;}
 html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32점점:hover,html.lab-저장본.lab32켬-줄메뉴:not(#_):not(#__):not(#___) .lab32점점.열림{background:rgba(0,0,0,.06);color:#1d1c1d;}
