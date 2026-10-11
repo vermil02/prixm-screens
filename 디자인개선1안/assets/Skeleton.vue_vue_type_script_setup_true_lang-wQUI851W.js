@@ -1,0 +1,1 @@
+import{d as t,a,a5 as r,o as n}from"./index-DiNYsuIl.js";const i=t({__name:"Skeleton",props:{width:{default:"100%"},height:{default:"16px"},rounded:{default:"6px"}},setup(e){return(o,d)=>(n(),a("div",{class:"animate-pulse",style:r({width:e.width,height:e.height,borderRadius:e.rounded,backgroundColor:"var(--surface-tertiary)"})},null,4))}});export{i as _};

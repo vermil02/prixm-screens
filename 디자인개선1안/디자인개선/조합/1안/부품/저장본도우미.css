@@ -1,0 +1,169 @@
+/* 조합 1안 · 부품/저장본도우미 — 손질/25_AI도우미/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-08
+   이메일 저장본(d04)에만: 첫 메일을 연 채로 시작(가운데 읽기 칸) · 오른쪽 AI 도우미 = 25 랩 조합 · 추천 단추 / 입력창 → 물음 · 쓰는 중 · 답(시연).
+   켠 항목: 얼굴 · 머리 크게 45(피그마 시안 2) · 얼굴 · 대화 전엔 가운데 크게 → 대화 중 머리 45 · 제안 꼴 · 회색 알약(레퍼런스) · 제안 빛 · 프리즘 테두리 올렸을 때만 · 추천 자리 · 인사 아래(피그마 원래) · 하는 일 한 줄(제목 아래) · 쓰는 중 테 · 프리즘(추천) · 전환 · GSAP(얼굴이 머리로 · 말풍선 · 답 차례로)(추천) · 쓰는 중 표시 · 하는 일 단계(사실 기반)(추천) */
+
+/* ═══ 25 AI 도우미 — 모든 규칙은 html.lab-저장본.lab25-메일.lab25켬-<항목> 아래 · 엔진이 인사 그림을 복사해 둔 칸(.lab25-머리얼굴 · .lab25-답얼굴)만 칠함 ═══ */
+html.lab-저장본.lab25-메일 .lab25-머리얼굴,html.lab-저장본.lab25-메일 .lab25-답얼굴,html.lab-저장본.lab25-메일 .lab25-흉내,html.lab-저장본.lab25-메일 .lab25-쓰는중,html.lab-저장본.lab25-메일 .lab25-머리설명{display:none;}
+html.lab-저장본.lab25-메일 .lab25-머리얼굴 img,html.lab-저장본.lab25-메일 .lab25-답얼굴 img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;}
+
+/* ── 상태 — 대화 중 · 답 쓰는 중이면 인사를 숨기고 흉내 대화를 보임(이메일만 · 흉내를 만든 판) ── */
+html.lab-저장본.lab25-메일.lab25켬-중 [data-ai-greeting]:has(+ .lab25-흉내),html.lab-저장본.lab25-메일.lab25켬-쓰는 [data-ai-greeting]:has(+ .lab25-흉내){display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-중 .lab25-흉내,html.lab-저장본.lab25-메일.lab25켬-쓰는 .lab25-흉내{display:flex;flex-direction:column;gap:18px;padding-bottom:24px;font:400 13px/1.55 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:var(--color-n-800,#1f2937);}
+html.lab-저장본.lab25-메일.lab25켬-쓰는 .lab25-쓰는중{display:block;color:#6b7280;}
+html.lab-저장본.lab25-메일 .lab25-흉내 .lab25-물음{align-self:flex-end;max-width:80%;background:#f3f4f6;border-radius:12px;padding:8px 12px;}
+html.lab-저장본.lab25-메일 .lab25-흉내 .lab25-답{display:flex;align-items:flex-start;gap:16px;}
+html.lab-저장본.lab25-메일 .lab25-흉내 .lab25-답 p{margin:0;min-width:0;}
+html.lab-저장본.lab25-메일 .lab25-흉내 .lab25-답 b{display:block;font-weight:600;font-size:14px;margin-bottom:4px;color:#111;}
+
+/* ── 얼굴 · 머리 작게 — 제목 앞 28 동그라미 ── */
+html.lab-저장본.lab25-메일.lab25켬-작게 .lab25-머리얼굴{display:block;flex:none;width:28px;height:28px;}
+
+/* ── 얼굴 · 마지막 답 옆(피그마 원본 212:305 — 「메일 작성이 완료되었습니다」 옆 80) ── */
+html.lab-저장본.lab25-메일.lab25켬-답옆 .lab25-흉내 .lab25-끝답 .lab25-답얼굴{display:block;flex:none;width:80px;height:80px;}
+
+/* ── 얼굴 · 머리 크게(피그마 시안 2 215:491 실측 — 얼굴 45.46 · 판 왼쪽 20 · 제목 15.5/600 · 얼굴 → 제목 13 → 우리 값 45 · 위 19 · 16/600(1안 머리 제목)) · 인사의 80 얼굴은 뺌 ── */
+html.lab-저장본.lab25-메일.lab25켬-크게 .lab25-머리얼굴{display:block;flex:none;position:relative;width:45px;height:45px;margin-right:5px;}
+html.lab-저장본.lab25-메일.lab25켬-크게 .lab25-도우미머리.lab25-도우미머리{padding-top:19px!important;}
+html.lab-저장본.lab25-메일.lab25켬-크게 .lab25-도우미제목.lab25-도우미제목{font-size:16px!important;letter-spacing:-.4px;}
+html.lab-저장본.lab25-메일.lab25켬-크게 [data-ai-greeting] > div:first-child > span.relative{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-크게 [data-ai-greeting] > div:first-child p{padding-top:0!important;}
+
+/* ── 얼굴 · 메신저(레퍼런스 Seva Kogaev) — 대화 전: 인사를 가운데로(얼굴 80 위 · 글 가운데) · 대화 중: 답마다 왼쪽 아래 24 얼굴 + 옅은 말풍선 ── */
+html.lab-저장본.lab25-메일.lab25켬-메신저 [data-ai-greeting]{padding-top:72px!important;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 [data-ai-greeting] > div:first-child{flex-direction:column!important;align-items:center!important;gap:14px!important;text-align:center;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 [data-ai-greeting] > div:first-child p{padding-top:0!important;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 [data-ai-greeting] > div:first-child > span.relative > svg{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 [data-ai-greeting] > button{margin-top:22px;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 .lab25-흉내 .lab25-답{align-items:flex-end;gap:8px;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 .lab25-흉내 .lab25-답얼굴{display:block;flex:none;width:24px;height:24px;}
+html.lab-저장본.lab25-메일.lab25켬-메신저 .lab25-흉내 .lab25-답 p{background:#f6f7f9;border-radius:12px 12px 12px 4px;padding:10px 12px;max-width:85%;}
+
+/* ── 처음 가운데(레퍼런스 Seva Kogaev 왼쪽 화면) — **대화 전에만**: 머리 얼굴 · 하는 일 한 줄 숨김(제목만) ·
+   인사 = 판 가운데 얼굴 96 + 글 가운데 · 제안 단추는 아래(입력칸 위)로. 대화가 시작되면 이 규칙은 꺼지고 「크게」(머리 45)가 그대로 ── */
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-머리얼굴,html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-머리설명{display:none!important;}
+/* 사용자 「이메일 AI 도우미 이런 건 가운데 정렬로 해도 되고」 — 대화 전 제목 가운데(레퍼런스처럼) · 대화 중은 얼굴 + 제목 왼쪽 그대로 */
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-도우미머리{justify-content:center!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-도우미머리 > .flex-1{flex:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-도우미제목{text-align:center;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting]{display:flex!important;flex-direction:column!important;min-height:100%;box-sizing:border-box;padding-top:0!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child{flex-direction:column!important;align-items:center!important;gap:18px!important;text-align:center;margin:auto 0 0!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child > span.relative{display:block!important;width:120px!important;height:120px!important;flex:none;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child > span.relative img{width:120px!important;height:120px!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child > span.relative > svg{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child p{padding-top:0!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > button{margin-top:auto!important;}
+/* 제안 알약(데모) — 저장본 이메일엔 제안 단추가 없어 레퍼런스처럼 판 아래에 셋을 흉내 · 대화 전 + 처음 가운데일 때만 */
+html.lab-저장본.lab25-메일 .lab25-제안{display:none;}
+/* 사용자 「대화 전에는 버튼들은 가운데 섹션 아래에 있는 거긴 해」 — 얼굴 · 인사 바로 아래 가운데 · 묶음째 판 세로 가운데 */
+html.lab-저장본.lab25-메일.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-제안{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:20px 0 auto;}
+html.lab-저장본.lab25-메일.lab25켬-알약 .lab25-제안 span{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;background:#f3f4f6;font:400 13px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#374151;white-space:nowrap;cursor:pointer;}
+html.lab-저장본.lab25-메일.lab25켬-알약 .lab25-제안 span:hover{background:#e9eaee;}
+/* 피그마 카드(221:131) — 흰 바탕 · 옅은 테 · 그림자 · 둥글기 12 · 높이 46 · ✉ 그림 + 글 왼쪽 · 판 폭 꽉 · 세로로 쌓음 */
+html.lab-저장본.lab25-메일.lab25켬-카드.lab25켬-처음가운데.lab25켬-전 .lab25-제안{flex-direction:column;align-items:stretch;align-self:stretch;}
+html.lab-저장본.lab25-메일.lab25켬-카드 .lab25-제안 span{display:flex;align-items:center;gap:8px;height:46px;padding:0 14px;border-radius:12px;background:#fff;border:1px solid #eef0f4;box-shadow:0 2px 8px rgba(16,24,40,.06);font:400 14px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#1f2937;cursor:pointer;}
+/* 라인 아이콘(lucide · 선 1.6 · #5e5d60 — LNB · 도구 줄 결) — 사용자 「이메일 아이콘은 라인 아이콘 스타일로」 · 「회색 알약 - 아이콘 추가」 · 요약 = mail · 회신 = reply */
+html.lab-저장본.lab25-메일:is(.lab25켬-카드,.lab25켬-알약) .lab25-제안 span::before{content:"";flex:none;width:16px;height:16px;background:#5e5d60;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") center/16px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") center/16px no-repeat;}
+html.lab-저장본.lab25-메일:is(.lab25켬-카드,.lab25켬-알약) .lab25-제안 span[data-i="회신"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 18v-2a4 4 0 0 0-4-4H4'/%3E%3Cpath d='m9 17-5-5 5-5'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 18v-2a4 4 0 0 0-4-4H4'/%3E%3Cpath d='m9 17-5-5 5-5'/%3E%3C/svg%3E");}
+html.lab-저장본.lab25-메일.lab25켬-알약 .lab25-제안 span{gap:6px;padding:0 14px 0 12px;}
+html.lab-저장본.lab25-메일.lab25켬-알약 .lab25-제안 span::before{width:15px;height:15px;-webkit-mask-size:15px;mask-size:15px;}
+html.lab-저장본.lab25-메일.lab25켬-카드 .lab25-제안 span:hover{background:#fafbfc;}
+/* 제안 빛 — 사용자 「그림자 효과보다는 프리즘처럼 테두리가 빛 · 보라 느낌 · 보석처럼」 → 그림자 없음. 1px 테두리에 보라→하늘→분홍 원뿔 그라디언트가 천천히 돎(보석 결)
+   테두리 = 바탕 두 겹(padding-box 단색 + border-box 그라디언트) · 각도는 @property 로 돌림 · transform 없음(GSAP 규칙) */
+@property --lab25각{syntax:"<angle>";inherits:false;initial-value:0deg;}
+html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span{border:1px solid transparent;box-shadow:none!important;transition:color .18s;}
+html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span::before{transition:background-color .18s;}
+html.lab-저장본.lab25-메일.lab25켬-빛늘 .lab25-제안 span,html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span:hover{
+  background:linear-gradient(#faf8ff,#faf8ff) padding-box,
+    conic-gradient(from var(--lab25각),#8b5cf6,#c4b5fd 18%,#7dd3fc 32%,#a78bfa 48%,#f0abfc 64%,#e9d5ff 78%,#8b5cf6) border-box;
+  color:#4c1d95;animation:lab25프리즘 6s linear infinite;}
+html.lab-저장본.lab25-메일.lab25켬-빛늘 .lab25-제안 span:nth-child(2){animation-delay:-3s;}
+html.lab-저장본.lab25-메일.lab25켬-빛늘 .lab25-제안 span::before{background:#8b5cf6;}
+html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span:hover{
+  background:linear-gradient(#f3eeff,#f3eeff) padding-box,
+    conic-gradient(from var(--lab25각),#7c3aed,#a78bfa 18%,#38bdf8 32%,#8b5cf6 48%,#e879f9 64%,#c4b5fd 78%,#7c3aed) border-box;
+  color:#5b21b6;animation-duration:2.4s;}
+html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span:hover::before{background:#7c3aed;}
+/* 사용자 「호버하면 글씨는 진한 검정?」 → 「아이콘하고 글씨 둘 다 보라 톤인데 좀 진하게」 — 글씨 #4c1d95(violet-900) · 아이콘 #5b21b6(violet-800) */
+html.lab-저장본.lab25-메일.lab25켬-빛호버 .lab25-제안 span:hover{color:#4c1d95;}
+html.lab-저장본.lab25-메일.lab25켬-빛호버 .lab25-제안 span:hover::before{background:#5b21b6;}
+@keyframes lab25프리즘{to{--lab25각:360deg;}}
+@media (prefers-reduced-motion:reduce){html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span{animation:none!important;}}
+
+/* ── 추천 자리 — 입력위면 인사 속 묶음을 숨기고 입력칸 위 묶음을 보임(대화 전에만 · 왼쪽 맞춤 · 입력칸과 같은 좌우 15) ── */
+html.lab-저장본.lab25-메일 .lab25-제안위{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-입력위.lab25켬-전 .lab25-제안위{display:flex!important;flex-wrap:wrap;justify-content:flex-start;gap:8px;margin:0 15px;padding-top:12px;flex:none;}
+html.lab-저장본.lab25-메일.lab25켬-입력위 .lab25-제안속{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-입력위.lab25켬-카드.lab25켬-전 .lab25-제안위{flex-direction:column;align-items:stretch;}
+html.lab-저장본.lab25-메일.lab25켬-입력위.lab25켬-처음가운데.lab25켬-전 [data-ai-greeting] > div:first-child{margin:auto 0!important;}   /* 인사 속 묶음이 빠지니 얼굴 · 인사만 가운데 */
+
+/* ── 입력칸(흉내 · 모든 안 · 모든 상태) — 저장본 이메일엔 입력칸이 없음 · 피그마 원래 디자인(prixm 221:131) 꼴: 테 AI 보라 · 둥글기 12 · 높이 130 · 안내 글 · + / ↵ ── */
+html.lab-저장본.lab25-메일 .lab25-입력{flex:none;margin:12px 15px 0;height:130px;box-sizing:border-box;border:1px solid #e5e7eb;border-radius:12px;background:#fff;position:relative;padding:0;font:400 14px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#9ca3af;transition:border-color .15s ease,box-shadow .15s ease;cursor:text;}
+/* 사용자 「입력창도 활성화되면 지금처럼 보라색이 되게」 — 평소 회색 테 · 올리면 조금 진하게 · 누르면(포커스) AI 보라 테 + 옅은 보라 둘레 */
+html.lab-저장본.lab25-메일 .lab25-입력:hover{border-color:#d1d5db;}
+html.lab-저장본.lab25-메일 .lab25-입력:focus-within{border-color:var(--color-ai-700,#8b5cf6);box-shadow:0 0 0 3px rgba(139,92,246,.12);}
+/* 사용자 「입력창 활성화되었을 때에도 테두리 프리즘」 — 제안 빛(프리즘)을 켰을 때 쓰는 중 테두리도 같은 결 · 링 그림자 없음 · 각도는 lab25프리즘 그대로 */
+html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-입력:focus-within{border-color:transparent;box-shadow:none;
+  background:linear-gradient(#fff,#fff) padding-box,
+    conic-gradient(from var(--lab25각),#7c3aed,#a78bfa 18%,#38bdf8 32%,#8b5cf6 48%,#e879f9 64%,#c4b5fd 78%,#7c3aed) border-box;
+  animation:lab25프리즘 6s linear infinite;}
+@media (prefers-reduced-motion:reduce){html.lab-저장본.lab25-메일:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-입력:focus-within{animation:none;}}
+html.lab-저장본.lab25-메일 .lab25-입력 textarea{display:block;width:100%;height:calc(100% - 40px);box-sizing:border-box;border:0;outline:0;resize:none;background:transparent;padding:14px 16px 0;font:inherit;color:#111827;}
+html.lab-저장본.lab25-메일 .lab25-입력 textarea::placeholder{color:#9ca3af;}
+/* 사용자 「입력창 아래로 좀 내려 주고 피드백은 숨겨 주던지」 — 판이 아래 55 를 비워 둠(제품 입력칸 자리) → 15 · 오른쪽 아래 피드백 단추(.relay-fab) 숨김 */
+html.lab-저장본.lab25-메일 :has(> .lab25-입력){padding-bottom:15px!important;}
+/* 메일 고르기 전 = 저장본 그대로 — 추천 문구 · 입력칸 없음 · 인사는 「왼쪽에서 메일을 고르시면 …」 */
+html.lab-저장본.lab25-메일.lab25켬-고르기전 .lab25-입력,html.lab-저장본.lab25-메일.lab25켬-고르기전 .lab25-제안{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-고르기전 :has(> .lab25-입력){padding-bottom:55px!important;}
+html.lab-저장본.lab25-메일.lab25켬-처음가운데.lab25켬-고르기전 [data-ai-greeting] > div:first-child{margin:auto 0!important;}   /* 제안이 없으니 얼굴 · 인사만 가운데 */
+/* 메일 고른 뒤(대화 전) — 인사 글을 피그마(221:131) 문구로 */
+html.lab-저장본.lab25-메일 .lab25-인사고름{display:none;}
+html.lab-저장본.lab25-메일.lab25켬-전 [data-ai-greeting] p.lab25-인사원래{display:none!important;}
+html.lab-저장본.lab25-메일.lab25켬-전 [data-ai-greeting] .lab25-인사고름{display:block;}
+html.lab-저장본.lab25-메일 .relay-fab{display:none!important;}
+html.lab-저장본.lab25-메일 .lab25-입력 i{position:absolute;bottom:12px;font-style:normal;font-size:20px;line-height:1;color:#374151;}
+html.lab-저장본.lab25-메일 .lab25-입력 i.더{left:14px;}
+html.lab-저장본.lab25-메일 .lab25-입력 i.보냄{right:14px;font-size:17px;}
+
+/* ── 하는 일 한 줄 — 제목 아래 12/400 회색 · 인사가 사라져도 무엇을 해 주는지 남음 ── */
+html.lab-저장본.lab25-메일.lab25켬-한줄 .lab25-머리설명{display:block;margin-top:2px;font:400 12px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── 답 쓰는 중 얼굴 테 — 머리 얼굴 둘레 2px AI 색 원뿔 테 · 1.1초 한 바퀴 · 상태가 「답 쓰는 중」 일 때만 · 움직임 줄이기면 멈춘 테 ── */
+html.lab-저장본.lab25-메일.lab25켬-테.lab25켬-쓰는 .lab25-머리얼굴{position:relative;}
+html.lab-저장본.lab25-메일.lab25켬-테.lab25켬-쓰는 .lab25-머리얼굴::after{content:"";position:absolute;inset:-3px;border-radius:50%;padding:2px;background:conic-gradient(from 0deg,transparent 0 55%,var(--color-ai-900,#6d28d9));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:lab25테 1.1s linear infinite;}
+@keyframes lab25테{to{transform:rotate(1turn);}}
+/* 프리즘 테 — 제안 · 입력창 프리즘과 같은 색 · 각도(--lab25각)만 돎(1.6초) · 테 2px · 그림자 없음 */
+html.lab-저장본.lab25-메일.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴{position:relative;}
+html.lab-저장본.lab25-메일.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴::after{content:"";position:absolute;inset:-3px;border-radius:50%;padding:2px;background:conic-gradient(from var(--lab25각),#7c3aed,#a78bfa 18%,#38bdf8 32%,#8b5cf6 48%,#e879f9 64%,#c4b5fd 78%,#7c3aed);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:lab25프리즘 1.6s linear infinite;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab25-메일.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴::after{animation:none;}}
+/* 사용자 「아이콘이 작아질 때 두꺼운 프리즘 테두리가 생겼다가 작아짐」 — 날아가는 동안(얼굴이 2.7배로 커 보임)엔 테를 숨겼다가 내려앉은 뒤 옅게 켬 */
+html.lab-저장본.lab25-메일 .lab25-머리얼굴::after{transition:opacity .3s ease;}
+html.lab-저장본.lab25-메일 .lab25-머리얼굴.lab25-나는중::after{opacity:0;transition:none;}
+/* 하는 일 단계 — 쓰는 중에만 보이는 줄들(지금 단계 = 작은 프리즘 고리 · 끝난 단계 = 체크) · 단계가 있으면 「답을 쓰는 중…」 글은 숨김 */
+html.lab-저장본.lab25-메일 .lab25-단계 ~ .lab25-쓰는중{display:none!important;}
+html.lab-저장본.lab25-메일 .lab25-단계{display:flex;flex-direction:column;gap:7px;padding:2px 0;}
+html.lab-저장본.lab25-메일 .lab25-단계줄{display:flex;align-items:baseline;gap:8px;font:400 13px/1.45 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#6b7280;}
+html.lab-저장본.lab25-메일 .lab25-단계줄 i{flex:none;position:relative;top:2px;width:12px;height:12px;border-radius:50%;}
+html.lab-저장본.lab25-메일 .lab25-단계줄.켬 i{background:conic-gradient(from var(--lab25각),#7c3aed,#a78bfa 18%,#38bdf8 32%,#8b5cf6 48%,#e879f9 64%,#c4b5fd 78%,#7c3aed);-webkit-mask:radial-gradient(circle,transparent 3.5px,#000 4px);mask:radial-gradient(circle,transparent 3.5px,#000 4px);animation:lab25프리즘 1s linear infinite;}
+html.lab-저장본.lab25-메일 .lab25-단계줄.끝 i{border-radius:0;background:#8b5cf6;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;}
+html.lab-저장본.lab25-메일 .lab25-단계줄 span{color:#374151;}
+html.lab-저장본.lab25-메일 .lab25-단계줄.켬 span{color:#4c1d95;font-weight:500;}
+html.lab-저장본.lab25-메일 .lab25-단계줄 em{font-style:normal;color:#9ca3af;font-size:12px;}
+/* 근거 한 줄 — 답 위 · 단계가 접힌 것 */
+html.lab-저장본.lab25-메일 .lab25-근거{display:flex;align-items:center;gap:6px;margin-bottom:-10px;font:400 12px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#9ca3af;}
+html.lab-저장본.lab25-메일 .lab25-근거::before{content:"";flex:none;width:12px;height:12px;background:#a78bfa;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;}
+html.lab-저장본.lab25-메일 .lab25-답 strong{font-weight:600;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab25-메일.lab25켬-테.lab25켬-쓰는 .lab25-머리얼굴::after{animation:none;background:var(--color-ai-900,#6d28d9);}}
+
+/* ═══ 1안 · 메일 연 채(읽기 칸) — 저장본 「메일을 선택해 주세요」 자리에 고른 메일을 보여 줌 ═══ */
+html.lab-저장본.lab25-메일 .lab25-빈칸{display:none!important;}
+html.lab-저장본.lab25-메일 .lab25-읽기{flex:1;min-height:0;overflow-y:auto;padding:26px 32px 40px;font:400 14px/1.75 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#1f2937;letter-spacing:-.2px;}
+html.lab-저장본.lab25-메일 .lab25-읽기 h2{margin:0 0 18px;font:600 18px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#111827;letter-spacing:-.4px;}
+html.lab-저장본.lab25-메일 .lab25-보낸{display:flex;align-items:center;gap:10px;padding-bottom:18px;margin-bottom:22px;border-bottom:1px solid #eceef1;}
+html.lab-저장본.lab25-메일 .lab25-보낸얼굴{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#eef0ff;color:#4f46e5;font:600 14px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif;}
+html.lab-저장본.lab25-메일 .lab25-보낸 b{display:block;font:600 14px/1.35 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#111827;}
+html.lab-저장본.lab25-메일 .lab25-보낸때{display:block;font:400 12px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;font-style:normal;color:#6b7280;}
+html.lab-저장본.lab25-메일 .lab25-본문{white-space:pre-wrap;word-break:keep-all;max-width:720px;}
+html.lab-저장본.lab25-메일 .lab25-고른{background:var(--color-n-50,#f7f8fa)!important;}
+/* 대화 — 누른 것만 쌓임 · 답 사이 */
+html.lab-저장본.lab25-메일 .lab25-흉내 .lab25-답 p{white-space:normal;}
+html.lab-저장본.lab25-메일 .lab25-흉내 .lab25-물음{white-space:pre-wrap;}

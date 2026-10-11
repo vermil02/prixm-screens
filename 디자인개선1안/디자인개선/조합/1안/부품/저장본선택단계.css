@@ -1,0 +1,32 @@
+/* 조합 1안 · 부품/저장본선택단계 — 2026-10-08 · 27 이메일 구조 랩에서 다듬은 「호버 · 선택 단계」 를 test-crew 저장본 화면에(저장본CSS 맨 끝이라 앞 파일의 같은 값을 이김)
+   사용자 「메일에서 호버 선택 단계 있지 그거를 lnb 부품에도 반영해 주고 정본에도 우선 반영」
+   단계: 호버 rgb(248,248,255) < 선택 rgb(243,243,254) < 선택에 올림 rgb(236,236,253)
+   2026-10-08 고침: LNB 켜짐만 rgb(238,238,254) + 글 · 아이콘 #5754d6 · 켜짐에 올림 rgb(232,232,253)(사용자 A 안) · 메일 줄 안쪽 둥글기 10 → 6(LNB 줄 · 도구 단추와 같게 · 사용자 「추천 6」)
+   2026-10-08 LNB 호버 248 → 244(사용자 「lnb 에서 이메일만 줠라 옅어 보임」 · 슬라이더로 고른 값 · 1안 LNB.css 와 같게) · 메일 목록 ② 호버 248 은 흰 바탕이라 그대로
+   ① 저장본 LNB 줄(채팅 · 협업 · 문서 · 이메일 · 관리 · 시스템 …) ② 이메일 메일 목록(랩 27 「A · 고른 메일 카드꼴」 값) */
+
+/* ① 저장본 LNB — 변수(저장본.css · 저장본부품.css 가 #e8e8fe · rgba(239,239,255,.85) 로 둔 것)와 줄 */
+html.lab-저장본 aside[class*="gnb-panel-bg"]:not(#_){--color-lnb-hover:rgb(244,244,255);--color-lnb-selected:rgb(238,238,254);}
+html.lab-저장본 aside[class*="gnb-panel-bg"] :is(.px-lnb-row:not(.is-active),ul > li > a:not(.router-link-active),[class*="lnb-row"]:not([class*="lnb-selected"]):not(.is-active)):not(#_):not(#__):hover{background:rgb(244,244,255)!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] :is(.px-lnb-row.is-active,[class*="lnb-selected"]):not(#_):not(#__){background:rgb(238,238,254)!important;color:#5754d6!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] :is(.px-lnb-row.is-active,[class*="lnb-selected"]):not(#_):not(#__):hover{background:rgb(232,232,253)!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] :is(.px-lnb-row.is-active,[class*="lnb-selected"]):not(#_):not(#__) :is(span,svg){color:#5754d6!important;}
+
+/* ② 이메일 메일 목록 — 고른 · 올린 줄 바탕 = 안쪽 둥근 영역(좌우 8 · 위아래 2 · 둥글기 10) · 줄 안쪽 좌우 20 · 위아래 12 · 줄 사이 선 없음 · 탭 줄 오른쪽 20
+   고른 줄 = lab25-고른(저장본도우미.js 가 첫 메일을 연 채 시작) · 메일 목록 = 폭 350 칸(section) */
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full{background:transparent!important;position:relative;isolation:isolate;padding:12px 20px!important;border-bottom-color:transparent!important;}
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full::before{content:"";position:absolute;inset:2px 8px;border-radius:6px;background:transparent;z-index:-1;transition:background-color .12s;}
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full:hover::before{background:rgb(248,248,255);}
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full.lab25-고른::before{background:rgb(243,243,254);}
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full.lab25-고른:hover::before{background:rgb(236,236,253);}
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] div[class*="mb-[20px]"]{padding-right:20px!important;}
+/* 키보드 초점(:focus-visible) — 줄 바깥 네모 2px 대신 안쪽 둥근 영역에 옅은 테(2026-10-08 사용자 「버튼 누른 뒤에 키보드 누르면 왜 테두리가 진해지지?」) */
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full:focus-visible{outline:none!important;}
+html.lab-저장본.lab25-메일:not(#_) section[class*="w-[350px]"] button.w-full:focus-visible::before{box-shadow:inset 0 0 0 1.5px rgba(108,105,240,.45);}
+
+/* 연동 계정 줄(lab18-계정 · 「사용중」 표) — 2026-10-08 사용자 「연동 계정 이거는 배경 빼 주고 사용중 태그는 기존처럼」
+   켜짐 규칙(lnb-selected → 238 바탕 + 주요색 글)이 이 줄에도 걸렸었음 → 바탕 없음 · 글 = 보통 줄 색(29 28 29) · 올리면 호버 248 248 255 · 표 = 원래 초록(바탕 #e9f7ef · 글 #15803d) */
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab18-계정:not(#_):not(#__):not(#___){background:transparent!important;color:rgb(29,28,29)!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab18-계정:not(#_):not(#__):not(#___):hover{background:rgb(244,244,255)!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab18-계정:not(#_):not(#__):not(#___) span:not(.lab18-계정표){color:rgb(29,28,29)!important;}
+html.lab-저장본 aside[class*="gnb-panel-bg"] .lab18-계정:not(#_):not(#__):not(#___) .lab18-계정표{color:#15803d!important;background:#e9f7ef!important;}

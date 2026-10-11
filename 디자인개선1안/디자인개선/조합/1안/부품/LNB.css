@@ -156,3 +156,19 @@ html body .lnb-panel .lab-목록{--lab바지금:rgba(214,216,230,0);transition:-
 /* 2026-10-06 막대 오른쪽 1px 틈 — 사용자 「스크롤바가 lnb 에서는 우측에 딱 붙어 있던 것 같은데 지금 여백이 미세하게」. LNB 판 안쪽 여백이 10 인데(실측) 목록 칸 · 고정 머리는 09 랩 때 값 -9 만큼만 넓혀서
    막대와 판 끝 사이에 바탕 1px(실측 313px). -10 으로 넓히고 안쪽 여백도 +1(왼 10 · 오른 5 = 4 + 1) → 막대가 판 끝에 붙고 글자 자리는 그대로. 저장본 LNB 는 원래 붙어 있음 */
 html body .lnb-panel .lab-목록{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:5px;}html body .lnb-panel > .lnb-wrap > .lnb-group:first-child{margin-left:-10px!important;margin-right:-10px!important;padding-left:10px!important;padding-right:10px!important;}
+
+/* 2026-10-08 선택 단계 = 이메일 메일 목록과 같게(27 이메일 구조 랩 · 사용자 「메일에서 호버 선택 단계 있지 그거를 lnb 부품에도 반영 · 정본에도 우선 반영」)
+   호버 rgb(248,248,255) < 켜짐 rgb(243,243,254) < 켜짐에 올림 rgb(236,236,253) · 앞: 호버 rgba(239,239,255,.85) · 켜짐 #e8e8fe(위 109 줄 · 그대로 둠) · 맨 위 핵심 카드 호버는 안 건드림 */
+html body .lnb-panel .lnb-wrap .lnb-group:not(:first-child) .lnb-list .channel-text-demo:not(.active):not(#_):hover,html body .lnb-panel .channel-text-demo:not(.active):not(#_):not(#__):hover{background:rgb(244,244,255)!important;}
+html body .lnb-panel .lnb-wrap .lnb-group .lnb-list .channel-text-demo.active:not(#_):not(#__){background:rgb(243,243,254)!important;}
+html body .lnb-panel .lnb-wrap .lnb-group .lnb-list .channel-text-demo.active:not(#_):not(#__):hover{background:rgb(236,236,253)!important;}
+
+/* 2026-10-08 켜짐 다시 — 사용자 「lnb 선택색은 좀 개선해야 될 것 같다」 → 실측: 켜짐 243 243 254 가 판 바탕 250 251 252 와 차이가 작고 글 · 아이콘은 보통 줄과 같아(400 · 29 28 29) 「지금 여기」 가 약함
+   → 비교 사진 A 안 고름: 켜짐 바탕 rgb(238,238,254) + 글 · 아이콘 주요색 #5754d6 · 켜짐에 올림 rgb(232,232,253) · 호버 248 248 255 는 그대로
+   맨 위 핵심 카드 묶음(.lnb-group:first-child · 모든 자동화 · 새 자동화 등 · 자기 켜짐 꼴이 따로 있음)은 뺌 — 처음엔 걸려서 보라 바탕에 보라 글씨가 됐음 */
+html body .lnb-panel .lnb-wrap .lnb-group:not(:first-child) .lnb-list .channel-text-demo.active:not(#_):not(#__):not(#___){background:rgb(238,238,254)!important;color:#5754d6!important;}
+html body .lnb-panel .lnb-wrap .lnb-group:not(:first-child) .lnb-list .channel-text-demo.active:not(#_):not(#__):not(#___):hover{background:rgb(232,232,253)!important;}
+html body .lnb-panel .lnb-wrap .lnb-group:not(:first-child) .lnb-list .channel-text-demo.active:not(#_):not(#__):not(#___) :is(span,div,p,svg){color:#5754d6!important;}
+
+/* 2026-10-08 호버만 되돌림(위 「선택 단계」 첫 줄) — 사용자 「lnb 에서 호버할 때 너무 옅지 않아?」 「개선 ㄱㄱ」. LNB 바탕 #fafafd(250) 위라 이메일 목록(흰 바탕) 호버 248 이 묻힘 → rgba(239,239,255,.85)(흰 위 ≈241). 켜짐은 바로 위 「켜짐 다시」 A안(238 + #5754d6)이 이김 · 손대지 않음. 이메일 저장본선택단계.css 는 그대로 */
+/* 2026-10-08 호버 244 — 사용자가 LNB호버조절.html 슬라이더로 고름(「지금보다 살짝 옅게」 · 241 → 244). 저장본(test-crew 화면) LNB 도 같은 값(저장본선택단계.css) */

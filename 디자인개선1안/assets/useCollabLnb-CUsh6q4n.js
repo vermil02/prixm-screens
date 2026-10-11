@@ -1,0 +1,1 @@
+import{r as n}from"./index-DiNYsuIl.js";const u=n(!1),l=n(0);let e=null;function f(){function r(){e===null&&(e=u.value,u.value=!0)}function t(){e!==null&&(u.value=e,e=null)}function o(s){u.value=s,e=null}function a(){l.value+=1}return{collapsed:u,autoCollapse:r,restore:t,userSet:o,searchTick:l,requestSearch:a}}export{f as u};

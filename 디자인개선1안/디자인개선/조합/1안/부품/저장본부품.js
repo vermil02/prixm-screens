@@ -5,7 +5,7 @@
 /* 18 전체 페이지 엔진 — 저장본 화면 하나에 한 번. 요소를 찾아 lab18-* 표시 · 핵심 버튼 묶음 · LNB 제목을 만들고, __lab18적용(항목들) 로 html 클래스만 갈아 끼움 */
 (function(){
   var d=document, w=window; if(w.__lab18적용) return;
-  var 파일=decodeURIComponent(location.pathname).split('/').pop(), 번호=파일.slice(0,2);
+  var 파일=decodeURIComponent(location.pathname).split('/').pop(), 번호=d.documentElement.getAttribute('data-저장본번호')||파일.slice(0,2);   /* 2026-10-11 로컬 복제(주소 /projects 등)는 <html data-저장본번호> 로 알려 줌 */
   var 메뉴={'01':'AI 채팅','02':'협업','03':'지식/문서','04':'이메일','06':'프로젝트','08':'관리','09':'시스템'}[번호]||'';
   var A=d.querySelector('aside[class*="gnb-panel-bg"]'); if(!A) return; var B=A.nextElementSibling;
   function 표(e,c){ if(e) e.classList.add(c); return e; }

@@ -1,0 +1,1 @@
+import{G as o}from"./index-DiNYsuIl.js";const s={getAutomationTab:()=>o.get("/workflows/automation-tab"),listExecutions:(t,a=20)=>o.get(`/workflows/${t}/executions`,{params:{limit:a}})};export{s as a};
