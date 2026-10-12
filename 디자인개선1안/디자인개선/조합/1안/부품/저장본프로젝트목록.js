@@ -1,4 +1,5 @@
 /* 조합 1안 · 부품/저장본프로젝트목록 — 손 부품 · 2026-10-12 · 짝 = 저장본프로젝트목록.css
+   ※ 2026-10-12 손질/66_태그묶기/1안반영.py 가 고침(태그로 묶으면 묶음마다 새 목록) — 고치기 전 원본 = 손질/66_태그묶기/원본_저장본프로젝트목록.js · 이 파일을 손으로 고치면 66 원본도 같이
    45 프로젝트 카드 시안 안 3(회색 단계 · 판 꽉 · 지연 주황 · 상태 = 앱 값 · 색 점)을 모든 프로젝트 목록에.
    ■ 읽는 곳(앱 표는 숨김 · 지우지 않음):
      - 프로젝트 줄 · 차례 · 거름(진행 중 · 역할 · 태그 · 정렬 · 32 요약 거름 lab32숨김) · 고정 = 앱 표 tbody 의 프로젝트 줄(보이는 글을 그대로 읽음)
@@ -14,6 +15,9 @@
   function 폭저장(v){ try{ localStorage.setItem(열쇠,JSON.stringify(v)); }catch(e){} }
   function 카드(){ return d.querySelector('.pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto'); }
   function 표(){ var c=카드(); return c&&c.querySelector(':scope > table.pj-table'); }
+  function 칸들(){ var 모두=[].slice.call(d.querySelectorAll('.pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto')).filter(function(c){ return c.querySelector(':scope > table.pj-table'); });
+    return 모두; }   /* 66 안 2 — 태그로 묶으면 묶음마다 그림(1안 은 늘) */
+  function 전부(){ var o=[]; 칸들().forEach(function(c){ o=o.concat(프로젝트들(c.querySelector(':scope > table.pj-table'))); }); return o; }
   function 프줄들(t){ return [].slice.call(t.tBodies[0]?t.tBodies[0].rows:[]).filter(function(r){ return !/lab32(업무|더|추가)/.test(r.className)&&r.querySelector('.pj-name-btn'); }); }
   function 글(e){ return e?e.textContent.replace(/\s+/g,' ').trim():''; }
   function 해시(s){ var n=0; for(var i=0;i<s.length;i++) n=(n*31+s.charCodeAt(i))>>>0; return n; }
@@ -81,11 +85,13 @@
       var 핀=r.querySelector('.pj-card-pin'), 고=!!(핀&&핀.getAttribute('aria-pressed')==='true');
       var 늦=parseInt(글(c[7]),10)||0, 퍼=parseInt(글(c[5]),10)||0, 업=id?업무들(id):[];
       return {r:r,이:이,id:id,고:고,우:글(c[2]).replace(/^[\^⌃]\s*/,''),담:글(c[4]),퍼:퍼,늦:늦,마:글(c[8]),활:글(c[9]),업:업}; }); }
-  function 그림(강제){ if(바쁨) return; var c=카드(), t=표(); if(!c||!t){ return; }
+  function 그림(강제){ if(바쁨) return; var 강=강제||서명===''; 서명='-'; var 칸=칸들(); 칸.forEach(function(c){ 그림하나(c,강); });
+    [].forEach.call(d.querySelectorAll('.pjl'),function(p){ if(칸.indexOf(p.parentElement)<0) p.remove(); }); }
+  function 그림하나(c,강제){ var t=c.querySelector(':scope > table.pj-table'); if(!t) return;
     var ps=프로젝트들(t), 틀=칸틀();
     var 새=JSON.stringify([ps.map(function(p){ return [p.이,p.고,p.우,p.담,p.퍼,p.늦,p.마,p.활,p.업.map(function(x){ return [x.id,x.이,x.퍼,x.시&&String(x.시),x.끝&&String(x.끝),x.담,x.앱]; })]; }),펼침,다,거름(),(정렬칸()||{}).value,틀.전]);
     var 판=c.querySelector(':scope > .pjl');
-    if(!강제&&판&&새===서명) return; 서명=새; 바쁨=true;
+    if(!강제&&판&&새===c.__서명) return; c.__서명=새; 바쁨=true;
     try{
       if(!판){ 판=d.createElement('div'); 판.className='pjl'; c.insertBefore(판,c.firstChild); }
       판.style.setProperty('--칸',틀.전); 판.style.setProperty('--칸뒤',틀.뒤); 판.style.minWidth=틀.최소+'px';
@@ -97,15 +103,15 @@
       var 이칸=판.querySelector('.프 > .이름'); if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px');
     } finally { 바쁨=false; } }
   /* 그 묶음 꼬리만 넣고 뺌(45 — 다 다시 그리면 마우스 올림이 끊겨 타일이 한순간 보였음) */
-  function 펼침바꿈(id,열){ 펼침[id]=열; var 판=d.querySelector('.pjl'), 묶=판&&판.querySelector('.묶음[data-id="'+id+'"]'); if(!묶) return; var 줄=묶.querySelector('.프'), 꼬=묶.querySelector(':scope > .꼬리');
+  function 펼침바꿈(id,열){ 펼침[id]=열; var 묶=d.querySelector('.pjl .묶음[data-id="'+id+'"]'); if(!묶) return; var 줄=묶.querySelector('.프'), 꼬=묶.querySelector(':scope > .꼬리');
     줄.querySelector('.펼').classList.toggle('열림',열); if(꼬) 꼬.remove();
-    if(열){ var t=표(), p=t&&프로젝트들(t).filter(function(x){ return x.id===id; })[0]; if(p) 줄.insertAdjacentHTML('afterend',꼬리글(p)); }
+    if(열){ var p=전부().filter(function(x){ return x.id===id; })[0]; if(p) 줄.insertAdjacentHTML('afterend',꼬리글(p)); }
     서명=''; 바쁨=true; setTimeout(function(){ 바쁨=false; 그림(); },0); }
   /* 숨긴 표에 잠깐 32 줄을 만들어 누름을 넘김 */
   function 넘김(html,안){ var t=표(); if(!t||!t.tBodies[0]) return; var tmp=d.createElement('tbody'); tmp.innerHTML=html; var tr=tmp.firstElementChild; t.tBodies[0].appendChild(tr); var 대=tr.querySelector(안)||tr; 대.click(); setTimeout(function(){ tr.remove(); },0); }
   function 길(){ var a=d.getElementById('app'); return a&&a.__vue_app__&&a.__vue_app__.config.globalProperties.$router; }
   function 메뉴닫기(){ if(메뉴){ 메뉴.remove(); 메뉴=null; } [].forEach.call(d.querySelectorAll('.pjl .점점.열림'),function(b){ b.classList.remove('열림'); }); }
-  function 메뉴열기(b,id){ 메뉴닫기(); var t=표(), p=t&&프로젝트들(t).filter(function(x){ return x.id===id; })[0]; if(!p) return;
+  function 메뉴열기(b,id){ 메뉴닫기(); var p=전부().filter(function(x){ return x.id===id; })[0]; if(!p) return;
     메뉴=d.createElement('div'); 메뉴.className='pjl-메뉴'; 메뉴.setAttribute('role','menu');
     메뉴.innerHTML='<button type="button" data-a="핀">'+핀그림+(p.고?'고정 풀기':'위로 고정')+'</button><hr><button type="button" data-a="열">'+열그림+'프로젝트 열기</button><button type="button" data-a="간">'+간그림+'간트에서 열기</button>';
     d.body.appendChild(메뉴); var r=b.getBoundingClientRect(); 메뉴.style.top=Math.round(r.bottom+4)+'px'; 메뉴.style.left=Math.round(r.right-메뉴.offsetWidth)+'px'; b.classList.add('열림');
@@ -117,7 +123,7 @@
     var 머=e.target.closest('.머리 > span[data-정]'); if(머&&!e.target.closest('.손')){ var s=정렬칸(), v=머.dataset.정; if(s&&s.value!==v){ var 넣=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set; 넣.call(s,v); s.dispatchEvent(new Event('input',{bubbles:true})); s.dispatchEvent(new Event('change',{bubbles:true})); } return; }
     var 점=e.target.closest('.점점'); if(점){ e.stopPropagation(); var id0=점.closest('.프').dataset.id; if(점.classList.contains('열림')) 메뉴닫기(); else 메뉴열기(점,id0); return; }
     var 프=e.target.closest('.프');
-    if(프){ var id=프.dataset.id; if(e.target.closest('.이름 b')){ var t=표(), p=t&&프로젝트들(t).filter(function(x){ return x.id===id; })[0], nb=p&&p.r.querySelector('.pj-name-btn'); if(nb) nb.click(); return; }
+    if(프){ var id=프.dataset.id; if(e.target.closest('.이름 b')){ var p=전부().filter(function(x){ return x.id===id; })[0], nb=p&&p.r.querySelector('.pj-name-btn'); if(nb) nb.click(); return; }
       if(id) 펼침바꿈(id,!프.querySelector('.펼').classList.contains('열림')); return; }
     var 업=e.target.closest('.업'); if(업){ 넘김('<tr class="lab32업무" data-pid="'+업.dataset.pid+'" data-tid="'+업.dataset.tid+'"><td><span>.</span></td></tr>','span'); return; }
     var 더=e.target.closest('.더'); if(더){ 다[더.dataset.더]=true; 펼침바꿈(더.dataset.더,true); return; }
