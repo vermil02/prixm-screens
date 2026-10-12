@@ -632,6 +632,14 @@ html.lab-저장본.lab25-메일.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25�
   background:radial-gradient(50% 100% at 50% 0,rgba(167,139,250,.30),rgba(125,211,252,.16) 45%,transparent 100%) 0 0/35% 100% no-repeat;
   -webkit-mask:linear-gradient(#000,transparent);mask:linear-gradient(#000,transparent);opacity:0;transition:opacity .3s ease;}
 html.lab-저장본.lab25-메일.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-라인왕복.lab25켬-쓰는 .lab25-도우미카드::after{opacity:1;transition:opacity .4s ease .1s;animation:lab27왕복빛 1.8s ease-in-out infinite alternate;}
+/* G-23 라인 흐름 — 답 쓰는 중 위 라인(::before · 1.5px · 폭 88%)의 색 띠가 오른쪽으로 끊김 없이 흐름 · 테 · 바탕은 G-15 그대로
+   색 띠 = 처음 · 끝이 같은 색(#a78bfa)인 한 바퀴 · 폭 200% 로 깔고 background-position 0% → 200%(= 띠 한 장만큼) linear 반복 → 이음매 없음 · transform 안 씀(GSAP 규칙)
+   양 끝은 mask 로 투명하게 사라짐(대기 라인과 같은 꼴) · ::after = 번짐뺌이 지운 번짐을 쓰는 중에만 되살림 · 같은 색 띠가 같은 속도로 흐름 · 아래로 · 양옆으로 사라짐 */
+@keyframes lab27흐름{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+/* 싱크(사용자 「g25 활성화 상태에서 최상단 프리즘 빛이랑 그림자랑 싱크가 안 맞는 듯」) — 원인: 라인천천히가 대기 라인에 같은 이름(lab27흐름)을 16초로 돌려 두어
+   쓰는 중에 3초로 바뀔 때 라인은 이름이 같아 처음부터 다시 돌지 않고(진행분이 이어짐) 아래 빛(::after)만 0 에서 시작 → 위치가 어긋남
+   → 대기엔 다른 이름(같은 프레임)을 써서 쓰는 중이 되면 라인 · 빛이 같은 순간 0 에서 함께 시작 */
+@keyframes lab27흐름느림{0%{background-position:0% 0;}100%{background-position:200% 0;}}
 html.lab-저장본.lab25-메일.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-라인흐름.lab25켬-쓰는 .lab25-도우미카드::before{
   background:linear-gradient(90deg,#a78bfa 0%,#7dd3fc 25%,#c4b5fd 50%,#f0abfc 75%,#a78bfa 100%) 0 0/200% 100% repeat-x;
   -webkit-mask:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);mask:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);
