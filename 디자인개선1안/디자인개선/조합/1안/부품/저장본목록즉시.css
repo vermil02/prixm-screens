@@ -1,0 +1,8 @@
+/* 조합 1안 · 부품/저장본목록즉시 — 손 부품 · 2026-10-12 · 짝 = 저장본목록즉시.js
+   사용자 「카드에서 리스트 누르면 이전 화면 보였다가 css 적용되는 느낌」 — 실측(화면 틀 기록): 리스트를 누르면 앱이 표 칸(div.overflow-x-auto)을 통째로 새로 만들어
+   0.07 ~ 0.21초 앱 원래 표(역할 · PM · 지연 열 · 타일 · 업무 줄 없음)가 보였다가 0.26초에 1안 목록(.pjl)으로 바뀜.
+   까닭: 저장본프로젝트목록 은 표 옆에 .pjl 이 있을 때만 표를 숨기고(display:none) · .pjl 은 0.4초 setInterval 로만 다시 그림.
+   → 짝 JS 가 새 표가 들어오는 즉시 window.__pj목록그림() 을 부르고(그 부품이 내놓은 것 · 그 부품은 안 고침),
+     여기선 .pjl 이 아직 없는 표를 안 보이게 둠(자리는 그대로) · 1초 지나도 .pjl 이 안 오면 그냥 보임(그 부품이 없을 때 대비). */
+@keyframes lab56보임{to{visibility:visible;}}
+html.lab-저장본.lab56-즉시 .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto:not(:has(> .pjl)) > table.pj-table{visibility:hidden;animation:lab56보임 0s 1s forwards;}

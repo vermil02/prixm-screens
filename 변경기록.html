@@ -32,6 +32,13 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 </ul>
 <p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
 <hr>
+<h2><span class="v">v26.10.12-7</span><span class="m">2026-10-12 16:48</span></h2>
+<p class="sub"><b>디자인 개선 1안 — 프로젝트 카드 → 리스트 바꿀 때 깜빡임 고침</b> (<code>디자인개선1안/</code>)</p>
+<ul>
+<li>프로젝트 · 모든 프로젝트 — 카드 → 리스트로 바꾸면 앱 원래 표(역할 · PM · 지연 열 · 타일 · 업무 줄 없음)가 0.07 ~ 0.21초 보였다가 1안 목록으로 바뀌던 것 고침 — 이제 누른 다음 틀부터 1안 목록</li>
+<li>까닭 — 앱이 표 칸을 통째로 새로 만드는데 1안 목록(.pjl)은 0.4초 간격으로만 다시 그려졌음 → 새 표가 들어오는 즉시 목록을 다시 그림(목록 부품 <code>window.__pj목록그림()</code>) · 목록이 아직 없는 표는 안 보이게(1초 지나면 그냥 보임)</li>
+<li>찾을 곳 — <code>디자인개선/조합/1안/부품/저장본목록즉시.js</code> · <code>.css</code></li>
+</ul>
 <h2><span class="v">v26.10.12-6</span><span class="m">2026-10-12 16:43 · a019110</span></h2>
 <p class="sub"><b>디자인 개선 1안 — 이메일 AI 도우미 입력창: 누르면 주요색 테 · 답 쓰는 중 프리즘 + 정지</b> (<code>디자인개선1안/</code>)</p>
 <ul>
