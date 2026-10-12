@@ -109,7 +109,7 @@
       ps.forEach(function(p){ var 열=거름열기()?(p.id in 걸펼침?걸펼침[p.id]:true):p.id in 펼침?펼침[p.id]:p.업.some(function(x){ return 상태(x)==='지연'; });
         o+='<div class="묶음" data-id="'+(p.id||'')+'"><div class="줄 프" data-id="'+(p.id||'')+'"><span class="이름"><button type="button" class="펼'+(열?' 열림':'')+'" aria-label="업무 펼치기">'+타일(p.이)+꺾+'</button><b title="'+p.이.replace(/"/g,'&quot;')+'">'+p.이+'</b>'+(p.고?'<span class="핀" title="고정됨">'+핀그림+'</span>':'')+'</span><span>'+우칩(p.우)+'</span><span>'+담(p.담)+'</span><span class="퍼">'+p.퍼+'%</span><span class="막대"><i style="width:'+p.퍼+'%"></i></span><span>'+(p.늦?'<span class="상 지연">지연 '+p.늦+'건</span>':'<span class="상 정상">정상</span>')+'</span><span class="날">'+(p.마&&p.마!=='—'?p.마:'<span class="흐">—</span>')+'</span><span>'+p.활+'</span><button type="button" class="점점" aria-label="더 보기" title="더 보기">'+점점+'</button></div>'+(열&&p.id?꼬리글(p):'')+'</div>'; });
       판.innerHTML=o;
-      var 이칸=판.querySelector('.프 > .이름'); if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px');
+      var 이칸=[].filter.call(판.querySelectorAll('.프 > .이름'),function(e){ return e.offsetWidth>0; })[0]; if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px');
     } finally { 바쁨=false; } }
   /* 그 묶음 꼬리만 넣고 뺌(45 — 다 다시 그리면 마우스 올림이 끊겨 타일이 한순간 보였음) */
   function 펼침바꿈(id,열){ if(거름열기()) 걸펼침[id]=열; else 펼침[id]=열; var 묶=d.querySelector('.pjl .묶음[data-id="'+id+'"]'); if(!묶) return; var 줄=묶.querySelector('.프'), 꼬=묶.querySelector(':scope > .꼬리');
@@ -143,12 +143,12 @@
   /* 칸 폭 끌기 */
   d.addEventListener('mousedown',function(e){ var 손=e.target.closest&&e.target.closest('.pjl .머리 .손'); if(!손) return; e.preventDefault(); e.stopPropagation();
     var i=+손.dataset.손, 칸=손.parentElement, x0=e.clientX, w0=칸.getBoundingClientRect().width; 손.classList.add('끄는중'); h.classList.add('pjl-끄는중');
-    function 움(ev){ var 폭=폭들(); 폭[i]=Math.max(최소폭[i],Math.round(w0+ev.clientX-x0)); 폭저장(폭); var 판=d.querySelector('.pjl'), 틀=칸틀(); if(판){ 판.style.setProperty('--칸',틀.전); 판.style.setProperty('--칸뒤',틀.뒤); 판.style.minWidth=틀.최소+'px'; var 이칸=판.querySelector('.프 > .이름'); if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px'); } }
+    function 움(ev){ var 폭=폭들(); 폭[i]=Math.max(최소폭[i],Math.round(w0+ev.clientX-x0)); 폭저장(폭); var 판=d.querySelector('.pjl'), 틀=칸틀(); if(판){ 판.style.setProperty('--칸',틀.전); 판.style.setProperty('--칸뒤',틀.뒤); 판.style.minWidth=틀.최소+'px'; var 이칸=[].filter.call(판.querySelectorAll('.프 > .이름'),function(e){ return e.offsetWidth>0; })[0]; if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px'); } }
     function 놓(){ d.removeEventListener('mousemove',움,true); d.removeEventListener('mouseup',놓,true); 손.classList.remove('끄는중'); h.classList.remove('pjl-끄는중'); 서명=''; 그림(); }
     d.addEventListener('mousemove',움,true); d.addEventListener('mouseup',놓,true); },true);
   w.__pj목록칸폭초기화=function(){ try{ localStorage.removeItem(열쇠); }catch(e){} 서명=''; 그림(); };
   w.__pj목록그림=function(){ 서명=''; 그림(); };
-  w.addEventListener('resize',function(){ var 판=d.querySelector('.pjl'), 이칸=판&&판.querySelector('.프 > .이름'); if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px'); });
+  w.addEventListener('resize',function(){ var 판=d.querySelector('.pjl'), 이칸=판&&[].filter.call(판.querySelectorAll('.프 > .이름'),function(e){ return e.offsetWidth>0; })[0]; if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px'); });
   /* 2026-10-12 사용자 「업무 눌러서 딤드 팝업 열릴 때 딤드된 부분이 좌측이랑 상단에 저렇게 나오던데」 — 이 화면(복제)은 바깥 우리 화면(GNB · 왼쪽 아이콘 줄)의 본문 칸 안 iframe 이라
      팝업 딤드(간트 .dd-backdrop rgba(15,15,20,.32))가 iframe 밖 GNB · 아이콘 줄엔 못 닿음(실측: iframe inset -42 0 0 -68 · 바깥 칸이 자름) → 팝업(html.lab32-팝업) 동안 바깥 문서에 같은 색 딤드 · iframe 칸 자리는 구멍(겹쳐 두 번 어두워지지 않게) */
   var 바깥=null;
