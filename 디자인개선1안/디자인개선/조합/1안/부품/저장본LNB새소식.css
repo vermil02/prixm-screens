@@ -1,0 +1,8 @@
+/* 조합 1안 · 부품/저장본LNB새소식 — 손질/54_LNB새소식/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   프로젝트(d06)에만: 54 랩 안 2 — LNB 프로젝트 줄 지연 점 대신 새 소식 점(주색 #6c69f0 7 + 이름 600) · 차례 = 고정 → 최근 활동순(새 소식이 위).
+   새 소식 = 마지막으로 연 뒤 활동이 있음 · 연 때 = 이 브라우저 localStorage lab54-연때(기록 없으면 2026-09-21 12:00 · 시연용) · 프로젝트를 열면 점 사라짐 · 되돌리기 __lab54연때초기화() */
+/* 안 2 · 3 — 지연 점(i.빨) 숨김 · 새 소식 점 = 주색 #6c69f0 6(아이콘 오른쪽 아래 · 1안 LNB 점 자리) */
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____) .px-lnb-row.lab32프 .px-lnb-ico i.빨{display:none!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____) .px-lnb-row.lab32프 .px-lnb-ico{position:relative;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____) .px-lnb-row.lab32프 .px-lnb-ico i.lab54새{position:absolute;left:13px;top:50%;margin-top:4px;width:7px;height:7px;border-radius:50%;background:#6c69f0;box-shadow:0 0 0 1.5px var(--color-gnb-panel-bg,#fafbfc);}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____) .px-lnb-row.lab32프.lab54새줄 .px-lnb-label{font-weight:600;color:#1d1c1d;}

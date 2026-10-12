@@ -1,0 +1,251 @@
+/* 조합 1안 · 부품/저장본도우미프로젝트 — 손질/56_프로젝트도우미/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   프로젝트 AI 도우미 = 이메일 도우미 엔진(카드 안) + 프로젝트 대본 · 얼굴 · 여닫기 속도 · 대화 도구 줄 / 피드백 = GNB 맨 아래(앱 화면 전부) — 56 랩 안 2 */
+
+/* 56 — 이메일 도우미 카드 안 규칙(저장본도우미메일.css 에서 굽는 순간 복사 · 앞머리 html.lab56-프) */
+html.lab-저장본.lab56-프 .lab25-머리얼굴,html.lab-저장본.lab56-프 .lab25-답얼굴,html.lab-저장본.lab56-프 .lab25-흉내,html.lab-저장본.lab56-프 .lab25-쓰는중,html.lab-저장본.lab56-프 .lab25-머리설명{display:none;}
+html.lab-저장본.lab56-프 .lab25-머리얼굴 img,html.lab-저장본.lab56-프 .lab25-답얼굴 img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;}
+html.lab-저장본.lab56-프.lab25켬-중 [data-ai-greeting]:has(+ .lab25-흉내),html.lab-저장본.lab56-프.lab25켬-쓰는 [data-ai-greeting]:has(+ .lab25-흉내){display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-중 .lab25-흉내,html.lab-저장본.lab56-프.lab25켬-쓰는 .lab25-흉내{display:flex;flex-direction:column;gap:18px;padding-bottom:24px;font:400 13px/1.55 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:var(--color-n-800,#1f2937);}
+html.lab-저장본.lab56-프.lab25켬-쓰는 .lab25-쓰는중{display:block;color:#6b7280;}
+html.lab-저장본.lab56-프 .lab25-흉내 .lab25-물음{align-self:flex-end;max-width:80%;background:#f3f4f6;border-radius:12px;padding:8px 12px;}
+html.lab-저장본.lab56-프 .lab25-흉내 .lab25-답{display:flex;align-items:flex-start;gap:16px;}
+html.lab-저장본.lab56-프 .lab25-흉내 .lab25-답 p{margin:0;min-width:0;}
+html.lab-저장본.lab56-프 .lab25-흉내 .lab25-답 b{display:block;font-weight:600;font-size:14px;margin-bottom:4px;color:#111;}
+html.lab-저장본.lab56-프.lab25켬-작게 .lab25-머리얼굴{display:block;flex:none;width:28px;height:28px;}
+html.lab-저장본.lab56-프.lab25켬-답옆 .lab25-흉내 .lab25-끝답 .lab25-답얼굴{display:block;flex:none;width:80px;height:80px;}
+html.lab-저장본.lab56-프.lab25켬-크게 .lab25-머리얼굴{display:block;flex:none;position:relative;width:45px;height:45px;margin-right:5px;}
+html.lab-저장본.lab56-프.lab25켬-크게 .lab25-도우미머리.lab25-도우미머리{padding-top:19px!important;}
+html.lab-저장본.lab56-프.lab25켬-크게 .lab25-도우미제목.lab25-도우미제목{font-size:16px!important;letter-spacing:-.4px;}
+html.lab-저장본.lab56-프.lab25켬-크게 [data-ai-greeting] > div:first-child > span.relative{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-크게 [data-ai-greeting] > div:first-child p{padding-top:0!important;}
+html.lab-저장본.lab56-프.lab25켬-메신저 [data-ai-greeting]{padding-top:72px!important;}
+html.lab-저장본.lab56-프.lab25켬-메신저 [data-ai-greeting] > div:first-child{flex-direction:column!important;align-items:center!important;gap:14px!important;text-align:center;}
+html.lab-저장본.lab56-프.lab25켬-메신저 [data-ai-greeting] > div:first-child p{padding-top:0!important;}
+html.lab-저장본.lab56-프.lab25켬-메신저 [data-ai-greeting] > div:first-child > span.relative > svg{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-메신저 [data-ai-greeting] > button{margin-top:22px;}
+html.lab-저장본.lab56-프.lab25켬-메신저 .lab25-흉내 .lab25-답{align-items:flex-end;gap:8px;}
+html.lab-저장본.lab56-프.lab25켬-메신저 .lab25-흉내 .lab25-답얼굴{display:block;flex:none;width:24px;height:24px;}
+html.lab-저장본.lab56-프.lab25켬-메신저 .lab25-흉내 .lab25-답 p{background:#f6f7f9;border-radius:12px 12px 12px 4px;padding:10px 12px;max-width:85%;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-머리얼굴,html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-머리설명{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-도우미머리{justify-content:center!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-도우미머리 > .flex-1{flex:none!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-도우미제목{text-align:center;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting]{display:flex!important;flex-direction:column!important;min-height:100%;box-sizing:border-box;padding-top:0!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child{flex-direction:column!important;align-items:center!important;gap:18px!important;text-align:center;margin:auto 0 0!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child > span.relative{display:block!important;width:120px!important;height:120px!important;flex:none;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child > span.relative img{width:120px!important;height:120px!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child > span.relative > svg{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > div:first-child p{padding-top:0!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) [data-ai-greeting] > button{margin-top:auto!important;}
+html.lab-저장본.lab56-프 .lab25-제안{display:none;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데:is(.lab25켬-전,.lab25켬-고르기전) .lab25-제안{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:20px 0 auto;}
+html.lab-저장본.lab56-프.lab25켬-알약 .lab25-제안 span{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;background:#f3f4f6;font:400 13px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#374151;white-space:nowrap;cursor:pointer;}
+html.lab-저장본.lab56-프.lab25켬-알약 .lab25-제안 span:hover{background:#e9eaee;}
+html.lab-저장본.lab56-프.lab25켬-카드.lab25켬-처음가운데.lab25켬-전 .lab25-제안{flex-direction:column;align-items:stretch;align-self:stretch;}
+html.lab-저장본.lab56-프.lab25켬-카드 .lab25-제안 span{display:flex;align-items:center;gap:8px;height:46px;padding:0 14px;border-radius:12px;background:#fff;border:1px solid #eef0f4;box-shadow:0 2px 8px rgba(16,24,40,.06);font:400 14px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#1f2937;cursor:pointer;}
+html.lab-저장본.lab56-프:is(.lab25켬-카드,.lab25켬-알약) .lab25-제안 span::before{content:"";flex:none;width:16px;height:16px;background:#5e5d60;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") center/16px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") center/16px no-repeat;}
+html.lab-저장본.lab56-프:is(.lab25켬-카드,.lab25켬-알약) .lab25-제안 span[data-i="회신"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 18v-2a4 4 0 0 0-4-4H4'/%3E%3Cpath d='m9 17-5-5 5-5'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 18v-2a4 4 0 0 0-4-4H4'/%3E%3Cpath d='m9 17-5-5 5-5'/%3E%3C/svg%3E");}
+html.lab-저장본.lab56-프.lab25켬-알약 .lab25-제안 span{gap:6px;padding:0 14px 0 12px;}
+html.lab-저장본.lab56-프.lab25켬-알약 .lab25-제안 span::before{width:15px;height:15px;-webkit-mask-size:15px;mask-size:15px;}
+html.lab-저장본.lab56-프.lab25켬-카드 .lab25-제안 span:hover{background:#fafbfc;}
+@property --lab25각{syntax:"<angle>";inherits:false;initial-value:0deg;}
+@property --lab25바{syntax:'<color>';inherits:true;initial-value:transparent;}
+html.lab-저장본.lab56-프.lab25켬-막대 .lab25-대화칸{scrollbar-width:auto!important;scrollbar-color:auto!important;--lab25바:rgba(214,216,230,0);transition:--lab25바 .2s ease;}
+html.lab-저장본.lab56-프.lab25켬-막대 .lab25-도우미카드:hover .lab25-대화칸{--lab25바:#d6d8e6;}
+html.lab-저장본.lab56-프.lab25켬-막대 .lab25-대화칸::-webkit-scrollbar{width:5px;}
+html.lab-저장본.lab56-프.lab25켬-막대 .lab25-대화칸::-webkit-scrollbar-track{background:transparent;margin:4px 0;}
+html.lab-저장본.lab56-프.lab25켬-막대 .lab25-대화칸::-webkit-scrollbar-thumb{background:var(--lab25바);border-radius:3px;}
+html.lab-저장본.lab56-프.lab25켬-막대 .lab25-대화칸::-webkit-scrollbar-thumb:active{background:#c2c4d6;}
+html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span{border:1px solid transparent;box-shadow:none!important;transition:color .18s;}
+html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span::before{transition:background-color .18s;}
+html.lab-저장본.lab56-프.lab25켬-빛늘 .lab25-제안 span,html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span:hover{
+  background:linear-gradient(#faf8ff,#faf8ff) padding-box,
+    conic-gradient(from var(--lab25각),var(--lab25색옅음)) border-box;
+  color:#4c1d95;animation:lab25프리즘 var(--lab25느림) linear infinite;}
+html.lab-저장본.lab56-프.lab25켬-빛늘 .lab25-제안 span:nth-child(2){animation-delay:-3s;}
+html.lab-저장본.lab56-프.lab25켬-빛늘 .lab25-제안 span::before{background:#8b5cf6;}
+html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span:hover{
+  background:linear-gradient(#f3eeff,#f3eeff) padding-box,
+    conic-gradient(from var(--lab25각),var(--lab25색)) border-box;
+  color:#5b21b6;animation-duration:var(--lab25빠름);}
+html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span:hover::before{background:#7c3aed;}
+html.lab-저장본.lab56-프.lab25켬-빛호버 .lab25-제안 span:hover{color:#4c1d95;}
+html.lab-저장본.lab56-프.lab25켬-빛호버 .lab25-제안 span:hover::before{background:#5b21b6;}
+@keyframes lab25프리즘{to{--lab25각:360deg;}}
+@media (prefers-reduced-motion:reduce){html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-제안 span{animation:none!important;}}
+html.lab-저장본.lab56-프 .lab25-제안위{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-입력위.lab25켬-전 .lab25-제안위{display:flex!important;flex-wrap:wrap;justify-content:flex-start;gap:8px;margin:0 15px;padding-top:12px;flex:none;}
+html.lab-저장본.lab56-프.lab25켬-입력위 .lab25-제안속{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-입력위.lab25켬-카드.lab25켬-전 .lab25-제안위{flex-direction:column;align-items:stretch;}
+html.lab-저장본.lab56-프.lab25켬-입력위.lab25켬-처음가운데.lab25켬-전 [data-ai-greeting] > div:first-child{margin:auto 0!important;}
+html.lab-저장본.lab56-프 .lab25-입력{flex:none;margin:12px 15px 0;height:130px;box-sizing:border-box;border:1px solid #e5e7eb;border-radius:12px;background:#fff;position:relative;padding:0;font:400 14px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#9ca3af;transition:border-color .15s ease,box-shadow .15s ease;cursor:text;}
+html.lab-저장본.lab56-프 .lab25-입력:hover{border-color:#d1d5db;}
+html.lab-저장본.lab56-프 .lab25-입력:focus-within{border-color:var(--color-ai-700,#8b5cf6);box-shadow:0 0 0 3px rgba(139,92,246,.12);}
+html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-입력:focus-within{border-color:transparent;box-shadow:none;
+  background:linear-gradient(#fff,#fff) padding-box,
+    conic-gradient(from var(--lab25각),var(--lab25색)) border-box;
+  animation:lab25프리즘 var(--lab25빠름) linear infinite;}
+@media (prefers-reduced-motion:reduce){html.lab-저장본.lab56-프:is(.lab25켬-빛늘,.lab25켬-빛호버) .lab25-입력:focus-within{animation:none;}}
+html.lab-저장본.lab56-프 .lab25-입력 textarea{display:block;width:100%;height:calc(100% - 40px);box-sizing:border-box;border:0;outline:0;resize:none;background:transparent;padding:14px 16px 0;font:inherit;color:#111827;}
+html.lab-저장본.lab56-프 .lab25-입력 textarea::placeholder{color:#9ca3af;}
+html.lab-저장본.lab56-프 :has(> .lab25-입력){padding-bottom:15px!important;}
+html.lab-저장본.lab56-프.lab25켬-고르기전 .lab25-입력,html.lab-저장본.lab56-프.lab25켬-고르기전 .lab25-제안{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-고르기전 :has(> .lab25-입력){padding-bottom:55px!important;}
+html.lab-저장본.lab56-프.lab25켬-처음가운데.lab25켬-고르기전 [data-ai-greeting] > div:first-child{margin:auto 0!important;}
+html.lab-저장본.lab56-프 .lab25-인사고름{display:none;}
+html.lab-저장본.lab56-프.lab25켬-전 [data-ai-greeting] p.lab25-인사원래{display:none!important;}
+html.lab-저장본.lab56-프.lab25켬-전 [data-ai-greeting] .lab25-인사고름{display:block;}
+html.lab-저장본.lab56-프 .lab25-입력 i{position:absolute;bottom:12px;font-style:normal;font-size:20px;line-height:1;color:#374151;}
+html.lab-저장본.lab56-프 .lab25-입력 i.더{left:14px;}
+html.lab-저장본.lab56-프 .lab25-입력 i.보냄{right:14px;font-size:17px;}
+html.lab-저장본.lab56-프.lab25켬-한줄 .lab25-머리설명{display:block;margin-top:2px;font:400 12px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+html.lab-저장본.lab56-프.lab25켬-테.lab25켬-쓰는 .lab25-머리얼굴{position:relative;}
+html.lab-저장본.lab56-프.lab25켬-테.lab25켬-쓰는 .lab25-머리얼굴::after{content:"";position:absolute;inset:-3px;border-radius:50%;padding:2px;background:conic-gradient(from 0deg,transparent 0 55%,var(--color-ai-900,#6d28d9));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:lab25테 1.1s linear infinite;}
+@keyframes lab25테{to{transform:rotate(1turn);}}
+html.lab-저장본.lab56-프.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴{position:relative;}
+html.lab-저장본.lab56-프.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴::after{content:"";position:absolute;inset:-2px;border-radius:50%;padding:1px;background:conic-gradient(from var(--lab25각),var(--lab25색));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:lab25프리즘 var(--lab25빠름) linear infinite;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab56-프.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴::after{animation:none;}}
+html.lab-저장본.lab56-프 .lab25-머리얼굴::after{transition:opacity .3s ease;}
+html.lab-저장본.lab56-프 .lab25-머리얼굴.lab25-나는중::after{opacity:0;transition:none;}
+html.lab-저장본.lab56-프 .lab25-단계 ~ .lab25-쓰는중{display:none!important;}
+html.lab-저장본.lab56-프 .lab25-단계{display:flex;flex-direction:column;gap:7px;padding:2px 0;}
+html.lab-저장본.lab56-프 .lab25-단계줄{display:flex;align-items:baseline;gap:8px;font:400 13px/1.45 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#6b7280;}
+html.lab-저장본.lab56-프 .lab25-단계줄 i{flex:none;position:relative;top:2px;width:12px;height:12px;border-radius:50%;}
+html.lab-저장본.lab56-프 .lab25-단계줄.켬 i{background:conic-gradient(from var(--lab25각),var(--lab25색));-webkit-mask:radial-gradient(circle,transparent 4.5px,#000 5px);mask:radial-gradient(circle,transparent 4.5px,#000 5px);animation:lab25프리즘 var(--lab25빠름) linear infinite;}
+html.lab-저장본.lab56-프 .lab25-단계줄.끝 i{border-radius:0;background:#8b5cf6;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;}
+html.lab-저장본.lab56-프 .lab25-단계줄 span{color:#374151;}
+html.lab-저장본.lab56-프 .lab25-단계줄.켬 span{color:#4c1d95;font-weight:500;}
+html.lab-저장본.lab56-프 .lab25-단계줄 em{font-style:normal;color:#9ca3af;font-size:12px;}
+html.lab-저장본.lab56-프 .lab25-근거{display:flex;align-items:center;gap:6px;margin-bottom:-10px;font:400 12px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#9ca3af;}
+html.lab-저장본.lab56-프 .lab25-근거::before{content:"";flex:none;width:12px;height:12px;background:#a78bfa;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;}
+html.lab-저장본.lab56-프 .lab25-답 strong{font-weight:600;}
+html.lab-저장본.lab56-프 .lab25-흉내 .lab25-답 p{white-space:normal;}
+html.lab-저장본.lab56-프 .lab25-흉내 .lab25-물음{white-space:pre-wrap;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab56-프.lab25켬-테.lab25켬-쓰는 .lab25-머리얼굴::after{animation:none;background:var(--color-ai-900,#6d28d9);}}
+html.lab-저장본.lab56-프.lab25켬-구조E:not(#_) .lab25-도우미카드{border:0!important;border-radius:0!important;box-shadow:none!important;}
+html.lab-저장본.lab56-프.lab25켬-AI내용안:not(#_):not(#__):not(#___) .lab25-도우미카드{border-radius:0 10px 10px 0!important;border-left:1px solid rgb(240,241,247)!important;clip-path:inset(-24px -24px -24px 0);}
+@keyframes lab27AI들어옴{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:none;}}
+html.lab-저장본.lab56-프.lab25켬-프리즘테 .lab25-머리얼굴{position:relative;}
+html.lab-저장본.lab56-프.lab25켬-프리즘테 .lab25-머리얼굴::after{content:"";position:absolute;inset:-.5px;border-radius:50%;padding:1px;background:conic-gradient(from var(--lab25각),var(--lab25색));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:lab25프리즘 var(--lab25빠름) linear infinite;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab56-프.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴::after{animation:none;}}
+html.lab-저장본.lab56-프.lab25켬-프리즘테 .lab25-머리얼굴::after{opacity:0;transition:opacity .6s ease;}
+html.lab-저장본.lab56-프.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴::after{opacity:1;transition:opacity .5s ease .1s;}
+html.lab-저장본.lab56-프.lab25켬-프리즘테.lab25켬-쓰는 .lab25-머리얼굴.lab25-나는중::after{opacity:0;transition:none;}
+html.lab-저장본.lab56-프:is(.lab25켬-꼴프리즘,.lab25켬-꼴프리즘면,.lab25켬-꼴보라면,.lab25켬-꼴빛,.lab25켬-꼴빛면,.lab25켬-꼴상태) .lab25-도우미카드{position:relative;}
+html.lab-저장본.lab56-프:is(.lab25켬-꼴프리즘면,.lab25켬-꼴보라면) .lab25-도우미카드 > *{background-color:transparent!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면 .lab25-도우미카드{background:#fbf9ff!important;border-color:#e6defb!important;overflow:hidden;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면 .lab25-도우미카드::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;pointer-events:none;z-index:3;background:linear-gradient(90deg,#8b5cf6,#38bdf8 35%,#a78bfa 60%,#e879f9);}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면 .lab25-입력{background:#fff;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬 .lab25-도우미카드{background:linear-gradient(180deg,#fff 0,#fff 140px,#fbf9ff 320px,#f8f5ff 100%)!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬 .lab25-도우미카드::before{height:1.5px;background:linear-gradient(90deg,transparent 0,#a78bfa 18%,#7dd3fc 40%,#c4b5fd 60%,#f0abfc 82%,transparent 100%);}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬 .lab25-도우미카드::after{content:"";position:absolute;left:8%;right:8%;top:0;height:10px;pointer-events:none;z-index:2;
+  background:linear-gradient(90deg,transparent,rgba(167,139,250,.18) 25%,rgba(125,211,252,.14) 50%,rgba(240,171,252,.14) 75%,transparent);-webkit-mask:linear-gradient(#000,transparent);mask:linear-gradient(#000,transparent);}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게 .lab25-도우미카드{background:#fff!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게 .lab25-도우미카드::before{left:30%;right:30%;transition:left .6s cubic-bezier(.4,0,.2,1),right .6s cubic-bezier(.4,0,.2,1);}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게 .lab25-도우미카드::after{left:33%;right:33%;transition:left .6s cubic-bezier(.4,0,.2,1),right .6s cubic-bezier(.4,0,.2,1);}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는 .lab25-도우미카드::before{left:6%;right:6%;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는 .lab25-도우미카드::after{left:10%;right:10%;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab56-프.lab25켬-띠좁게 .lab25-도우미카드::before,html.lab-저장본.lab56-프.lab25켬-띠좁게 .lab25-도우미카드::after{transition:none;}}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌 .lab25-도우미카드::after{content:none!important;}
+html.lab-저장본.lab56-프.lab25켬-보라테 .lab25-도우미카드{border-color:#d8cafc!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-은은프리즘테 .lab25-도우미카드{border:1px solid transparent!important;
+  background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--lab25각),#c9b5fb,#9fd0f5 25%,#dcb4f6 50%,#b0b9fa 75%,#c9b5fb) border-box!important;
+  animation:lab25프리즘 8s linear infinite;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-은은프리즘테 .lab25-도우미카드::before,html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-은은프리즘테 .lab25-도우미카드::after{content:none!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-띠75 .lab25-도우미카드::before{left:12.5%;right:12.5%;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-띠75 .lab25-도우미카드::after{left:15%;right:15%;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-띠75.lab25켬-쓰는 .lab25-도우미카드::before{left:6%;right:6%;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-띠75.lab25켬-쓰는 .lab25-도우미카드::after{left:10%;right:10%;}
+html.lab-저장본.lab56-프.lab25켬-보라테진하게 .lab25-도우미카드{border-color:#cbb9fa!important;}
+html.lab-저장본.lab56-프.lab25켬-입력테 .lab25-입력{border-color:#d1d5db;}
+html.lab-저장본.lab56-프.lab25켬-입력테 .lab25-입력:hover:not(:focus-within){border-color:#b9bec7;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테 .lab25-도우미카드::after{content:""!important;position:absolute;inset:0!important;height:auto!important;border-radius:inherit;padding:1px;pointer-events:none;z-index:3;
+  background:conic-gradient(from var(--lab25각),var(--lab25색));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s ease;animation:lab25프리즘 var(--lab25빠름) linear infinite;animation-play-state:paused;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테.lab25켬-쓰는 .lab25-도우미카드::after{opacity:1;animation-play-state:running;transition:opacity .5s ease .35s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는중전체테 .lab25-도우미카드::before{transition:left .6s cubic-bezier(.4,0,.2,1) .25s,right .6s cubic-bezier(.4,0,.2,1) .25s,opacity .4s ease .2s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는중전체테.lab25켬-쓰는 .lab25-도우미카드::before{left:0!important;right:0!important;opacity:0;transition:left .6s cubic-bezier(.4,0,.2,1),right .6s cubic-bezier(.4,0,.2,1),opacity .45s ease .55s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는중은은 .lab25-도우미카드{
+  background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--lab25각),#c9b5fb,#9fd0f5 25%,#dcb4f6 50%,#b0b9fa 75%,#c9b5fb) border-box!important;
+  animation:lab25프리즘 3.5s linear infinite;animation-play-state:paused;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는중은은.lab25켬-쓰는 .lab25-도우미카드{animation-play-state:running;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테.lab25켬-쓰는중은은 .lab25-도우미카드::after{content:none!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테.lab25켬-라인돎 .lab25-도우미카드::after{padding:1.5px;
+  background:conic-gradient(from calc(var(--lab25각) - 50deg),transparent 0deg,#a78bfa 18deg,#7dd3fc 40deg,#c4b5fd 60deg,#f0abfc 82deg,transparent 100deg,transparent 360deg);animation-duration:3s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테.lab25켬-라인돎.lab25켬-쓰는 .lab25-도우미카드::after{transition:opacity .35s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는중전체테.lab25켬-라인돎 .lab25-도우미카드::before{transition:opacity .35s ease .1s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-쓰는중전체테.lab25켬-라인돎.lab25켬-쓰는 .lab25-도우미카드::before{left:12.5%!important;right:12.5%!important;opacity:0;transition:opacity .3s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테.lab25켬-라인돎.lab25켬-라인확장 .lab25-도우미카드::after{--lab27폭:90deg;--lab27흐림:22deg;
+  background:conic-gradient(from calc(var(--lab25각) - var(--lab27폭) / 2),transparent 0deg,#a78bfa var(--lab27흐림),#7dd3fc calc(var(--lab27폭) * .32),#f0abfc calc(var(--lab27폭) * .6),#c4b5fd calc(var(--lab27폭) * .8),#a78bfa calc(var(--lab27폭) - var(--lab27흐림)),transparent var(--lab27폭),transparent 360deg);
+  animation:none;transition:opacity .3s ease,--lab27폭 .3s ease,--lab27흐림 .3s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-쓰는중전체테.lab25켬-라인돎.lab25켬-라인확장.lab25켬-쓰는 .lab25-도우미카드::after{--lab27폭:360deg;--lab27흐림:0deg;
+  animation:lab25프리즘 4s linear .9s infinite;transition:opacity .3s ease,--lab27폭 .8s cubic-bezier(.4,0,.2,1) .15s,--lab27흐림 .8s cubic-bezier(.4,0,.2,1) .15s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-선채움 .lab25-도우미카드::before{transition:opacity .35s ease .1s;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠좁게.lab25켬-선채움.lab25켬-쓰는 .lab25-도우미카드::before{left:12.5%!important;right:12.5%!important;opacity:0;transition:opacity .3s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-라인왕복.lab25켬-쓰는 .lab25-도우미카드::before{
+  background:linear-gradient(90deg,transparent 0,#a78bfa 20%,#7dd3fc 42%,#c4b5fd 62%,#f0abfc 82%,transparent 100%) 0 0/35% 100% no-repeat,
+    linear-gradient(90deg,transparent 0,rgba(167,139,250,.35) 18%,rgba(125,211,252,.3) 50%,rgba(240,171,252,.3) 82%,transparent 100%) 0 0/100% 100% no-repeat;
+  animation:lab27왕복 1.8s ease-in-out infinite alternate;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-라인왕복 .lab25-도우미카드::after{content:""!important;position:absolute;left:6%!important;right:6%!important;top:0;height:14px;pointer-events:none;z-index:2;
+  background:radial-gradient(50% 100% at 50% 0,rgba(167,139,250,.30),rgba(125,211,252,.16) 45%,transparent 100%) 0 0/35% 100% no-repeat;
+  -webkit-mask:linear-gradient(#000,transparent);mask:linear-gradient(#000,transparent);opacity:0;transition:opacity .3s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-라인왕복.lab25켬-쓰는 .lab25-도우미카드::after{opacity:1;transition:opacity .4s ease .1s;animation:lab27왕복빛 1.8s ease-in-out infinite alternate;}
+@keyframes lab27흐름{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+@keyframes lab27흐름느림{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-라인흐름.lab25켬-쓰는 .lab25-도우미카드::before{
+  background:linear-gradient(90deg,#a78bfa 0%,#7dd3fc 25%,#c4b5fd 50%,#f0abfc 75%,#a78bfa 100%) 0 0/200% 100% repeat-x;
+  -webkit-mask:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);mask:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);
+  animation:lab27흐름 3s linear infinite;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-라인흐름 .lab25-도우미카드::after{content:""!important;position:absolute;left:6%!important;right:6%!important;top:0;height:14px;pointer-events:none;z-index:2;
+  background:linear-gradient(90deg,rgba(167,139,250,.30) 0%,rgba(125,211,252,.24) 25%,rgba(196,181,253,.26) 50%,rgba(240,171,252,.24) 75%,rgba(167,139,250,.30) 100%) 0 0/200% 100% repeat-x;
+  -webkit-mask:linear-gradient(#000,transparent),linear-gradient(90deg,transparent 0,#000 18%,#000 82%,transparent 100%);-webkit-mask-composite:source-in;
+  mask:linear-gradient(#000,transparent),linear-gradient(90deg,transparent 0,#000 18%,#000 82%,transparent 100%);mask-composite:intersect;
+  opacity:0;transition:opacity .3s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-라인흐름.lab25켬-쓰는 .lab25-도우미카드::after{opacity:1;transition:opacity .4s ease .1s;animation:lab27흐름 3s linear infinite;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠75.lab25켬-번짐뺌:not(.lab25켬-켜짐티).lab25켬-라인흐름 .lab25-도우미카드::after{left:12.5%!important;right:12.5%!important;transition:opacity .3s ease,left .6s cubic-bezier(.4,0,.2,1),right .6s cubic-bezier(.4,0,.2,1);}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-띠75.lab25켬-번짐뺌:not(.lab25켬-켜짐티).lab25켬-라인흐름.lab25켬-쓰는 .lab25-도우미카드::after{left:6%!important;right:6%!important;transition:opacity .4s ease .1s,left .6s cubic-bezier(.4,0,.2,1),right .6s cubic-bezier(.4,0,.2,1);}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab56-프.lab25켬-라인흐름 .lab25-도우미카드::before,html.lab-저장본.lab56-프.lab25켬-라인흐름 .lab25-도우미카드::after{animation:none!important;}}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-켜짐티 .lab25-도우미카드::before{height:1px;transition:left .6s cubic-bezier(.4,0,.2,1),right .6s cubic-bezier(.4,0,.2,1),height .4s ease;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-켜짐티.lab25켬-쓰는 .lab25-도우미카드::before{height:2.5px;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-켜짐티 .lab25-도우미카드{overflow:clip!important;overflow-clip-margin:1px;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-켜짐티 .lab25-도우미카드::before{top:-1px;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-보라면다듬.lab25켬-라인천천히 .lab25-도우미카드::before{
+  background:linear-gradient(90deg,#a78bfa 0%,#7dd3fc 25%,#c4b5fd 50%,#f0abfc 75%,#a78bfa 100%) 0 0/200% 100% repeat-x;
+  -webkit-mask:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);mask:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);
+  animation:lab27흐름느림 16s linear infinite;}
+@media (prefers-reduced-motion: reduce){html.lab-저장본.lab56-프.lab25켬-라인천천히 .lab25-도우미카드::before{animation:none!important;}}
+html.lab-저장본.lab56-프.lab25켬-테좌측 .lab25-도우미카드{border-color:var(--color-n-200,#e5e7eb)!important;box-shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.03)!important;}
+html.lab-저장본.lab56-프.lab25켬-꼴보라면.lab25켬-번짐뺌.lab25켬-라인흐름.lab25켬-켜짐티 .lab25-도우미카드::after{height:40px;left:2%!important;right:2%!important;top:-4px;filter:blur(8px);
+  -webkit-mask:linear-gradient(#000 0,rgba(0,0,0,.6) 25%,rgba(0,0,0,.25) 55%,transparent 100%),linear-gradient(90deg,transparent 0,#000 22%,#000 78%,transparent 100%);-webkit-mask-composite:source-in;
+  mask:linear-gradient(#000 0,rgba(0,0,0,.6) 25%,rgba(0,0,0,.25) 55%,transparent 100%),linear-gradient(90deg,transparent 0,#000 22%,#000 78%,transparent 100%);mask-composite:intersect;
+  background:linear-gradient(90deg,rgba(167,139,250,.36) 0%,rgba(125,211,252,.30) 25%,rgba(196,181,253,.32) 50%,rgba(240,171,252,.30) 75%,rgba(167,139,250,.36) 100%) 0 0/200% 100% repeat-x;}
+html.lab-저장본.lab56-프.lab25켬-전 .lab25-대화칸 > [data-ai-greeting]{margin-bottom:0!important;}
+@keyframes lab31AI나감{from{opacity:1;transform:none;}to{opacity:0;transform:translateX(16px);}}
+/* 56 — 프로젝트 칸에 맞춤: 앱 원래 제안 칩 · 대화 도구 줄(pj-ai-act)은 대화 전엔 숨김(이메일과 같게) */
+html.lab56-프.lab25켬-전:not(#_):not(#__):not(#___):not(#____) .pj-ai-act{display:none!important;}
+/* 56 — 앱 원래 입력칸(이메일 엔진 입력칸이 대신) · 녹화된 지난 대화(pj-ai-user · pj-ai-bot — 시연 대화가 그 아래로 밀렸음) 숨김 */
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) [class*="rounded-[15px]"] > div.shrink-0:has(> .px-cib){display:none!important;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-msgs > .pj-ai-user,html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-msgs > .pj-ai-bot{display:none!important;}
+/* 56 — 제안 알약 그림(이메일 = 편지 · 답장) → 지연 = 시계 · 이번 주 = 달력 · 담당 = 사람 + */
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .lab25-제안 span[data-i="지연"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .lab25-제안 span[data-i="이번주"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4.5' width='18' height='16.5' rx='2'/%3E%3Cpath d='M16 2.5v4M8 2.5v4M3 10h18'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4.5' width='18' height='16.5' rx='2'/%3E%3Cpath d='M16 2.5v4M8 2.5v4M3 10h18'/%3E%3C/svg%3E");}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .lab25-제안 span[data-i="담당"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='4'/%3E%3Cpath d='M2 21a7 7 0 0 1 14 0'/%3E%3Cpath d='M19 8v6M16 11h6'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='4'/%3E%3Cpath d='M2 21a7 7 0 0 1 14 0'/%3E%3Cpath d='M19 8v6M16 11h6'/%3E%3C/svg%3E");}
+
+/* 56 — (앞 판 「LNB 맨 아래 줄」 은 사용자 「LNB 가 아니라 GNB 최하단에 검정 버튼 그대로, 대신 우측으로 열리게」 로 바꿈) */
+
+/* 56 — 진짜 피드백 단추 덩이(복제 안)는 거울이 있는 동안 안 보이게 · 누름도 막음(사본이 대신) */
+html.lab56켬-피드백GNB:not(#_):not(#__):not(#___):not(#____) .relay-fab.lab56-숨김{opacity:0!important;pointer-events:none!important;}
+
+/* 56 — 대화 도구 줄(새 대화 · 전체 대화 문서화 · AI 기능) = 이메일 대화 도구(저장본도우미대화도구.css) 값: 줄 사이 2 · 안쪽 2 9 4 · 단추 28 · 0 7 · 둥글기 6 · 12.5/500 #4b5563 · 그림 15 · 올리면 rgba(0,0,0,.06) #111827
+   앞(앱): 사이 10 · 0 15 · 0 8 · 13px · 그림 16 · 사용자 「새 대화 · 전체 대화 문서화는 AI 도우미 버튼 보고 간격이나 크기 맞춰」
+   AI 기능(AI로 일정 등록하기) = 피그마 아이콘(prixm 247:35245 ico-ai-fill · 그라데이션 #6366F1 → #840AFE) · 바탕 없음 · 올리면 원래 옅은 보라 바탕(#f3f0ff) — 사용자 「AI 기능도 기본 배경 없이 호버하면 배경 생기게」 */
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act{gap:2px!important;padding:2px 9px 4px!important;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button{height:28px!important;padding:0 7px!important;gap:5px!important;border-radius:6px!important;background:transparent!important;font:500 12.5px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif!important;color:#4b5563!important;transition:background-color .12s,color .12s;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button:hover{background:rgba(0,0,0,.06)!important;color:#111827!important;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button:active{background:rgba(0,0,0,.09)!important;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button svg{width:15px!important;height:15px!important;flex:none;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button.lab56-AI:hover{background:#f3f0ff!important;color:#111827!important;}
+html.lab56-프:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button.lab56-AI:active{background:#ebe5ff!important;}
+/* 2026-10-12 사용자 「입력되고 나서 동작 중일 때에는 상단 버튼들 비활성화」 — 답 쓰는 동안(엔진 상태 lab25켬-쓰는) 대화 도구 단추 셋 다 흐리게 · 못 누름(이메일과 같음) */
+html.lab56-프.lab25켬-쓰는:not(#_):not(#__):not(#___):not(#____) .pj-ai-act > button{opacity:.45!important;pointer-events:none!important;cursor:default!important;}
+
