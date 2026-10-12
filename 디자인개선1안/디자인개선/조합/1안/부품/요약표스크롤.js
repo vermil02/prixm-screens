@@ -93,9 +93,11 @@
       if(줄어듦+26>(t.scrollHeight-t.clientHeight)) 붙듦=true; 접기(false);
     } else if(접힘&&y<=2&&!붙듦){ 펴기(false); 빈칸뗌(); }
   },true);
-  /* 거른 뒤(붙듦) 스크롤이 없거나 맨 위면 — 목록 위에서 휠을 위로 굴리면 폄 */
+  /* 거른 뒤(붙듦) 스크롤이 없거나 맨 위면 — 목록 위에서 휠을 위로 굴리면 폄
+     2026-10-12 붙듦 조건 뺌(사용자 「프로젝트 리스트 접힌 상태에서 위로 올리면 다시 안 펼쳐짐」) — 짧은 목록은 접히는 동안 틀이 길어지며 스크롤이 100 → 0 으로 줄어드는데,
+     그 사이 y>24 에서 붙듦이 풀리고 남는 스크롤이 2 이하라 scroll 쪽(아래틀)도 안 봐서 펼 길이 없었음(1280×640 실측) → 접힌 채 맨 위면 휠 위로 = 늘 폄 */
   d.addEventListener('wheel',function(e){
-    if(!꼴||!접힘||!붙듦||e.deltaY>=0) return; var t=틀;
+    if(!꼴||!접힘||e.deltaY>=0) return; var t=틀;
     if(t&&t.isConnected&&!t.contains(e.target)&&!(줄&&줄.contains(e.target))) return;
     if(!t||!t.isConnected||t.scrollTop<=2){ 붙듦=false; 펴기(false); 빈칸뗌(); }
   },{passive:true,capture:true});

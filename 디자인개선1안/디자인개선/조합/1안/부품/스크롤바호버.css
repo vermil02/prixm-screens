@@ -1,0 +1,35 @@
+/* 조합 1안 · 부품/스크롤바호버 — 손 부품 · 2026-10-12
+   사용자 「전체적으로 스크롤바는 호버하면 나오도록 · 이전에 사용했던 스크롤바 방식이 있을거야」
+   = LNB(09 랩 · LNB.css 끝) · 메일 읽기 칸(42 랩 안 3) · 도우미 대화 칸(lab25켬-막대)과 같은 방식을 모든 스크롤 칸에:
+     막대 5 · 끝 둥글기 3 · 평소 숨김 → 그 칸에 올리거나 스크롤하는 동안(0.8초) #d6d8e6 · 막대 누르는 동안 #c2c4d6 · 0.2초에 서서히.
+   이미 이 방식인 칸(.lab-목록 · .lab25-대화칸 · .lab25-읽기 · .lab25-본문)은 제 규칙 그대로 둠(LNB 는 LNB 전체에 올릴 때 보임).
+   짝 스크립트(스크롤바호버.js)가 html 에 lab63-바 를 붙이고, 올리거나 스크롤한 칸에 data-lab63 · 스크롤 중 lab63-구름 을 붙임.
+   막대엔 transition 이 안 먹어 색을 @property 변수(--lab63바)에 두고 변수를 전환 — 전환은 제 transition 이 없는 칸에만(있는 칸은 덮어쓰면 그 칸 움직임이 깨져 즉시 켜짐).
+   scrollbar-width:none 으로 일부러 숨긴 칸은 안 건드림(스크립트가 표시를 안 붙임). 앞 판 없음(새 파일). */
+@property --lab63바{syntax:'<color>';inherits:true;initial-value:rgba(214,216,230,0);}
+/* 막대(가상 요소)는 칸에서 변수를 물려받아야 해서 inherits:true · 대신 모든 칸이 제 기본값을 가져 바깥 칸에 올린 색이 안쪽 칸으로 번지지 않음 */
+html.lab63-바 *{--lab63바:rgba(214,216,230,0);}
+:where(html.lab63-바) *::-webkit-scrollbar{width:5px;height:5px;}
+:where(html.lab63-바) *::-webkit-scrollbar-thumb{border-radius:3px;}
+:where(html.lab63-바) *::-webkit-scrollbar-track,:where(html.lab63-바) *::-webkit-scrollbar-corner{background:transparent;}
+html.lab63-바 [data-lab63]:not(.lab-목록,.lab25-대화칸,.lab25-읽기,.lab25-본문){scrollbar-width:auto!important;scrollbar-color:auto!important;}
+html.lab63-바:not(#_) :not(.lab-목록,.lab25-대화칸,.lab25-읽기,.lab25-본문)::-webkit-scrollbar-thumb,html.lab63-바:not(#_)::-webkit-scrollbar-thumb{background-color:var(--lab63바)!important;}
+html.lab63-바:not(#_) :not(.lab-목록,.lab25-대화칸,.lab25-읽기,.lab25-본문)::-webkit-scrollbar-thumb:active,html.lab63-바:not(#_)::-webkit-scrollbar-thumb:active{background-color:#c2c4d6!important;}
+html.lab63-바 :hover,html.lab63-바:hover,html.lab63-바 .lab63-구름,html.lab63-바.lab63-구름{--lab63바:#d6d8e6;}
+html.lab63-바 [data-lab63="서서히"]{transition:--lab63바 .2s ease;}
+/* 2026-10-12 고침 — 사용자 「이렇게 두꺼운 스크롤바가 나온다고?」(프로젝트 표) · 표 안 막대(34 · 칸 12 + 투명 테 3 · background-clip:padding-box = 보이는 손잡이 6 알약)를
+   background 줄임꼴 !important 로 덮어 clip 이 풀려 12 네모가 됐음 → 색(background-color)만 바꾸고 둥글기는 제 것이 없을 때만(:where) · 앞 판 판/스크롤바호버_*_두꺼움전.css */
+/* 2026-10-12 이어서 사용자 「협업 lnb처럼 얇은 스크롤바가 나와야지」 — 실측 협업 LNB 막대 = 5 · 끝 둥글기 3 · 테 0 → 올리거나 스크롤한 칸(data-lab63 · 일부러 숨긴 칸 「숨김」 은 뺌) 전부 이 꼴로.
+   제 굵기를 정했던 칸(34 표 안 막대 12 · 투명 테 3)도 5 로 · 길 여백(표 머리 아래 40 부터)은 제 것 그대로 */
+html.lab63-바:not(#_) [data-lab63]:not([data-lab63="숨김"]):not(.lab-목록,.lab25-대화칸,.lab25-읽기,.lab25-본문)::-webkit-scrollbar{width:5px!important;height:5px!important;}
+html.lab63-바:not(#_) [data-lab63]:not([data-lab63="숨김"]):not(.lab-목록,.lab25-대화칸,.lab25-읽기,.lab25-본문)::-webkit-scrollbar-thumb{border:0!important;border-radius:3px!important;background-clip:border-box!important;}
+/* 2026-10-12 이어서 사용자 「스크롤바있는 곳에 뒷배경이 흰색인데 해결해줘」 — 원인: 크롬 막대는 내용 옆에 제 자리(5)를 따로 차지해 표 줄 배경(호버 · 머리 회색)이 그 앞에서 끊기고 자리엔 칸 바탕(흰색)이 보임.
+   → 「덮개 막대」: 그런 칸(lab63-덮개)은 크롬 막대를 끄고(자리 0) 짝 스크립트가 내용 위에 뜬 막대(.lab63-막대 · 같은 꼴 5 · 둥글기 3 · #d6d8e6 · 누름 #c2c4d6 · 0.2초)를 그림 = 줄 배경이 끝까지 이어짐.
+   이미 이 방식인 칸(.lab-목록 · .lab25-대화칸 · .lab25-읽기 · .lab25-본문)은 바탕이 한 색이라 크롬 막대 그대로. 앞 판 판/스크롤바호버_*_덮개전.* */
+html.lab63-바:not(#_):not(#__) .lab63-덮개{scrollbar-width:none!important;}
+html.lab63-바:not(#_):not(#__) .lab63-덮개::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;}
+#lab63-층{position:fixed;inset:0;pointer-events:none;z-index:2147483000;}
+#lab63-층 .lab63-막대{position:fixed;width:5px;border-radius:3px;background:#d6d8e6;opacity:0;transition:opacity .2s ease,background-color .15s ease;pointer-events:none;}
+#lab63-층 .lab63-막대.가로{height:5px;}
+#lab63-층 .lab63-막대.보임{opacity:1;pointer-events:auto;}
+#lab63-층 .lab63-막대.끄는{background:#c2c4d6;}
