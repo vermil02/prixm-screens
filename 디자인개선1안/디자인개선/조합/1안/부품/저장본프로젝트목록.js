@@ -1,4 +1,5 @@
 /* 조합 1안 · 부품/저장본프로젝트목록 — 손 부품 · 2026-10-12 · 짝 = 저장본프로젝트목록.css
+   ※ 2026-10-12 손질/67_요약업무열기/1안반영.py 도 고침(요약 거름 때 업무 펼침 · 칩 거름 · 날짜 지연) — 그 앞 원본 = 손질/67_요약업무열기/원본_저장본프로젝트목록.js
    ※ 2026-10-12 손질/66_태그묶기/1안반영.py 가 고침(태그로 묶으면 묶음마다 새 목록) — 고치기 전 원본 = 손질/66_태그묶기/원본_저장본프로젝트목록.js · 이 파일을 손으로 고치면 66 원본도 같이
    45 프로젝트 카드 시안 안 3(회색 단계 · 판 꽉 · 지연 주황 · 상태 = 앱 값 · 색 점)을 모든 프로젝트 목록에.
    ■ 읽는 곳(앱 표는 숨김 · 지우지 않음):
@@ -53,7 +54,8 @@
       Object.keys(o).forEach(function(k){ if(!있[k]) delete o[k]; }); }
     else Object.keys(o).forEach(function(k){ var g=고[pid+'|'+k]; if(g){ o[k].퍼=g.progress; o[k].시=g.start; o[k].끝=g.end; } });
     return Object.keys(o).map(function(k){ return o[k]; }); }
-  function 상태(t){ if(앱상[t.앱]) return 앱상[t.앱]; if(t.퍼>=100) return '완료'; if(날(t.끝)<오늘()) return '지연'; if(날(t.시)<=오늘()) return '진행'; return '대기'; }
+  function 상태(t){ var 앱=앱상[t.앱]; if(true&&앱!=='완료'&&앱!=='보류'&&t.끝&&(Number(t.퍼)||0)<100&&날(t.끝)<오늘()) return '지연';   /* 67 — 날짜로 지연(앱 지연 수와 같게) */
+    if(앱상[t.앱]) return 앱상[t.앱]; if(t.퍼>=100) return '완료'; if(날(t.끝)<오늘()) return '지연'; if(날(t.시)<=오늘()) return '진행'; return '대기'; }
   function 내것(t){ return !!나&&t.담.split(',').map(function(x){ return x.trim(); }).indexOf(나)>=0; }
   function 차례(t){ return ({지연:0,진행:1,대기:2,보류:3,완료:4}[상태(t)]||2)*1e7+(내것(t)?0:1)*1e6+날(t.끝).getTime()/864e5; }
   function 이번주(t){ var o=오늘(), 끝=날(t.끝), 주=new Date(o.getFullYear(),o.getMonth(),o.getDate()+((7-o.getDay())%7)); return 상태(t)!=='지연'&&끝>=o&&끝<=주; }
@@ -72,9 +74,16 @@
   function 머리글(){ var s=정렬칸(), v=s&&s.value;
     return '<div class="머리">'+머리칸.map(function(m,i){ var 정=m[1]&&s&&[].some.call(s.options,function(o){ return o.value===m[1]; });
       return '<span'+(i===3?' style="grid-column:span 2"':'')+(정?' data-정="'+m[1]+'"':'')+' class="'+(정&&v===m[1]?'켬':'')+(정&&!오름[m[1]]?' 내림':'')+'">'+m[0]+(정?화살:'')+(i<6?'<i class="손" data-손="'+i+'" title="끌어서 칸 폭 바꾸기"></i>':'')+'</span>'; }).join('')+'</div>'; }
-  function 거름(){ var c=d.querySelector('.lab32거름칩'), t=글(c); return /지연/.test(t)?'지연':/이번 주/.test(t)?'이번주':/내 업무/.test(t)?'내':''; }
+  function 거름(){ var c=d.querySelector('.lab32거름칩'), t=글(c); if(true) t=t.split('·')[0];   /* 67 — 앞(요약 칸)만 봄 */
+    return /지연/.test(t)?'지연':/이번 주/.test(t)?'이번주':/내 업무/.test(t)?'내':''; }
+  function 잔거름(){ if(false) return ''; var 뒤=(글(d.querySelector('.lab32거름칩')).split('·')[1]||'').trim();   /* 67 — 칩(뒤) */
+    return /내 업무/.test(뒤)?'내':/다른 사람/.test(뒤)?'다른':/담당 없음/.test(뒤)?'없음':/지연/.test(뒤)?'지연':/진행/.test(뒤)?'진행':''; }
+  var 걸펼침={}, 앞걸글='';   /* 67 — 요약 거름이 켜진 동안의 펼침(거름이 바뀌면 비움 · 끄면 원래 펼침으로) */
+  function 거름열기(){ return true&&!!거름(); }
   function 꼬리글(p){ var 목=p.업.slice().sort(function(a,b){ return 차례(a)-차례(b); }), 걸=거름();
     if(걸==='지연') 목=목.filter(function(t){ return 상태(t)==='지연'; }); else if(걸==='이번주') 목=목.filter(이번주); else if(걸==='내') 목=목.filter(내것);
+    var 잔=잔거름(); if(잔==='내') 목=목.filter(내것); else if(잔==='다른') 목=목.filter(function(t){ return !!t.담&&t.담!=='—'&&!내것(t); }); else if(잔==='없음') 목=목.filter(function(t){ return !t.담||t.담==='—'; });
+    else if(잔==='지연') 목=목.filter(function(t){ return 상태(t)==='지연'; }); else if(잔==='진행') 목=목.filter(function(t){ return 상태(t)==='진행'; });
     var 몇=(다[p.id]||걸)?목.length:Math.min(3,목.length), o='<div class="꼬리">';
     목.slice(0,몇).forEach(function(t){ var s=상태(t), 지=s==='지연';
       o+='<div class="줄 업" data-pid="'+p.id+'" data-tid="'+t.id+'"><span class="이름"><i class="아" title="'+s+'">'+원(s)+'</i>'+t.이+'</span><span></span><span>'+담(t.담)+'</span><span class="퍼">'+t.퍼+'%</span><span class="막대"><i style="width:'+t.퍼+'%"></i></span><span><span class="상 '+s+'">'+s+'</span></span><span class="날'+(지?' 지남':'')+'" style="grid-column:span 2">'+(t.시?짧(t.시)+' ~ '+짧(t.끝):'—')+'</span></div>'; });
@@ -85,11 +94,11 @@
       var 핀=r.querySelector('.pj-card-pin'), 고=!!(핀&&핀.getAttribute('aria-pressed')==='true');
       var 늦=parseInt(글(c[7]),10)||0, 퍼=parseInt(글(c[5]),10)||0, 업=id?업무들(id):[];
       return {r:r,이:이,id:id,고:고,우:글(c[2]).replace(/^[\^⌃]\s*/,''),담:글(c[4]),퍼:퍼,늦:늦,마:글(c[8]),활:글(c[9]),업:업}; }); }
-  function 그림(강제){ if(바쁨) return; var 강=강제||서명===''; 서명='-'; var 칸=칸들(); 칸.forEach(function(c){ 그림하나(c,강); });
+  function 그림(강제){ if(바쁨) return; var 걸글=글(d.querySelector('.lab32거름칩')); if(걸글!==앞걸글){ 걸펼침={}; 앞걸글=걸글; } var 강=강제||서명===''; 서명='-'; var 칸=칸들(); 칸.forEach(function(c){ 그림하나(c,강); });
     [].forEach.call(d.querySelectorAll('.pjl'),function(p){ if(칸.indexOf(p.parentElement)<0) p.remove(); }); }
   function 그림하나(c,강제){ var t=c.querySelector(':scope > table.pj-table'); if(!t) return;
     var ps=프로젝트들(t), 틀=칸틀();
-    var 새=JSON.stringify([ps.map(function(p){ return [p.이,p.고,p.우,p.담,p.퍼,p.늦,p.마,p.활,p.업.map(function(x){ return [x.id,x.이,x.퍼,x.시&&String(x.시),x.끝&&String(x.끝),x.담,x.앱]; })]; }),펼침,다,거름(),(정렬칸()||{}).value,틀.전]);
+    var 새=JSON.stringify([ps.map(function(p){ return [p.이,p.고,p.우,p.담,p.퍼,p.늦,p.마,p.활,p.업.map(function(x){ return [x.id,x.이,x.퍼,x.시&&String(x.시),x.끝&&String(x.끝),x.담,x.앱]; })]; }),펼침,걸펼침,다,거름(),글(d.querySelector('.lab32거름칩')),(정렬칸()||{}).value,틀.전]);
     var 판=c.querySelector(':scope > .pjl');
     if(!강제&&판&&새===c.__서명) return; c.__서명=새; 바쁨=true;
     try{
@@ -97,13 +106,13 @@
       판.style.setProperty('--칸',틀.전); 판.style.setProperty('--칸뒤',틀.뒤); 판.style.minWidth=틀.최소+'px';
       var o=머리글();
       if(!ps.length) o+='<div class="빈목록">프로젝트가 없어요</div>';
-      ps.forEach(function(p){ var 열=p.id in 펼침?펼침[p.id]:p.업.some(function(x){ return 상태(x)==='지연'; });
+      ps.forEach(function(p){ var 열=거름열기()?(p.id in 걸펼침?걸펼침[p.id]:true):p.id in 펼침?펼침[p.id]:p.업.some(function(x){ return 상태(x)==='지연'; });
         o+='<div class="묶음" data-id="'+(p.id||'')+'"><div class="줄 프" data-id="'+(p.id||'')+'"><span class="이름"><button type="button" class="펼'+(열?' 열림':'')+'" aria-label="업무 펼치기">'+타일(p.이)+꺾+'</button><b title="'+p.이.replace(/"/g,'&quot;')+'">'+p.이+'</b>'+(p.고?'<span class="핀" title="고정됨">'+핀그림+'</span>':'')+'</span><span>'+우칩(p.우)+'</span><span>'+담(p.담)+'</span><span class="퍼">'+p.퍼+'%</span><span class="막대"><i style="width:'+p.퍼+'%"></i></span><span>'+(p.늦?'<span class="상 지연">지연 '+p.늦+'건</span>':'<span class="상 정상">정상</span>')+'</span><span class="날">'+(p.마&&p.마!=='—'?p.마:'<span class="흐">—</span>')+'</span><span>'+p.활+'</span><button type="button" class="점점" aria-label="더 보기" title="더 보기">'+점점+'</button></div>'+(열&&p.id?꼬리글(p):'')+'</div>'; });
       판.innerHTML=o;
       var 이칸=판.querySelector('.프 > .이름'); if(이칸) 판.style.setProperty('--이름폭',이칸.getBoundingClientRect().width+'px');
     } finally { 바쁨=false; } }
   /* 그 묶음 꼬리만 넣고 뺌(45 — 다 다시 그리면 마우스 올림이 끊겨 타일이 한순간 보였음) */
-  function 펼침바꿈(id,열){ 펼침[id]=열; var 묶=d.querySelector('.pjl .묶음[data-id="'+id+'"]'); if(!묶) return; var 줄=묶.querySelector('.프'), 꼬=묶.querySelector(':scope > .꼬리');
+  function 펼침바꿈(id,열){ if(거름열기()) 걸펼침[id]=열; else 펼침[id]=열; var 묶=d.querySelector('.pjl .묶음[data-id="'+id+'"]'); if(!묶) return; var 줄=묶.querySelector('.프'), 꼬=묶.querySelector(':scope > .꼬리');
     줄.querySelector('.펼').classList.toggle('열림',열); if(꼬) 꼬.remove();
     if(열){ var p=전부().filter(function(x){ return x.id===id; })[0]; if(p) 줄.insertAdjacentHTML('afterend',꼬리글(p)); }
     서명=''; 바쁨=true; setTimeout(function(){ 바쁨=false; 그림(); },0); }
