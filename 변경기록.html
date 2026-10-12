@@ -32,6 +32,13 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 </ul>
 <p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
 <hr>
+<h2><span class="v">v26.10.12-6</span><span class="m">2026-10-12 16:43</span></h2>
+<p class="sub"><b>디자인 개선 1안 — 이메일 AI 도우미 입력창: 누르면 주요색 테 · 답 쓰는 중 프리즘 + 정지</b> (<code>디자인개선1안/</code>)</p>
+<ul>
+<li>이메일 — AI 도우미 입력창을 누르면 주요색 얇은 테(1px · --color-p-500 · 기본 #6c69f0 · 주색 고르기 따라감)만 · 프리즘 · 옅은 둘레 없음(전엔 누르면 프리즘이 2.4초로 빠르게 돎)</li>
+<li>이메일 — 답 쓰는 중엔 입력창 테가 프리즘(2.4초 한 바퀴 · 누르든 말든) + 보내기 ↵ 자리에 정지 ■(28 검은 동그라미 · 올리면 #374151 · Esc 도 됨) · 멈추면 물음은 남고 「답변을 멈췄어요」 · 입력칸 글 그대로 · 다시 물으면 정상</li>
+<li>찾을 곳 — <code>디자인개선/조합/1안/부품/저장본도우미입력.css · .js</code>(<code>.lab25-입력:focus-within</code> · <code>html.lab25켬-쓰는 .lab25-입력</code> · <code>.lab25-입력 i.멈춤</code> · <code>.lab25-멈춘</code>) · 만드는 곳 <code>손질/60_도우미입력/1안반영.py</code></li>
+</ul>
 <h2><span class="v">v26.10.12-5</span><span class="m">2026-10-12 16:26 · e58f4fb</span></h2>
 <p class="sub"><b>디자인 개선 1안 — 프로젝트 카드 보기에서도 요약 거름</b> (<code>디자인개선1안/</code>)</p>
 <ul>
