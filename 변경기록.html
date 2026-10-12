@@ -32,6 +32,14 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 </ul>
 <p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
 <hr>
+<h2><span class="v">v26.10.12-5</span><span class="m">2026-10-12 16:26</span></h2>
+<p class="sub"><b>디자인 개선 1안 — 프로젝트 카드 보기에서도 요약 거름</b> (<code>디자인개선1안/</code>)</p>
+<ul>
+<li>프로젝트 · 모든 프로젝트 「카드」 보기 — 요약 칸 · 칩을 누르면 카드도 리스트와 같은 조건으로 거름(진행 중 프로젝트 = 지연 있음 · 정상 / 지연 업무 · 이번 주 마감 = 내 업무 · 다른 사람 · 담당 없음 / 내 업무 = 지연 · 진행 중)</li>
+<li>프로젝트 — 카드 보기에서 요약 칸을 누르면 「지연 업무」 큰 수가 0 으로 바뀌던 것 고침(늘 진행 중 프로젝트 지연 합 · 리스트 · 카드 같음)</li>
+<li>프로젝트 — 리스트 → 카드로 바꾸면 도구 줄 「카드 | 리스트」 단추 꼴 · 자리가 바뀌던 것 고침(앱이 단추를 다시 그려도 1안 꼴 유지)</li>
+<li>찾을 곳 — <code>디자인개선/조합/1안/부품/저장본카드보기.js</code>(카드 <code>.pj-card[data-project-card]</code> · 걸린 조건 = <code>.lab32요약 .칸.켬</code> · 칩 = 칸의 <code>data-lab48칩</code>)</li>
+</ul>
 <h2><span class="v">v26.10.12-4</span><span class="m">2026-10-12 16:25 · d04660c</span></h2>
 <p class="sub"><b>디자인 개선 1안 — 이메일 AI 도우미 위 프리즘 띠가 다시 흐름</b> (<code>디자인개선1안/</code>)</p>
 <ul>
