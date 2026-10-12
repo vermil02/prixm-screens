@@ -1,0 +1,8 @@
+/* 조합 1안 · 부품/저장본프로젝트모두펼침 — 손질/62_프로젝트모두펼침/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   프로젝트(d06)에만: 62 랩 안 2 — 모든 프로젝트 리스트 머리 「이름」 왼쪽(타일 열 · 24 × 24)에 모두 펼치기 ⇕ / 모두 접기(다 열렸을 때).
+   누르면 바꿀 줄의 .프 .펼 을 한 번에 누름 · 머리가 다시 그려지면 그리기 전에 같은 단추를 옮겨 붙임(번쩍 없게) · 누름은 이름 정렬로 안 퍼짐. */
+html.lab-저장본:not(#_):not(#__):not(#___) .pjl .머리{position:relative;}
+html.lab-저장본:not(#_):not(#__):not(#___) .pjl .머리 button.lab62모두{position:absolute;left:16px;top:50%;margin-top:-12px;z-index:1;width:24px;height:24px;padding:0;border:0;border-radius:6px;background:transparent;color:#5e5d60;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+html.lab-저장본:not(#_):not(#__):not(#___) .pjl .머리 button.lab62모두:hover{background:rgba(0,0,0,.06);color:#111827;}
+html.lab-저장본:not(#_):not(#__):not(#___) .pjl .머리 button.lab62모두:active{background:rgba(0,0,0,.09);}
+html.lab-저장본:not(#_):not(#__):not(#___) .pjl .머리 button.lab62모두 svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
