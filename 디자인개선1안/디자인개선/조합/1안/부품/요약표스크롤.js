@@ -1,8 +1,9 @@
-/* 조합 1안 · 부품/요약표스크롤 — 손질/34_표스크롤/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
-   모든 자동화 · 모든 프로젝트 목록: 33 안 3(내리면 요약 칸이 작은 칸으로 접힘) + 34 안 3(표 카드 안만 스크롤 · 머리 고정 · 바깥 흰색) */
-
+/* 조합 1안 · 부품/요약표스크롤 — 손질/64_요약접힘순서/1안반영.py 가 만듦(손으로 고치지 말 것 · 34 1안반영.py 로 다시 만들지 말 것) · 2026-10-12
+   모든 자동화 · 모든 프로젝트 목록: 33 안 3(내리면 요약 칸이 작은 칸으로 접힘) + 34 안 3(표 카드 안만 스크롤 · 머리 고정 · 바깥 흰색)
+   + 64 안 2(먼저 접기 — 표 맨 위에서 휠 내림 = 요약만 접힘 · 0.32초 뒤부터 표 스크롤 · 올릴 땐 표 맨 위에서 한 번 멈춘 뒤 휠 위로 = 폄)
+   + 64 프로젝트 목록 항목 머리 고정(모두펼침 relative · 카드리스트 transparent 를 이김) */
 (function(){
-  var d=document, w=window, h=d.documentElement; if(w.__lab33적용) return;
+  var d=document, w=window, h=d.documentElement; if(w.__lab64엔진) return; w.__lab64엔진=1;
   var 붙듦=false, 꼴='', 접힘=false, 줄=null, 원높이=0, 서명='', 틀=null, 때=0;
   var 시간='.28s cubic-bezier(.2,.8,.2,1)';
   function 요약(){ return d.querySelector('.lab24요약, .lab32요약'); }
@@ -91,13 +92,74 @@
       /* 2026-10-12 빈 칸 없앰(사용자 「프로젝트 리스트에서 하단에 남는 여백 없애 주고」 — 짧은 목록에서 66 이 남았음) → 접은 뒤 남는 스크롤이 모자라면
          빈 칸 대신 「붙듦」(거른 뒤와 같음 · 맨 위로 튕겨도 접힌 채 · 펴기 = 맨 위에서 휠 위로 · ⌄) */
       if(줄어듦+26>(t.scrollHeight-t.clientHeight)) 붙듦=true; 접기(false);
-    } else if(접힘&&y<=2&&!붙듦){ 펴기(false); 빈칸뗌(); }
+    } else if(접힘&&y<=2&&!붙듦&&!먼저()){ 펴기(false); 빈칸뗌(); }
   },true);
+  /* 64 안 2 — 먼저 접기 · 휠만(스크롤바 · 키는 위 scroll 쪽) */
+  function 먼저(){ return h.classList.contains('lab64켬-먼저접기')||h.classList.contains('lab64켬-이어접기'); }
+  var 잠금=0, 잠금쪽=0;
+  function 틀찾기(el){ for(var e=el;e&&e.nodeType===1;e=e.parentElement){ if(아래틀(e)) return e; } return null; }
+  d.addEventListener('wheel',function(e){
+    if(!꼴||!h.classList.contains('lab64켬-먼저접기')||!e.deltaY||Math.abs(e.deltaX)>Math.abs(e.deltaY)) return;
+    var 쪽=e.deltaY>0?1:-1, 지금=Date.now();
+    if(잠금>지금&&쪽===잠금쪽){ e.preventDefault(); return; }   /* 접히는 · 펴지는 동안 같은 쪽 휠은 먹음 = 표가 안 움직임 */
+    if(쪽>0&&!접힘){
+      var t=틀찾기(e.target); if(!t||t.scrollTop>2) return;
+      틀=t; e.preventDefault(); 붙듦=false; 접기(false); 잠금=지금+320; 잠금쪽=1;
+    } else if(쪽<0&&접힘){
+      var t2=(틀&&틀.isConnected)?틀:틀찾기(e.target);
+      if(t2&&!t2.contains(e.target)&&!(줄&&줄.contains(e.target))) return;
+      if(t2&&t2.scrollTop>2) return;   /* 표가 아직 위로 갈 수 있으면 표부터 */
+      e.preventDefault(); 붙듦=false; 펴기(false); 빈칸뗌(); 잠금=지금+320; 잠금쪽=-1;
+    }
+  },{passive:false,capture:true});
+
+  /* 64 안 3 — 휠 따라 접기 · 굴린 만큼 접힘 정도(0 ~ 1) · 다 접히면 표가 휠을 받음 */
+  var 목표=0, 보임=0, 돎=false, 쉼=null, 마지막쪽=0, 원pt=0, 원pb=0, 테=true;
+  function 칠(k){
+    var s=요약(); if(!s) return; 줄만들기(s); 줄맞춤(s);
+    if(!s.dataset.lab33){ var cs=getComputedStyle(s); 원높이=s.offsetHeight; 원pt=parseFloat(cs.paddingTop)||0; 원pb=parseFloat(cs.paddingBottom)||0; 테=cs.boxSizing==='border-box'; s.dataset.lab33='1'; }
+    if(접힘){ 접힘=false; h.classList.remove('lab33-접힘'); s.style.pointerEvents=''; }
+    var r=1-k;
+    s.style.transition='none'; s.style.overflow='hidden';
+    s.style.height=((테?원높이:원높이-원pt-원pb)*r)+'px';
+    s.style.setProperty('padding-top',(원pt*r)+'px','important'); s.style.setProperty('padding-bottom',(원pb*r)+'px','important');
+    s.style.opacity=String(Math.max(0,1-k*1.6));
+    줄.style.transition='none'; 줄.style.height=(줄높이()*k)+'px'; 줄.style.paddingTop=(12*k)+'px'; 줄.style.paddingBottom=((parseFloat(줄.dataset.pb)||0)*k)+'px';
+    줄.style.opacity=String(Math.max(0,Math.min(1,(k-.4)/.6)));
+  }
+  function 돌기(){ if(돎) return; 돎=true;
+    requestAnimationFrame(function 틱(){
+      var 차=목표-보임; 보임=Math.abs(차)<.004?목표:보임+차*.45;
+      if(보임>=1){ 보임=1; if(!접힘) 접기(true); }
+      else if(보임<=0){ 보임=0; var s=요약(); if(s&&s.dataset.lab33) 펴기(true); }
+      else 칠(보임);
+      if(보임!==목표) requestAnimationFrame(틱); else 돎=false; }); }
+  d.addEventListener('wheel',function(e){
+    if(!꼴||!h.classList.contains('lab64켬-이어접기')||!e.deltaY||Math.abs(e.deltaX)>Math.abs(e.deltaY)) return;
+    var dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1), 쪽=dy>0?1:-1;
+    if(!돎&&!쉼) 보임=목표=접힘?1:0;   /* 다른 길(스크롤바 · 키)로 바뀐 상태에 맞춤 */
+    if(쪽>0){
+      if(목표>=1) return;   /* 다 접힘 — 표가 받음 */
+      var t=(목표>0&&틀&&틀.isConnected)?틀:틀찾기(e.target); if(!t) return;
+      if(목표<=0&&t.scrollTop>2) return;
+      틀=t;
+    } else {
+      if(목표<=0) return;
+      if(목표>=1){ var t2=(틀&&틀.isConnected)?틀:틀찾기(e.target);
+        if(t2&&!t2.contains(e.target)&&!(줄&&줄.contains(e.target))) return;
+        if(t2&&t2.scrollTop>2) return; }   /* 표가 아직 위로 갈 수 있으면 표부터 */
+    }
+    e.preventDefault(); 마지막쪽=쪽; 붙듦=false; 빈칸뗌();
+    var s=요약(), 거=Math.max(60,((s&&s.dataset.lab33)?원높이:(s?s.offsetHeight:0))-줄높이());
+    목표=Math.min(1,Math.max(0,목표+dy/거)); 돌기();
+    clearTimeout(쉼); 쉼=setTimeout(function(){ 쉼=null; if(목표>0&&목표<1){ 목표=마지막쪽>0?1:0; 돌기(); } },140);
+  },{passive:false,capture:true});
+
   /* 거른 뒤(붙듦) 스크롤이 없거나 맨 위면 — 목록 위에서 휠을 위로 굴리면 폄
      2026-10-12 붙듦 조건 뺌(사용자 「프로젝트 리스트 접힌 상태에서 위로 올리면 다시 안 펼쳐짐」) — 짧은 목록은 접히는 동안 틀이 길어지며 스크롤이 100 → 0 으로 줄어드는데,
      그 사이 y>24 에서 붙듦이 풀리고 남는 스크롤이 2 이하라 scroll 쪽(아래틀)도 안 봐서 펼 길이 없었음(1280×640 실측) → 접힌 채 맨 위면 휠 위로 = 늘 폄 */
   d.addEventListener('wheel',function(e){
-    if(!꼴||!접힘||e.deltaY>=0) return; var t=틀;
+    if(!꼴||!접힘||e.deltaY>=0||먼저()) return; var t=틀;
     if(t&&t.isConnected&&!t.contains(e.target)&&!(줄&&줄.contains(e.target))) return;
     if(!t||!t.isConnected||t.scrollTop<=2){ 붙듦=false; 펴기(false); 빈칸뗌(); }
   },{passive:true,capture:true});
@@ -120,7 +182,7 @@
 })();
 
 (function(){
-  var w=window, h=document.documentElement; if(w.__lab34적용) return;
+  var w=window, h=document.documentElement; if(w.__lab64엔진2) return; w.__lab64엔진2=1;
   w.__lab34적용=function(목록){
     if(w.__lab33적용) w.__lab33적용(["작은칸"]);   /* 전제 — 33 안 3 */
     var 새=(목록||[])[0]||'';
@@ -140,3 +202,13 @@
 
 /* 늘 켬 — 33 · 34 랩이 제 엔진을 얹은 문서(lab33-css · lab34-css)에선 안 켬(랩이 안을 고름) */
 (function(){ var d=document; if(d.getElementById('lab33-css')||d.getElementById('lab34-css')) return; try{ window.__lab34적용(['표만']); }catch(e){} })();
+
+/* 64 — 랩 안 고르기(lab64켬-먼저접기) */
+(function(){ var w=window, h=document.documentElement; if(w.__lab64적용) return;
+  w.__lab64적용=function(목록){ var 켬=(목록||[]);
+    [].slice.call(h.classList).forEach(function(c){ if(c.indexOf('lab64켬-')===0&&켬.indexOf(c.slice(7))<0) h.classList.remove(c); });
+    켬.forEach(function(i){ h.classList.add('lab64켬-'+i); }); };
+})();
+
+/* 64 안 2 늘 켬 — 64 랩은 이 파일을 빼고 제 엔진으로 안을 고름 */
+(function(){ try{ window.__lab64적용(['먼저접기']); }catch(e){} })();

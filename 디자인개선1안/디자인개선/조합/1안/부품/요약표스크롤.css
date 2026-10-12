@@ -1,6 +1,7 @@
-/* 조합 1안 · 부품/요약표스크롤 — 손질/34_표스크롤/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
-   모든 자동화 · 모든 프로젝트 목록: 33 안 3(내리면 요약 칸이 작은 칸으로 접힘) + 34 안 3(표 카드 안만 스크롤 · 머리 고정 · 바깥 흰색) */
-
+/* 조합 1안 · 부품/요약표스크롤 — 손질/64_요약접힘순서/1안반영.py 가 만듦(손으로 고치지 말 것 · 34 1안반영.py 로 다시 만들지 말 것) · 2026-10-12
+   모든 자동화 · 모든 프로젝트 목록: 33 안 3(내리면 요약 칸이 작은 칸으로 접힘) + 34 안 3(표 카드 안만 스크롤 · 머리 고정 · 바깥 흰색)
+   + 64 안 2(먼저 접기 — 표 맨 위에서 휠 내림 = 요약만 접힘 · 0.32초 뒤부터 표 스크롤 · 올릴 땐 표 맨 위에서 한 번 멈춘 뒤 휠 위로 = 폄)
+   + 64 프로젝트 목록 항목 머리 고정(모두펼침 relative · 카드리스트 transparent 를 이김) */
 html .lab33-줄{box-sizing:border-box;overflow:hidden;font-family:"Pretendard Variable","Pretendard",system-ui,sans-serif;letter-spacing:-.3px;}
 html .lab33-줄 .판{display:flex;align-items:center;}
 html .lab33-줄 button{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;transition:background-color .15s,box-shadow .15s;}
@@ -76,3 +77,6 @@ html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우
 html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar-thumb:hover,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.32);}
 html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar-corner,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar-corner{background:transparent;}
 
+/* 64 — 모양은 1안 요약표스크롤.css 그대로 · 이 랩은 순서(엔진)만 */
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pjl .머리{position:sticky;top:0;z-index:3;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .pjl .머리{background:#f5f5f7!important;}

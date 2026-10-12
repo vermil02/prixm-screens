@@ -1,0 +1,21 @@
+/* 조합 1안 · 부품/저장본프로젝트카드리스트 — 손질/63_프로젝트카드리스트/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   프로젝트(d06) 모든 프로젝트 리스트 — 63 랩 안 11: 회색 판(#f5f5f7) 안에 프로젝트마다 흰 카드 · 업무 칸 연한 회색 · 줄 펼침 화살 닫힘 ⌄ / 열림 ⌃
+   · 프로젝트 줄 올리면 카드 테 #c9cbd6 + 화살 단추 바탕 rgba(0,0,0,.05)(이름 위 = 밑줄 · 둘 다 끔) · 누를 때 테 깜빡임 없음 · 이름 툴팁은 잘린(…) 이름에만. */
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) div:has(> .pjl){background:#f5f5f7!important;border-color:transparent!important;border-radius:14px!important;box-shadow:none!important;padding:0 4px 4px!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl{background:transparent!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .머리{background:transparent!important;border-bottom:0!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음{background:#fff!important;border:1px solid #eceef8!important;border-radius:11px!important;box-shadow:0 1px 2px rgba(16,24,40,.04)!important;overflow:hidden;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음 + .묶음{margin-top:4px!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .줄.프{border-top:0!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음 .꼬리{background:#f7f8fa!important;margin:0 6px 6px!important;border-radius:8px!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .펼 svg{transform:rotate(90deg);}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .펼.열림 svg{transform:rotate(270deg);}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음 .프::before{inset:0!important;border-radius:0!important;background:var(--color-p-50,#f3f3ff)!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음 .꼬리{margin-top:6px!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .pjl .묶음 .프::before{opacity:0!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음{transition:border-color .15s ease!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .pjl .묶음:has(> .프:hover){border-color:#c9cbd6!important;}
+html.lab57-새:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .pjl .묶음{transition:none!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______):not(#________) .pjl .묶음:has(> .프 .이름 b:hover){border-color:#eceef8!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음:has(> .프:hover) > .프 .펼{background:rgba(0,0,0,.05)!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______) .pjl .묶음:has(> .프 .이름 b:hover) > .프 .펼:not(:hover){background:transparent!important;}
