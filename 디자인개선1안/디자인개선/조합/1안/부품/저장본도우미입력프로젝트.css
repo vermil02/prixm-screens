@@ -1,0 +1,11 @@
+/* 조합 1안 · 부품/저장본도우미입력프로젝트 — 손질/60_도우미입력/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   프로젝트 도우미(html.lab56-프)에만 · 이메일 것과 같은 꼴: AI 도우미 입력창 — 누름 땐 주요색 테(프리즘 없음) · 답 쓰는 중엔 진한 프리즘 2.4초 + 보냄 자리에 정지 ■. */
+html.lab-저장본.lab56-프:not(#_) .lab25-입력:focus-within{border-color:var(--color-p-500,#6c69f0)!important;box-shadow:none!important;background:#fff!important;animation:none!important;}
+html.lab-저장본.lab56-프:not(#_).lab25켬-쓰는 .lab25-입력,html.lab-저장본.lab56-프:not(#_).lab25켬-쓰는 .lab25-입력:focus-within{border-color:transparent!important;box-shadow:none!important;background:linear-gradient(#fff,#fff) padding-box,conic-gradient(from var(--lab25각),var(--lab25색)) border-box!important;animation:lab25프리즘 var(--lab25빠름,2.4s) linear infinite!important;}
+@media (prefers-reduced-motion:reduce){html.lab-저장본.lab56-프:not(#_) .lab25-입력,html.lab-저장본.lab56-프:not(#_) .lab25-입력:focus-within{animation:none!important;}}
+html.lab-저장본.lab56-프:not(#_) .lab25-입력 i.멈춤{display:none;}
+html.lab-저장본.lab56-프:not(#_).lab25켬-쓰는 .lab25-입력 i.보냄{display:none!important;}
+html.lab-저장본.lab56-프:not(#_).lab25켬-쓰는 .lab25-입력 i.멈춤{display:flex;align-items:center;justify-content:center;position:absolute;right:10px;bottom:8px;width:28px;height:28px;border-radius:50%;background:#111827;cursor:pointer;transition:background .15s ease;}
+html.lab-저장본.lab56-프:not(#_).lab25켬-쓰는 .lab25-입력 i.멈춤:hover{background:#374151;}
+html.lab-저장본.lab56-프:not(#_) .lab25-입력 i.멈춤::before{content:"";width:9px;height:9px;border-radius:2px;background:#fff;}
+html.lab-저장본.lab56-프:not(#_) .lab25-멈춘{margin-top:2px;font:400 12.5px/1.4 "Pretendard Variable","Pretendard",system-ui,sans-serif;color:#9ca3af;}
