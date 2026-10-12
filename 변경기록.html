@@ -32,6 +32,13 @@ h2{display:flex;align-items:baseline;gap:10px;margin:26px 0 6px;font-size:14px;}
 </ul>
 <p class="sub"><b>버전</b> — <code>v연.월.일-그날 몇 번째</code>. 번호가 빈 것은 화면이 안 바뀐 올림이다. 끝의 7자리는 GitHub 커밋 번호(<code>git checkout &lt;번호&gt;</code> 로 그때 모습을 볼 수 있다).</p>
 <hr>
+<h2><span class="v">v26.10.12-8</span><span class="m">2026-10-12 16:53</span></h2>
+<p class="sub"><b>디자인 개선 1안 — 프로젝트 목록 펼침 누를 때 왼쪽 아이콘 깜빡임 고침</b> (<code>디자인개선1안/</code>)</p>
+<ul>
+<li>프로젝트 · 모든 프로젝트 — 목록 줄 맨 왼쪽(올리면 머리글자 타일 → 펼침 화살표)을 눌러 펼치거나 접을 때 화살표 → 타일 → 화살표로 깜빡이던 것 고침 — 누르는 동안 화살표 그대로</li>
+<li>까닭 — 누르면 1안 목록이 그 줄을 새 요소로 다시 그려(0.03초), 마우스가 올라가 있어도 새 줄이 기본 꼴(타일)에서 0.12초 전환으로 화살표로 돌아갔음 → 새로 그려진 줄이 들어온 틀만 전환을 끔</li>
+<li>찾을 곳 — <code>디자인개선/조합/1안/부품/저장본목록호버.js</code> · <code>.css</code>(html <code>lab57-새</code> 가 두 틀 동안 붙음)</li>
+</ul>
 <h2><span class="v">v26.10.12-7</span><span class="m">2026-10-12 16:48 · 8a2bfe5</span></h2>
 <p class="sub"><b>디자인 개선 1안 — 프로젝트 카드 → 리스트 바꿀 때 깜빡임 고침</b> (<code>디자인개선1안/</code>)</p>
 <ul>
