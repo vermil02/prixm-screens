@@ -1,0 +1,12 @@
+/* 조합 1안 · 부품/저장본메일스크롤바 — 손질/42_메일스크롤바/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   이메일(d04)에만: 42 랩 안 3 — 메일 읽기 칸 스크롤 막대 5 · 위아래 12 띄움(카드 둥글기 10 에 안 깎이게) · 끝 둥글기 3 · 평소엔 숨고 카드에 올리거나 스크롤하는 동안만 #d6d8e6. */
+
+@property --lab42바{syntax:'<color>';inherits:true;initial-value:transparent;}
+html.lab-저장본.lab25-메일 .lab25-읽기,html.lab-저장본.lab25-메일 .lab25-본문{scrollbar-width:auto!important;scrollbar-color:auto!important;}
+html.lab-저장본.lab25-메일 .lab25-읽기::-webkit-scrollbar,html.lab-저장본.lab25-메일 .lab25-본문::-webkit-scrollbar{width:5px;}
+html.lab-저장본.lab25-메일 .lab25-읽기::-webkit-scrollbar-track,html.lab-저장본.lab25-메일 .lab25-본문::-webkit-scrollbar-track{background:transparent;margin:12px 0;}
+html.lab-저장본.lab25-메일 .lab25-읽기::-webkit-scrollbar-thumb:active,html.lab-저장본.lab25-메일 .lab25-본문::-webkit-scrollbar-thumb:active{background:#c2c4d6;}
+/* 안 3 — 막대엔 transition 이 안 먹어 색을 @property 변수에 두고 그 변수를 전환(1안 대화 칸 · LNB 와 같은 수) */
+html.lab-저장본.lab25-메일 .lab25-읽기,html.lab-저장본.lab25-메일 .lab25-본문{--lab42바:rgba(214,216,230,0);transition:--lab42바 .2s ease;}
+html.lab-저장본.lab25-메일 .lab25-상세카드:hover :is(.lab25-읽기,.lab25-본문),html.lab-저장본.lab25-메일 :is(.lab25-읽기,.lab25-본문).lab42-구름{--lab42바:#d6d8e6;}
+html.lab-저장본.lab25-메일 .lab25-읽기::-webkit-scrollbar-thumb,html.lab-저장본.lab25-메일 .lab25-본문::-webkit-scrollbar-thumb{background:var(--lab42바);border-radius:3px;}

@@ -20,6 +20,10 @@
 /* ── 제목 줄 ── */
 html:not(#_):not(#_) [data-머리줄="제목"]{box-sizing:border-box!important;display:flex!important;align-items:center!important;padding:0 var(--머리-우) 0 calc(var(--머리-좌) - 8px)!important;min-height:0!important;}
 html:not(#_):not(#_)[data-머리="2"] [data-머리줄="제목"]{height:var(--머리-제목줄)!important;flex:0 0 var(--머리-제목줄)!important;border-bottom:1px solid transparent!important;}
+/* 두 줄형인데 도구 줄이 제목 바로 아래가 아님(사이에 요약 칸 등 · 머리줄.js 가 실제 간격으로 data-머리선="떨어짐") → 제목 아래 선(자동화 「모든 자동화」 와 같게) · 2026-10-12 사용자 「자동화는 모든 자동화 아래에 가로선이 있는데 프로젝트는 없음」 */
+html:not(#_):not(#_):not(#_)[data-머리="2"] [data-머리줄="제목"][data-머리선="떨어짐"]{height:var(--머리-한줄)!important;flex:0 0 var(--머리-한줄)!important;border-bottom-color:var(--머리-선)!important;}
+/* 높이도 한 줄형(56)과 같게 — 사용자 「모든 자동화 아래 여백하고 모든 프로젝트 여백하고 다른데 모든 프로젝트 여백이 좀 더 작음」(실측 글자 → 선 자동화 28 · 프로젝트 20) · 56 이면 글자 가운데가 저절로 28 이라 내림은 뺌 */
+html:not(#_):not(#_):not(#_)[data-머리="2"] [data-머리줄="제목"][data-머리선="떨어짐"] > *{transform:none;}
 html:not(#_):not(#_)[data-머리="2"] [data-머리줄="제목"] > *{transform:translateY(var(--머리-제목내림));}
 html:not(#_):not(#_)[data-머리="1"] [data-머리줄="제목"]{height:var(--머리-한줄)!important;flex:0 0 var(--머리-한줄)!important;border-bottom:1px solid var(--머리-선)!important;}
 html:not(#_):not(#_) [data-머리줄="제목"] [data-머리="제목글"]{font-size:var(--머리-제목크기)!important;font-weight:var(--머리-제목굵기)!important;color:var(--머리-제목색)!important;}

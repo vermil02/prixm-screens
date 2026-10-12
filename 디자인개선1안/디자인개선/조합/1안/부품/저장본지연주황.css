@@ -1,0 +1,10 @@
+/* 조합 1안 · 부품/저장본지연주황 — 손 부품 · 2026-10-12 사용자 「리스트에서 지연이 주황으로 됐는데, 요약 카드나 전체적으로 지연과 관련된 건 주황으로 해야지?」
+   프로젝트 화면(저장본)에서 「지연」 뜻으로 쓰던 빨강을 목록(저장본프로젝트목록)과 같은 주황으로 — 우선순위 「높음」(빨강)은 지연이 아니라 그대로.
+   값 = 목록과 같음: 점 #f09a6c(업무 팝업 지연 점) · 칩 바탕 #fff1e8 · 글 #c2410c · 선 아이콘 #ea580c(작은 선이라 점보다 진하게)
+   덮는 곳(만든 부품은 손으로 못 고쳐 여기서 이김): 32 요약 「지연 업무」 아이콘(svg.빨) · 요약 칩 점(--c 239,68,68 = 지연 있음 · 지연 칸 내 업무 · 내 업무 칸 지연 · 46 요약칩나눔도 같은 값)
+   · 33 접힌 줄에 옮겨 그린 아이콘 · LNB 프로젝트 지연 점(i.빨) · 프로젝트 상세 지연 칩(앱 .pj-late · 업무 표 .pj-status.is-overdue) */
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .lab32요약 .윗 svg.빨,html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .lab33-줄 svg.빨{color:#ea580c!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .lab32요약 [style*="239,68,68"],html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .lab33-줄 [style*="239,68,68"]{--c:240,154,108!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .px-lnb-row.lab32프 .px-lnb-ico i.빨{background:#f09a6c!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-late{background:#fff1e8!important;color:#c2410c!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-status.is-overdue{border-color:#f5b088!important;color:#c2410c!important;}

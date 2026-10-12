@@ -128,7 +128,10 @@ window.__lab32실=window.__lab32실||function(){ var b=window.__복제; if(!b||!
       tr.classList.toggle('lab32숨김',!보); }); }
   function 그림(){ if(!d.querySelector('.pj-tools')) return; 요약(); 거르기(); 펼침그림(); }   /* 목록 화면만(상세 대시보드의 .pj-table = 업무 표) */
   w.__lab32업무그림=그림;
-  new MutationObserver(function(){ 그림(); }).observe(h,{attributes:true,attributeFilter:['class']});
+  /* 2026-10-12 깜빡임 고침(사용자 「왜 이렇게 깜빡거리면서 이상하지」) — html class 가 바뀔 때마다(33 요약 접힘 lab33-접힘 등 남의 표시) 업무 줄을 다 지우고 다시 그렸음
+     (실측: 표 스크롤 5초에 업무 줄 108 개 빠짐 · 들어옴) → 이 엔진 스위치(lab32켬-*)가 바뀔 때만 */
+  var 켬서명=''; function 켬글(){ return [].slice.call(h.classList).filter(function(c){ return c.indexOf('lab32켬-')===0; }).sort().join(' '); }
+  new MutationObserver(function(){ var 새=켬글(); if(새===켬서명) return; 켬서명=새; 그림(); }).observe(h,{attributes:true,attributeFilter:['class']});
   var t=setInterval(function(){ if(d.querySelector('.pj-table tbody tr')){ 그림(); clearInterval(t); } },200); setTimeout(function(){ clearInterval(t); },8000);
 })();
 

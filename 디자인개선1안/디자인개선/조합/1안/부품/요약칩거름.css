@@ -1,0 +1,16 @@
+/* 조합 1안 · 부품/요약칩거름 — 손질/48_요약칩거름/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   모든 자동화 · 모든 프로젝트 요약: 칸 = 그 칸만 거름(1안 그대로) · 칸 안 칩 = 칸 + 칩 두 조건(칸이 안 켜져 있으면 대신 켬 · 같은 칩 다시 = 칩만 풂 · 고른 칩 = 칩 색 테) ·
+   ⚠ 칩 · 칩 줄 안은 안 건드림(저장본요약칩나눔 이 칩 줄을 다시 써서 서로 고치면 멎음) — 고른 차례는 칸의 data-lab48칩. */
+
+/* ⚠ 칩(.요칩) 안 · 칩 줄(.아래글) 안은 손대지 않음 — 46 칩 나눔(1안 저장본요약칩나눔)이 칩 줄 innerHTML 을 견줘 다시 쓰므로
+   칩에 클래스를 붙이면 서로 고쳐 쓰며 끝없이 돌아 화면 전체가 멎었음(2026-10-12 실측). → 고른 칩 차례를 칸(.칸)의 data-lab48칩 에 적고 CSS 로 칠함 */
+html.lab48켬-거름 .lab24요약 .요칩,html.lab48켬-거름 .lab32요약 .요칩{cursor:pointer;transition:background-color .12s,box-shadow .12s;}
+html.lab48켬-거름 .lab24요약 .요칩:hover,html.lab48켬-거름 .lab32요약 .요칩:hover{background:rgba(var(--c),.10)!important;box-shadow:inset 0 0 0 1px rgba(var(--c),.35);}
+html.lab48켬-거름 .lab24요약 .요칩.영{cursor:default;}
+html.lab48켬-거름 .lab24요약 .요칩.영:hover{background:inherit!important;box-shadow:none;}
+html.lab48켬-거름 :is(.lab24요약,.lab32요약) .칸[data-lab48칩="1"] .아래글 > .요칩:nth-child(1){background:rgba(var(--c),.14)!important;box-shadow:inset 0 0 0 1.5px rgb(var(--c));}
+html.lab48켬-거름 :is(.lab24요약,.lab32요약) .칸[data-lab48칩="2"] .아래글 > .요칩:nth-child(2){background:rgba(var(--c),.14)!important;box-shadow:inset 0 0 0 1.5px rgb(var(--c));}
+html.lab48켬-거름 :is(.lab24요약,.lab32요약) .칸[data-lab48칩="3"] .아래글 > .요칩:nth-child(3){background:rgba(var(--c),.14)!important;box-shadow:inset 0 0 0 1.5px rgb(var(--c));}
+html.lab48켬-거름 :is(.lab24요약,.lab32요약) .칸[data-lab48칩="4"] .아래글 > .요칩:nth-child(4){background:rgba(var(--c),.14)!important;box-shadow:inset 0 0 0 1.5px rgb(var(--c));}
+html.lab48켬-거름 :is(.lab24요약,.lab32요약) .칸[data-lab48칩="5"] .아래글 > .요칩:nth-child(5){background:rgba(var(--c),.14)!important;box-shadow:inset 0 0 0 1.5px rgb(var(--c));}
+html.lab48켬-거름 .lab48-숨김{display:none!important;}

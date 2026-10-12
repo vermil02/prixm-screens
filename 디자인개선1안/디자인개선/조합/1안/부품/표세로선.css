@@ -1,0 +1,4 @@
+/* 조합 1안 · 부품/표세로선 — 손질/40_표세로선/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   모든 자동화 리스트 표: 40 랩 안 2 — 끌 수 있는 머리 칸(손잡이) 사이에 짧은 선 16 · #dfe1e6 · 칸 사이 4 의 가운데 · 손잡이도 그 자리로(올리면 선이 하이라이트) */
+html:not(#_):not(#__) body .body > .main > .content .lab24우표 > .머리 > span:has(> .손잡이)::after{content:"";position:absolute;right:-2.5px;top:50%;width:1px;height:16px;margin-top:-8px;background:#dfe1e6;pointer-events:none;}
+html:not(#_):not(#__) body .body > .main > .content .lab24우표 > .머리 .손잡이{right:-5px!important;}

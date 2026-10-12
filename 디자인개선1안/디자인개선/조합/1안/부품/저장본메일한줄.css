@@ -1,0 +1,13 @@
+/* 조합 1안 · 부품/저장본메일한줄 — 손질/41_메일스크롤/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   이메일(d04)에만: 41 랩 안 5 — 메일 내용은 통째로 스크롤 그대로 · 제목 줄(제목 · 보낸 사람)이 다 올라가면 카드 위에 한 줄 「메일 제목 │ 작성자 날짜」(48 · 흰 바탕 · 아래 선 + 옅은 그림자) · 누르면 맨 위로. */
+html .lab41-한줄{display:none;}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄{display:flex;position:absolute;left:0;right:0;top:0;z-index:5;height:48px;box-sizing:border-box;align-items:center;gap:10px;padding:0 32px;
+  background:#fff;border-bottom:1px solid #eceef1;border-radius:10px 10px 0 0;box-shadow:0 8px 10px -8px rgba(16,24,40,.12);
+  font:400 13px/1 "Pretendard Variable","Pretendard",system-ui,sans-serif;letter-spacing:-.2px;color:#6b7280;
+  opacity:0;translate:0 -6px;pointer-events:none;transition:opacity .16s ease,translate .16s cubic-bezier(.2,.8,.2,1);}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄.보임{opacity:1;translate:0 0;pointer-events:auto;}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄 b{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 14px/1.2 "Pretendard Variable","Pretendard",sans-serif;color:#111827;letter-spacing:-.3px;}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄 span{flex:none;white-space:nowrap;}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄 em{flex:none;width:1px;height:12px;background:#e3e4e8;margin:0 2px;}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄 .보{color:#374151;font-weight:500;}
+html.lab-저장본.lab25-메일:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab41-한줄 .때{color:#9ca3af;margin-left:-4px;}

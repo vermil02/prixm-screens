@@ -1,0 +1,93 @@
+/* 조합 1안 · 부품/저장본프로젝트목록 — 손 부품 · 2026-10-12 · 짝 = 저장본프로젝트목록.js
+   사용자 「주황으로 ㄱㄱ」 = 45 프로젝트 카드 시안(손질/45_프로젝트카드시안) 안 3 · 색 회색 단계 · 업무 호버 판 꽉 · 지연 주황 · 상태 = 앱 값 · 색 점.
+   앱 프로젝트 표(table)는 숨기고(읽기만 — 순서 · 거름 · 고정 · 이름 누름이 거기서 옴) 같은 스크롤 카드 안에 목록(.pjl)을 새로 그림.
+   44 처럼 표에 덧칠하지 않음(정렬 · 여백 어긋남의 원인). 값은 45 시안 그대로. */
+html.lab-저장본 .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto:has(> .pjl) > table.pj-table{display:none!important;}
+.pjl{--자:50px;--아:28px;--칸:minmax(200px,340px) 80px 140px 60px 160px 92px 80px minmax(96px,1fr);
+  --머리:#f6f7f9;--머리선:#eceef8;--줄선:#f1f2f7;--프호:#f3f4f6;--판:#f7f8fa;--판호:#eef0f3;
+  font-family:"Pretendard Variable","Pretendard",system-ui,sans-serif;color:#1d1c1d;letter-spacing:-.3px;min-width:900px;}
+.pjl *{box-sizing:border-box;}
+/* 머리 — 붙박이(34 안 3 카드 안 스크롤) · 40 · 짧은 세로선 · 손잡이 · 눌러 정렬 */
+.pjl .머리,.pjl .줄{display:grid;grid-template-columns:var(--칸);align-items:center;}
+.pjl .머리{position:sticky;top:0;z-index:3;height:40px;background:var(--머리);border-bottom:1px solid var(--머리선);font-size:12.5px;font-weight:500;color:#8a8b9a;padding-right:16px;}
+.pjl .머리 > span{position:relative;display:flex;align-items:center;gap:4px;height:28px;padding:0 8px;white-space:nowrap;user-select:none;}
+.pjl .머리 > span:first-child{padding-left:var(--자);}
+.pjl .머리 > span[data-정]{cursor:pointer;}
+.pjl .머리 > span[data-정]::before{content:"";position:absolute;left:2px;right:2px;top:0;bottom:0;border-radius:6px;background:transparent;transition:background-color .12s;z-index:-1;}
+.pjl .머리 > span[data-정]:first-child::before{left:calc(var(--자) - 8px);}
+.pjl .머리 > span[data-정]:hover::before{background:rgba(0,0,0,.035);}
+.pjl .머리 > span[data-정]:hover,.pjl .머리 > span.켬{color:#1d1c1d;}
+.pjl .머리 > span.켬{font-weight:600;}
+.pjl .머리 .화살{width:12px;height:12px;flex:none;opacity:0;transition:opacity .12s;}
+.pjl .머리 > span[data-정]:hover .화살{opacity:.45;}
+.pjl .머리 > span.켬 .화살{opacity:1;}
+.pjl .머리 > span.내림 .화살{transform:rotate(180deg);}
+.pjl .머리 > span:not(:last-child)::after{content:"";position:absolute;right:-.5px;top:50%;width:1px;height:16px;margin-top:-8px;background:#dfe1e6;pointer-events:none;}
+.pjl .머리 .손{position:absolute;right:-3px;top:50%;width:6px;height:16px;margin-top:-8px;border-radius:3px;cursor:col-resize;z-index:2;}
+.pjl .머리 .손:hover,.pjl .머리 .손.끄는중{background:#c7c8fb;}
+html.pjl-끄는중,html.pjl-끄는중 *{cursor:col-resize!important;user-select:none!important;}
+/* 줄 */
+.pjl .줄{position:relative;cursor:pointer;padding-right:16px;}
+.pjl .줄 > span{padding:0 8px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pjl .묶음 + .묶음 > .프{border-top:1px solid var(--줄선);}
+.pjl .프{height:56px;font-size:14px;color:#2a3445;isolation:isolate;}
+.pjl .프::before{content:"";position:absolute;inset:6px;border-radius:10px;background:var(--프호);opacity:0;transition:opacity .12s;z-index:-1;}
+.pjl .프:hover::before{opacity:1;}
+.pjl .프 .이름{display:flex;align-items:center;gap:10px;padding-left:16px;}
+.pjl .프 .이름 b{font-weight:600;color:#1d1c1d;overflow:hidden;text-overflow:ellipsis;cursor:pointer;line-height:22px;text-underline-offset:3px;text-decoration-thickness:1px;}
+.pjl .프 .이름 b:hover{text-decoration:underline;color:#000;}
+.pjl .프 .이름 .핀{flex:none;width:13px;height:13px;color:#8a8b9a;margin-left:-4px;}
+.pjl .펼{position:relative;flex:none;width:24px;height:24px;border:0;padding:0;background:transparent;border-radius:6px;cursor:pointer;}
+.pjl .펼 .타일{position:absolute;inset:0;display:grid;place-items:center;border-radius:6px;font-size:12.5px;font-weight:700;letter-spacing:0;transition:opacity .12s;}
+.pjl .펼 svg{position:absolute;inset:4px;width:16px;height:16px;color:#5e5d60;opacity:0;transition:opacity .12s,transform .18s;}
+.pjl .펼.열림 svg{transform:rotate(90deg);}
+.pjl .프:hover .펼 .타일,.pjl .펼:focus-visible .타일{opacity:0;}
+.pjl .프:hover .펼 svg,.pjl .펼:focus-visible svg{opacity:1;}
+.pjl .펼:hover{background:rgba(0,0,0,.05);}
+/* ⋯ 줄 메뉴(32 줄메뉴와 같은 꼴) */
+.pjl .점점{position:absolute;right:10px;top:50%;margin-top:-13px;width:26px;height:26px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:#5e5d60;cursor:pointer;opacity:0;transition:opacity .12s,background-color .12s;}
+.pjl .프:hover .점점,.pjl .점점.열림{opacity:1;}
+.pjl .점점:hover,.pjl .점점.열림{background:rgba(0,0,0,.06);color:#1d1c1d;}
+.pjl .점점 svg{width:16px;height:16px;}
+.pjl-메뉴{position:fixed;z-index:200;min-width:168px;padding:4px;border-radius:10px;background:#fff;border:1px solid #eceef8;box-shadow:0 8px 24px -6px rgba(16,24,40,.14),0 2px 6px rgba(16,24,40,.06);font-family:"Pretendard Variable","Pretendard",sans-serif;}
+.pjl-메뉴 button{display:flex;align-items:center;gap:8px;width:100%;height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:#1d1c1d;font-size:13px;font-weight:500;letter-spacing:-.3px;text-align:left;cursor:pointer;}
+.pjl-메뉴 button:hover{background:rgba(0,0,0,.04);}
+.pjl-메뉴 button svg{width:15px;height:15px;flex:none;color:#5e5d60;}
+.pjl-메뉴 hr{border:0;height:1px;background:#f1f2f5;margin:4px 2px;}
+/* 업무 판(안 3 · 판 꽉) */
+.pjl .꼬리{margin:0 6px 6px;padding:0;border-radius:10px;background:var(--판);overflow:hidden;--아:22px;}
+.pjl .꼬리 > *{transition:background-color .12s;}
+.pjl .꼬리 > .업,.pjl .꼬리 > .더,.pjl .꼬리 > .추가{cursor:pointer;}
+.pjl .꼬리 > *:hover{background:var(--판호);}
+.pjl .업{height:40px;font-size:13px;color:#2a3445;grid-template-columns:calc(var(--이름폭,340px) - 6px) var(--칸뒤);padding-right:10px;}
+.pjl .업 .이름{position:relative;padding-left:calc(var(--자) - 6px);line-height:22px;text-underline-offset:3px;text-decoration-thickness:1px;}
+.pjl .업:hover .이름{text-decoration:underline;color:#1d1c1d;}
+.pjl .더,.pjl .추가{position:relative;height:40px;display:flex;align-items:center;padding-left:calc(var(--자) - 6px);font-size:12.5px;font-weight:500;}
+.pjl .더 button,.pjl .추가 button{border:0;background:transparent;padding:0;font:inherit;cursor:pointer;}
+.pjl .더 button{color:#6b6e78;}
+.pjl .더:hover button{color:#1d1c1d;}
+.pjl .추가 button{color:#5754d6;}
+.pjl .추가 .빈{margin-left:10px;color:#9aa0ae;font-weight:400;}
+.pjl .꼬리 > .더 + .추가::before{content:"";position:absolute;left:calc(var(--자) - 6px);right:10px;top:0;height:1px;background:#e8eaef;}
+.pjl .아{position:absolute;left:calc(var(--아) - 7px);top:50%;width:14px;height:14px;margin-top:-7px;display:block;}
+.pjl .아 svg{display:block;width:14px;height:14px;}
+.pjl .더 .아 svg{color:#8a8b9a;}
+.pjl .더:hover .아 svg{color:#1d1c1d;}
+.pjl .추가 .아 svg{color:#5754d6;}
+/* 칩 · 담당 · 진행률 · 날짜 */
+.pjl .칩{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 7px;border-radius:5px;font-size:12px;font-weight:600;}
+.pjl .칩.높{background:#fdecec;color:#dc2626;}.pjl .칩.보{background:#f1f2f5;color:#5e5d60;}.pjl .칩.낮{background:#f1f2f5;color:#8a8b9a;}
+.pjl .칩 svg{width:11px;height:11px;}
+.pjl .상{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font-size:11.5px;font-weight:600;}
+.pjl .상.지연{background:#fff1e8;color:#c2410c;}.pjl .상.진행{background:#e8f0fe;color:#2f6fe0;}.pjl .상.대기,.pjl .상.보류,.pjl .상.정상{background:#f1f2f5;color:#5e5d60;}.pjl .상.완료{background:#e3f5ec;color:#15803d;}
+.pjl .담{display:inline-flex;align-items:center;gap:6px;max-width:100%;}
+.pjl .담 i{display:inline-grid;place-items:center;width:20px;height:20px;flex:none;border-radius:50%;font-size:10.5px;font-weight:600;font-style:normal;letter-spacing:0;}
+.pjl .담.없 i{border:1.2px dashed #c9cbd6;width:18px;height:18px;}
+.pjl .퍼{text-align:right;font-size:12.5px;font-weight:500;color:#5e5d60;font-variant-numeric:tabular-nums;}
+.pjl .막대{height:4px;border-radius:2px;background:#eef0f4;overflow:hidden;margin:0 8px;padding:0!important;}
+.pjl .막대 i{display:block;height:100%;background:#6c69f0;border-radius:2px;}
+.pjl .날{font-size:12.5px;color:#5e5d60;font-variant-numeric:tabular-nums;}.pjl .날.지남{color:#c2410c;}
+.pjl .흐{color:#b0b3c0;}
+.pjl .빈목록{padding:40px 0;text-align:center;color:#8a8b9a;font-size:13px;}
+/* 2026-10-12 팝업(html.lab32-팝업) 동안 오른쪽 아래 피드백 · AI 도우미 단추가 딤드 위에 밝게 남았음(relay-fab z 2147483000 > 간트 80) → 딤드 아래로 */
+html.lab-저장본.lab32-팝업 .relay-fab,html.lab-저장본.lab32-팝업 [class*="relay-fab"]{z-index:70!important;}

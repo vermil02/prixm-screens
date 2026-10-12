@@ -15,7 +15,17 @@
     [".prism-page-header", null, ".prism-page-title"]                                                                      /* 설정(대시보드 등) */
   ];
   var 보임 = function (e) { return !!e && e.getClientRects().length > 0 && getComputedStyle(e).display !== "none"; };
-  var 지움 = function () { [].forEach.call(D.querySelectorAll("[data-머리줄],[data-머리]"), function (e) { if (e !== H) { e.removeAttribute("data-머리줄"); e.removeAttribute("data-머리"); } }); H.removeAttribute("data-머리"); };
+  var 지움 = function () { [].forEach.call(D.querySelectorAll("[data-머리줄],[data-머리],[data-머리선]"), function (e) { if (e !== H) { e.removeAttribute("data-머리줄"); e.removeAttribute("data-머리"); e.removeAttribute("data-머리선"); } }); H.removeAttribute("data-머리"); };
+  /* 떨어진 도구 줄 — 두 줄형인데 도구 줄이 제목 바로 아래가 아님(프로젝트: 사이에 요약 칸 · 제목 끝 100 → 도구 줄 272) → 제목에 data-머리선="떨어짐" → 제목 아래 선.
+     형제 관계로는 못 가림(지식/문서는 도구 줄이 감싼 칸 안이라 형제가 아니어도 바로 붙음) — 실제 간격으로 봄 · 도구 줄 쪽만 구르는 칸의 스크롤은 되돌려 잼(굴려도 안 바뀜).
+     2026-10-12 사용자 「자동화는 모든 자동화 아래에 가로선이 있는데 프로젝트는 모든 프로젝트 아래에 가로선이 없음」 */
+  function 선(제목, 도구) {
+    var 뗌 = false;
+    if (도구) { var 간 = 도구.getBoundingClientRect().top - 제목.getBoundingClientRect().bottom;
+      for (var x = 도구.parentElement; x && !x.contains(제목); x = x.parentElement) 간 += x.scrollTop;
+      뗌 = 간 > 8; }
+    if (뗌 !== 제목.hasAttribute("data-머리선")) { if (뗌) 제목.setAttribute("data-머리선", "떨어짐"); else 제목.removeAttribute("data-머리선"); }
+  }
   function 붙이기() {
     if (H.classList.contains("lab-도구줄") || H.classList.contains("lab-목록머리")) { if (H.hasAttribute("data-머리")) 지움(); return; }
     for (var i = 0; i < 자리.length; i++) {
@@ -23,6 +33,7 @@
       if (!보임(제목)) continue;
       var 도구 = z[1] && D.querySelector(z[1]); if (!보임(도구)) 도구 = null;
       var 판 = 도구 ? "2" : "1";
+      선(제목, 도구);
       if (H.getAttribute("data-머리") === 판 && 제목.getAttribute("data-머리줄") === "제목" && (!도구 || 도구.getAttribute("data-머리줄") === "도구")) return;
       지움();
       제목.setAttribute("data-머리줄", "제목");

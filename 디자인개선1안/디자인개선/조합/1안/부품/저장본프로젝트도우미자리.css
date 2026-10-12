@@ -1,0 +1,5 @@
+/* 조합 1안 · 부품/저장본프로젝트도우미자리 — 손질/38_프로젝트도우미자리/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   프로젝트(d06)에만: 38 랩 안 3 — AI 도우미 얼굴 단추(동그라미 + 이름표)를 흰 판(.pj-content) 끝에서 오른쪽 · 아래 똑같이 24 · 피드백 단추는 얼굴 위 16(가로 가운데).
+   (1안 저장본프로젝트 의 얼굴 자리 right 28 · bottom 90 을 :not(#) 다섯으로 이김) */
+html.lab-저장본.lab32켬-도우미여닫기:not(#_):not(#__):not(#___):not(#____):not(#_____) .lab32얼굴{right:38px;bottom:35px;}
+html.lab-저장본.lab32켬-도우미여닫기 .relay-fab{position:fixed!important;right:63px!important;bottom:143px!important;left:auto!important;top:auto!important;}

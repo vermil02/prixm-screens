@@ -1,0 +1,26 @@
+/* 조합 1안 · 부품/저장본프로젝트전체업무 — 손질/43_프로젝트전체업무/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   모든 프로젝트 목록: 펼침 = 전체 업무 · 담당자(얼굴 + 이름) · 역할 · PM → 담당자 · 지연 → 상태 · 「내 업무 N」 칩 숨김(43 랩 안 3) */
+
+/* 43 — 담당 칸(업무 줄 PM 자리) */
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table .lab43담당{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;font:400 13px/1 "Pretendard Variable","Pretendard",sans-serif;color:#2a3445;letter-spacing:-.3px;white-space:nowrap;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table .lab43담당 .이{overflow:hidden;text-overflow:ellipsis;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table .lab43담당.없음{color:#b0b3c0;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table .lab43담당 .얼{display:inline-grid;place-items:center;width:20px;height:20px;flex:none;border-radius:50%;font:600 10.5px/1 "Pretendard Variable","Pretendard",sans-serif;letter-spacing:0;background:var(--b);color:var(--f);}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table .lab43담당.없음 .얼{background:transparent;border:1.2px dashed #c9cbd6;width:18px;height:18px;}
+/* 담당자열 — 역할(4번째 칸) 숨김 · 담당자(5번째) 140 · 프로젝트 줄 PM 글은 숨기고 같은 꼴로 */
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:nth-child(4),html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table tbody > tr > td:nth-child(4):not([colspan]){width:0!important;min-width:0!important;max-width:0!important;padding:0!important;font-size:0!important;overflow:hidden!important;border-left:0!important;border-right:0!important;}   /* display:none 이면 줄이 카드 끝까지 안 감(실측 · 표 고정 배치에서 칸 수가 어긋남) → 폭 0 */
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:nth-child(4)::after,html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:nth-child(4)::before,html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:nth-child(4) > *{display:none!important;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:nth-child(5){width:140px!important;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table td.lab43pm{font-size:0!important;}
+/* 2026-10-12 사용자 「2026 소자연구 뒤에 내 업무 4 이게 칩으로 있는데 저거 굳이 필요할까?」 → 전체 업무를 보이는 안(2 ~ 4)에선 숨김 — 내 업무 수 = 요약 「내 업무」 칸 · 펼침 = 이름 앞 › */
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____):is(.lab43켬-이름,.lab43켬-얼굴이름,.lab43켬-얼굴) .lab32내칩{display:none!important;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table td.lab43pm .lab43담당{font-size:14px;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table td.lab43상 > :not(.lab43상태칩){display:none!important;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table td.lab43상{font-size:0!important;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table .lab43상태칩{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;font:600 11.5px/1 "Pretendard Variable","Pretendard",sans-serif;white-space:nowrap;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table .lab43상태칩.지연{background:#fdecec;color:#dc2626;}
+html.lab-저장본.lab43켬-담당자열:not(#_):not(#__):not(#___):not(#____):not(#_____) .pj-content:has(.pj-tools) .pj-scroll .pj-table .lab43상태칩.정상{background:#f1f2f5;color:#5e5d60;}
+/* 2026-10-12 깜빡임 고침 — 32 가 업무 줄(내 업무)을 다시 그리면 이 엔진이 바꿀 때까지 한순간 보였음(처음 뜰 때 실측 ~1초) → 이 엔진이 맡는 동안(html.lab43-맡음) 32 줄은 바로 숨김 */
+html.lab43-맡음:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table tr:is(.lab32업무,.lab32더):not(.lab43){display:none!important;}
+html.lab-저장본:not(#_):not(#__):not(#___):not(#____) .pj-content:has(.pj-tools) .pj-table .lab43담당 .나{margin-left:2px;padding:0 5px;height:16px;line-height:16px;border-radius:4px;background:#ededfd;color:#5754d6;font:600 10.5px/16px "Pretendard Variable","Pretendard",sans-serif;}
+

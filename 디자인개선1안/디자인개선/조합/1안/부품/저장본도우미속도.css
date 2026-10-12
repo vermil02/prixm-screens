@@ -1,0 +1,6 @@
+/* 조합 1안 · 부품/저장본도우미속도 — 손질/39_도우미결/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   이메일(d04)에만: 39 랩 안 4 — AI 도우미 칸 여닫기 0.22초 · cubic-bezier(.25,.6,.3,1)(바로 출발 · 틀마다 고르게 · 끝에서 천천히 내려앉음) · 닫으면 얼굴 단추 0.22초 뒤 0.1초.
+   앞: 37 안 2(0.14초 · (.2,.8,.2,1) — 첫 틀에 109 뜀 · 「툭」) → 판/저장본도우미속도_*_37안2.css */
+html.lab-저장본.lab25-메일.lab25켬-폭스르륵.lab25켬-AI접기:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab25-도우미칸{transition:width 0.22s cubic-bezier(.25,.6,.3,1)!important;}
+html.lab-저장본.lab25-메일.lab25켬-폭스르륵.lab25켬-AI접기:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______) .lab25-상세칸{transition:padding-right 0.22s cubic-bezier(.25,.6,.3,1)!important;}
+html.lab-저장본.lab25-메일.lab25켬-폭스르륵.lab25켬-AI접기:not(#_):not(#__):not(#___):not(#____):not(#_____):not(#______):not(#_______).lab25켬-열리면창닫기:not(.lab27-AI펼침) .lab31-AI단추{transition:opacity 0.1s ease 0.22s,visibility 0s 0.22s,box-shadow .25s ease,scale .35s cubic-bezier(.34,1.56,.64,1)!important;}

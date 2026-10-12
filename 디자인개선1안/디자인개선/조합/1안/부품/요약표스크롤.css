@@ -1,0 +1,78 @@
+/* 조합 1안 · 부품/요약표스크롤 — 손질/34_표스크롤/1안반영.py 가 만듦(손으로 고치지 말 것) · 2026-10-12
+   모든 자동화 · 모든 프로젝트 목록: 33 안 3(내리면 요약 칸이 작은 칸으로 접힘) + 34 안 3(표 카드 안만 스크롤 · 머리 고정 · 바깥 흰색) */
+
+html .lab33-줄{box-sizing:border-box;overflow:hidden;font-family:"Pretendard Variable","Pretendard",system-ui,sans-serif;letter-spacing:-.3px;}
+html .lab33-줄 .판{display:flex;align-items:center;}
+html .lab33-줄 button{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;transition:background-color .15s,box-shadow .15s;}
+html .lab33-줄 .아{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;flex:none;color:#1d1c1d;}
+html .lab33-줄 .아 svg{width:15px;height:15px;}
+html .lab33-줄 .이{font-size:13px;font-weight:500;color:#5e5d60;}
+html .lab33-줄 .수{font-size:14px;font-weight:700;color:#1d1c1d;letter-spacing:-.4px;}
+html .lab33-줄 .수 small{font-size:12px;font-weight:500;color:#8a8b9a;margin-left:2px;}
+html .lab33-줄 .없음 .수{color:#b4b5c6;}
+html .lab33-줄 .없음{cursor:default;}
+html .lab33-줄 .켬 .이{color:#4b48d6;}
+html .lab33-줄 .펼{margin-left:auto;width:28px;height:28px;justify-content:center;border-radius:7px;color:#8a8b9a;}
+html .lab33-줄 .펼:hover{background:rgba(0,0,0,.05);color:#5e5d60;}
+html .lab33-줄 .펼 svg{width:16px;height:16px;}
+html .lab33-줄 .세{display:inline-flex;align-items:center;gap:8px;margin-left:4px;font-size:12px;color:#8a8b9a;}
+html .lab33-줄 .세 span{display:inline-flex;align-items:center;gap:4px;}
+html .lab33-줄 .세 i{width:6px;height:6px;border-radius:50%;flex:none;}
+html .lab33-줄 .세 i.돎{width:9px;height:9px;box-sizing:border-box;background:transparent!important;border:1.5px solid #16a34a;border-right-color:transparent;animation:lab33돎 .8s linear infinite;}
+html .lab33-줄 .세 b{font-weight:600;color:#5e5d60;}
+@keyframes lab33돎{to{transform:rotate(360deg);}}
+
+/* 안 2 · 4 — 회색 판 한 줄 · 칩 사이 가는 선 */
+html.lab33켬-줄 .lab33-줄 .판,html.lab33켬-세부 .lab33-줄 .판{height:44px;padding:0 6px;border-radius:12px;background:#f5f5f7;gap:2px;}
+html.lab33켬-줄 .lab33-줄 .칩,html.lab33켬-세부 .lab33-줄 .칩{height:32px;padding:0 12px;border-radius:8px;}
+html.lab33켬-줄 .lab33-줄 .칩:hover:not(.없음),html.lab33켬-세부 .lab33-줄 .칩:hover:not(.없음){background:rgba(0,0,0,.045);}
+html.lab33켬-줄 .lab33-줄 .칩.켬,html.lab33켬-세부 .lab33-줄 .칩.켬{background:#ededfd;box-shadow:inset 0 0 0 1px #c7c8fb;}
+html.lab33켬-줄 .lab33-줄 .가,html.lab33켬-세부 .lab33-줄 .가{width:1px;height:14px;background:#e3e4e8;flex:none;margin:0 2px;}
+
+/* 안 3 — 칸 자리 그대로 · 높이 44 · 이름 왼쪽 · 수 오른쪽 */
+html.lab33켬-작은칸 .lab33-줄 .판{display:flex;gap:12px;}
+html.lab33켬-작은칸 .lab33-줄 .가{display:none;}
+html.lab33켬-작은칸 .lab33-줄 .칩{flex:1 1 0;min-width:0;max-width:380px;height:44px;padding:0 14px;border-radius:12px;background:#f5f5f7;}   /* 원래 칸과 같은 폭(flex · 최대 380 · 24 랩) */
+html.lab33켬-작은칸 .lab33-줄 .칩 .수{margin-left:auto;font-size:16px;}
+html.lab33켬-작은칸 .lab33-줄 .칩:hover:not(.없음){background:#efeff3;}
+html.lab33켬-작은칸 .lab33-줄 .칩.켬{background:#ededfd;box-shadow:0 0 0 1px #c7c8fb;}
+html.lab33켬-작은칸 .lab33-줄 .펼{display:none;}   /* 2026-10-12 사용자 「요약 카드 줄어 있을 때 맨 우측에 펼치기 버튼 필요 없을 듯」 → 숨김(펴기 = 맨 위로 올림 · 거른 뒤엔 맨 위에서 휠 위로) · 작은 칸이 끝까지 참 */
+
+/* 공통(안 2 · 3) — 표 바깥 흰색 · 지금 #fcfcfe(실측) */
+html:not(#_).lab34켬-붙박이 body .body > .main > .content,html:not(#_).lab34켬-표만 body .body > .main > .content{background:#fff!important;}
+html:not(#_).lab34켬-붙박이 .pj-content:has(.pj-tools) .pj-scroll,html:not(#_).lab34켬-표만 .pj-content:has(.pj-tools) .pj-scroll{background:#fff!important;}
+/* 표 머리 — 붙을 때 줄이 비쳐 보이지 않게 불투명 · 아래 선 */
+html:not(#_).lab34켬-붙박이 body .body > .main > .content .lab24우표 > .머리,html:not(#_).lab34켬-표만 body .body > .main > .content .lab24우표 > .머리{position:sticky!important;top:0;z-index:3;background:#f6f7f9;}
+html:not(#_).lab34켬-붙박이 body .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th{position:sticky!important;top:0;z-index:3;background:#f6f7f9!important;box-shadow:inset 0 -1px 0 #eceef1;}
+
+/* 안 2 — 판 전체 스크롤 그대로 · 카드의 overflow:hidden 이 sticky 를 막아서 clip 으로(둥글기는 그대로 잘림) */
+html:not(#_).lab34켬-붙박이 body .body > .main > .content .lab24우표{overflow:clip!important;}
+html:not(#_).lab34켬-붙박이 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto{overflow:clip!important;overflow-clip-margin:1px;}   /* 1 = 붙은 머리 위 흰 띠가 카드 옆 테까지 덮게 */
+/* 머리 위가 잘려 보이던 것(사용자 2026-10-12) — 쉴 때 머리는 판 위에서 자동화 4(판 위 3 + 테 1) · 프로젝트 8(판 안쪽 7 + 테 1) 아래인데 top:0 에 붙어 그만큼 올라가며 카드 위 테 · 둥글기가 사라졌음
+   → 붙는 자리 = 쉴 때 자리(4 · 8) · 붙어 있는 동안(엔진이 lab34-붙음) 머리 위에 테 1 + 그 위 틈은 흰색으로 덮어 줄이 비치지 않게 */
+html:not(#_).lab34켬-붙박이 body .body > .main > .content .lab24우표 > .머리{top:4px!important;}
+html:not(#_).lab34켬-붙박이 body .body > .main > .content .lab24우표 > .머리.lab34-붙음{box-shadow:0 0 0 1px #eceef8,0 -4px 0 1px #fff!important;}
+html:not(#_).lab34켬-붙박이 body .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th{top:1px!important;}   /* 프로젝트 판은 안쪽 위 7 이 있어 sticky 가 그 아래 기준(실측 top:8 → 판 위 15) → 1 = 판 위 8 */
+/* 프로젝트 표는 border-collapse 라 칸 바깥 그림자가 안 그려짐 → 붙어 있는 동안 칸 위에 흰 띠(7) + 아래 테 1(카드 위 테 자리) · 보이는 첫 · 끝 칸은 카드 옆 테까지 덮음 */
+html:not(#_).lab34켬-붙박이 body .pj-content:has(.pj-tools) .pj-scroll .pj-table thead.lab34-붙음 th::before{content:"";position:absolute;left:0;right:0;top:-8px;height:7px;background:#fff;border-bottom:1px solid #eceef8;pointer-events:none;}
+html:not(#_).lab34켬-붙박이 body .pj-content:has(.pj-tools) .pj-scroll .pj-table thead.lab34-붙음 th.lab34-첫::before{left:-1px;}
+html:not(#_).lab34켬-붙박이 body .pj-content:has(.pj-tools) .pj-scroll .pj-table thead.lab34-붙음 th.lab34-끝::before{right:-1px;}
+
+/* 안 3 — 판은 스크롤 안 함 · 표 카드 = 남은 높이까지(내용이 짧으면 내용만큼) · 그 안만 스크롤 */
+html:not(#_).lab34켬-표만 body .body > .main > .content:has(> .lab24판 > .lab24우표){overflow:hidden!important;display:flex!important;flex-direction:column;}
+html:not(#_).lab34켬-표만 body .body > .main > .content > .lab24판:has(> .lab24우표){flex:0 1 auto;min-height:0;display:flex;flex-direction:column;margin:3px 24px 0!important;}   /* 판을 grid → flex 로 바꾸면 grid 가 주던 좌우 24 가 빠져 표가 양끝에 붙음(사용자 캡처 2026-10-12 · 실측 안 1 350~1964 / 안 3 326~1988) → 되돌림 */
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표{min-height:0;overflow:auto!important;overscroll-behavior:contain;}
+html:not(#_).lab34켬-표만 body .body > .main > .content:has(> .lab24판 > .lab24우표) > div[style*="220px"]{display:none!important;}   /* 정본 끝 빈 칸(화면01 352줄) — 판이 안 움직이니 필요 없음 */
+html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll{overflow:hidden!important;display:flex!important;flex-direction:column;padding-bottom:20px;box-sizing:border-box;}
+/* 2026-10-12 사용자 「프로젝트 리스트 좌우 여백도 그렇고 우측 스크롤바도」 — 표 카드 338~1976 · 요약 350~1964(2000 폭 실측 · 자동화는 같음) → 판 좌우 12 → 24. 위 프로젝트 규칙은 :not(#) 넷 — 저장본프로젝트(32)의 카드 바탕 #fff!important(:not(#) 셋)가 머리 옆 스크롤바 칸 회색을 덮고 있었음 */
+html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll{padding-left:24px!important;padding-right:24px!important;}
+html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll > section{flex:0 1 auto;min-height:0;display:flex;flex-direction:column;}
+html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto{min-height:0;overflow:auto!important;overscroll-behavior:contain;}
+/* 표 안 스크롤바 — 머리 오른쪽 끝에 스크롤바 칸이 비어 보이던 것(사용자 2026-10-12) → 스크롤바 길을 머리 아래(40)부터 · 머리 옆 칸은 머리 색(카드 바탕을 위 40 만 머리 색 · 스크롤 안 따라감) */
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto{background:linear-gradient(#f6f7f9 0,#f6f7f9 39px,#eceef8 39px,#eceef8 40px,#fff 40px) no-repeat,#fff!important;}
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar{width:12px;height:12px;}
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar-track,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar-track{background:transparent;margin-top:40px;}
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar-thumb,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:999px;border:3px solid transparent;background-clip:padding-box;}
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar-thumb:hover,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar-thumb:hover{background-color:rgba(0,0,0,.32);}
+html:not(#_).lab34켬-표만 body .body > .main > .content .lab24판 > .lab24우표::-webkit-scrollbar-corner,html:not(#_):not(#__):not(#___):not(#____).lab34켬-표만 body .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto::-webkit-scrollbar-corner{background:transparent;}
+

@@ -1,0 +1,10 @@
+/* 조합 1안 · 부품/저장본프로젝트표열 — 손 부품 · 2026-10-12 사용자 「자동화 리스트처럼 프로젝트 것도 수정」
+   모든 프로젝트 목록 표: 남는 폭을 Name 이 다 가져가던 것(2400 실측 Name 1312) → 자동화 리스트처럼 열 폭 고정 · 남는 폭은 오른쪽 빈 칸.
+   표는 table-layout:fixed — 폭 없는 열이 남는 폭을 가져감. 카드 폭 1064(= Name 340 + 나머지 열 628 + Activity 96) 넘으면
+   Name 340(자동화 이름 열과 같음) · 마지막 Activity 의 폭(w-[96px])을 풀어 남는 폭을 받게 함(글은 왼쪽 → 빈 칸이 오른쪽 · 줄 선은 끝까지).
+   그보다 좁으면 원래대로(Name 이 줄어듦 · 1064 에서 Name = 340 이라 이어짐). 열 폭에 calc(% - px) · clamp 는 안 먹어서(실측) 카드에 container 를 걸어 나눔. */
+html:not(#_).lab-저장본 .pj-content:has(.pj-tools) .pj-scroll section > div.overflow-x-auto{container:pj표열/inline-size;}
+@container pj표열 (min-width:1064px){
+  html:not(#_).lab-저장본 .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:nth-child(2){width:340px!important;}
+  html:not(#_).lab-저장본 .pj-content:has(.pj-tools) .pj-scroll .pj-table thead th:last-child{width:auto!important;}
+}
