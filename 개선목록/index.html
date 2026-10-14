@@ -76,8 +76,8 @@ body.보기-큰 .wrap{max-width:none}
 .big-media{grid-area:media;padding:0 calc(var(--spacing)*5) calc(var(--spacing)*5);min-width:0}
 .big-main{display:flex;align-items:center;justify-content:center;width:100%;padding:0;border:0;border-radius:var(--radius-lg);overflow:hidden;cursor:zoom-in;
   background:var(--bg-tertiary);box-shadow:inset 0 0 0 1px var(--border-default)}
-.big-main.shot{height:auto;max-width:none}                 /* .shot 의 높이 180 을 풀어 칸을 꽉 채운다 */
-.big-main.shot img{display:block;width:100%;height:auto;max-width:none;max-height:72vh;object-fit:contain}   /* 캡처 비율대로 — 세로로 긴 참고 캡처는 화면 높이 72% 에서 멈춘다 */
+.big-main.shot{height:auto;max-width:none;aspect-ratio:16/9}   /* 캡처 칸 크기 고정(16:9) — 카드마다 높이가 들쭉날쭉하지 않게(2026-10-14 사용자 「크기 고정 어떰」) */
+.big-main.shot img{display:block;width:100%;height:100%;max-width:none;object-fit:contain}   /* 칸 안에 비율대로 — 세로로 긴 캡처는 좌우가 빈다 */
 .big-none{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:16/9;border-radius:var(--radius-lg);
   color:var(--text-tertiary);font-size:var(--text-xs);box-shadow:inset 0 0 0 1px var(--border-default)}
 .big-thumbs{display:flex;gap:calc(var(--spacing)*2);margin-top:calc(var(--spacing)*3);flex-wrap:wrap}
@@ -345,12 +345,15 @@ async function 복사(글){
 }
 const 아이콘복사 = '<svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>';
 
+function 꼬리표(o){ const t = [o['화면'], o['영역·위치'], o['현재 문제']].join('|'); let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
 function 캡처들(탭, o, 열){
   return String(o[열] || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean).map(s => {
     const m = s.match(/^이미지\s*(\d+)$/);
     if (m){
       const 이름 = `${o['No']}-${열 === '참고 캡처' ? 'ref' : 'now'}-${m[1]}.png`;
-      return { 이름, 표시: s, src: 캡처폴더 + encodeURIComponent(이름) };
+      // 번호를 다시 매기면 같은 파일 이름에 다른 그림이 들어간다 → 브라우저가 예전 그림을 보여 준다(2026-10-14 실제로 겪음).
+      // 항목 내용으로 만든 꼬리표(?v=)를 붙여, 항목이 바뀌면 주소도 바뀌게 한다
+      return { 이름, 표시: s, src: 캡처폴더 + encodeURIComponent(이름) + '?v=' + 꼬리표(o) };
     }
     // 주소든 파일 이름이든 마지막 조각만 떼어 이 폴더 캡처/ 에서 찾는다 → 로컬·깃헙 어디서 열어도 같다
     const 이름 = decodeURIComponent(s.split('?')[0].split('/').pop());
