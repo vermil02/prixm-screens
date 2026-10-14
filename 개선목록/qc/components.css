@@ -1,0 +1,762 @@
+/* quiet-chrome v3 @ ea3b4d6 — 복사본. 고치지 말 것(정본은 quiet-chrome/v3-gpt기반/components.css) */
+/* components.css — 이 화면이 쓰는 부품만. 값은 tokens.css 에서만 가져온다.
+   부품을 미리 다 만들지 않는다 — 화면이 필요로 할 때 하나씩 는다(AGENTS·v1 실패 근거). */
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font-sans);background:var(--bg-primary);
+     color:var(--text-primary);font-size:var(--body-text)}
+
+/* ── 단추 ─────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--btn-gap);
+  height:var(--btn-height);padding:0 var(--btn-pad-x);border:0;border-radius:var(--btn-radius);
+  corner-shape:var(--corner);font:inherit;font-size:var(--btn-text);font-weight:var(--btn-weight);
+  cursor:pointer;white-space:nowrap;
+  background:var(--interactive-bg-secondary-default);color:var(--interactive-label-secondary-default);
+  transition:background var(--transition-duration) var(--transition-ease)}
+/* 실측: 평소 배경 없음 · 호버에서만 배경이 보인다(.btn-ghost:hover = 검정 5%).
+   **누름 효과는 없다** — ChatGPT 화면에서 누름 = 호버 5% 로 같다(2026-09-28 화면 computed).
+   캡처 CSS 의 .btn:active{opacity:.8} 은 .btn 이름표가 붙은 단추(화면에 1개)에만 걸린다.
+   원칙(2026-09-28 사용자): **UI 조작 부품에는 클릭 효과를 두지 않는다. 끌어 옮기는 콘텐츠만 예외.** */
+.btn:hover{background:var(--interactive-bg-secondary-hover)}
+/* 포커스 링은 **키보드로 들어왔을 때만** 그린다(focus-mode.js 가 <html> 에 표시한다).
+   마우스로 누른 뒤 링이 남으면 화면이 시끄럽다 — 실측에서 ChatGPT 가 그렇게 한다. */
+/* 마우스로 쓰는 동안은 **브라우저 기본 링도 끈다**(2026-09-28). 메뉴를 닫으면 Zag 가 초점을 단추로 돌려주는데,
+   스크립트가 옮긴 초점에는 Chrome 이 기본 파란 링을 그렸다 — 컴포저 ＋ 에서 사용자가 봤다.
+   키보드일 때의 링은 부품마다 아래 [data-focus-mode="keyboard"] 규칙이 그린다. */
+:root:not([data-focus-mode="keyboard"]) :focus-visible{outline:none}
+:root[data-focus-mode="keyboard"] .btn:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+.btn[data-variant="primary"]{background:var(--interactive-bg-primary-default);
+  color:var(--interactive-label-primary-default)}
+.btn[data-variant="primary"]:hover{background:var(--interactive-bg-primary-hover)}
+.btn[data-variant="outline"]{box-shadow:inset 0 0 0 1px var(--border-default)}
+.btn[data-size="icon"]{width:var(--btn-height);padding:0}
+.btn[data-state="open"]{background:var(--interactive-bg-secondary-hover)}  /* 열려 있음도 상태다 */
+/* 켜짐/꺼짐 한 쌍(그리드 보기 / 목록 보기). 실측 2026-09-22: 둘 다 테두리 없는 ghost 아이콘 단추이고
+   켜진 쪽(aria-pressed=true)만 배경 #f3f3f3 — 탭의 고른 상태와 같은 면(--bg-tertiary). outline 아니다. */
+.btn[aria-pressed="true"]{background:var(--bg-tertiary);color:var(--text-primary)}
+/* 못 누름 — 흐리게 하고 호버 음영을 지운다. 툴팁은 그대로 뜬다(왜 못 누르는지 이름은 보여야 한다).
+   2026-09-30 사용자 컨펌: 속성 패널의 줄바꿈 단추가 못 누름인데 누를 수 있는 단추와 똑같이 보였다. */
+.btn:disabled{opacity:var(--btn-disabled-opacity);cursor:default}
+.btn:disabled:hover{background:var(--interactive-bg-secondary-default)}
+.btn[data-variant="primary"]:disabled:hover{background:var(--interactive-bg-primary-default)}
+
+/* 앞에 아이콘이 붙은 단추 — 좌우 여백이 12 로 줄고 아이콘은 16px. 실측: "만들기 시작"·"새로 만들기" */
+.btn[data-icon]{padding:0 var(--btn-icon-pad-x);gap:var(--btn-icon-gap)}
+.btn[data-icon] .ic{width:var(--btn-icon);height:var(--btn-icon)}
+
+/* ── 입력칸 ───────────────────────────────────────────────────── */
+.input{height:var(--input-height);padding:0 var(--input-pad-x);border:0;
+  box-shadow:inset 0 0 0 1px var(--border-default);
+  border-radius:var(--input-radius);corner-shape:var(--corner);
+  background:var(--bg-primary);color:var(--text-primary);font:inherit;font-size:var(--input-text)}
+.input::placeholder{color:var(--text-tertiary)}
+/* 실측: 평소 --border-default(10%) → 포커스 --border-heavy(20%). 링·아웃라인은 끈다.
+   (캡처의 검색칸: border-token-border-default · focus:border-token-border-heavy ·
+    focus:ring-0 · focus:outline-none · keyboard-focused:focus-ring)
+   브라우저 기본 :focus-visible 로는 못 한다 — 텍스트 입력은 마우스로 눌러도 :focus-visible 이
+   걸리기 때문에 클릭만 해도 링이 나온다. 그래서 focus-mode 장치가 필요했다. */
+.input:focus{box-shadow:inset 0 0 0 1px var(--border-heavy);outline:none}
+:root[data-focus-mode="keyboard"] .input:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* ── 탭 (알약형) ──────────────────────────────────────────────── */
+.tabs{display:flex;gap:var(--tabs-gap)}
+.tab{height:var(--tab-height);padding:0 var(--tab-pad-x);border:0;border-radius:var(--tab-radius);
+  corner-shape:var(--corner);background:none;color:var(--text-secondary);
+  font:inherit;font-size:var(--tab-text);cursor:pointer;
+  transition:background var(--transition-duration) var(--transition-ease)}
+.tab:hover{background:var(--interactive-bg-secondary-hover)}
+.tab[aria-selected="true"]{background:var(--bg-tertiary);color:var(--text-primary);font-weight:var(--tab-weight-selected)}
+:root[data-focus-mode="keyboard"] .tab:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* ── 카드 (라이브러리 타일) ───────────────────────────────────── */
+.card{display:grid;gap:var(--card-gap);padding:var(--card-pad);
+  border-radius:var(--card-radius);corner-shape:var(--corner);
+  box-shadow:inset 0 0 0 1px var(--border-xlight);background:var(--bg-primary);
+  cursor:pointer;transition:background var(--transition-duration) var(--transition-ease)}
+.card:hover{background:var(--surface-hover)}
+.card-title{margin:0;font-size:var(--card-title-text);font-weight:var(--card-title-weight)}
+.card-meta{color:var(--text-tertiary);font-size:var(--card-meta-text)}
+.thumb{display:grid;place-items:center;height:var(--thumb-height);border-radius:var(--thumb-radius);
+  corner-shape:var(--corner);background:var(--bg-secondary-surface)}
+
+/* ── 드롭다운 (동작은 Zag, 모양은 여기) ──────────────────────────── */
+.menu-content{width:var(--menu-width);padding:var(--menu-pad-y) 0;
+  background:var(--bg-primary);border-radius:var(--menu-radius);corner-shape:var(--corner);
+  box-shadow:var(--menu-shadow);outline:none}
+/* 실측(2026-09-22 캡처 .__menu-label): 본문과 **같은 14px**이고 굵기도 보통이다.
+   작게 줄이지 않는다 — 색만 흐리다. */
+.menu-heading{margin:0 var(--menu-gutter);
+  padding:var(--menu-label-pad-y) var(--menu-item-pad-x);
+  font-size:var(--menu-heading-text);font-weight:400;color:var(--text-tertiary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu-separator{height:1px;margin:var(--menu-gutter) 0;background:var(--border-xlight);border:0}
+/* 실측(.__menu-item): 항목이 **메뉴 가장자리에서 6px 안쪽**으로 들어가고 **자기 라운드 10px**을 갖는다.
+   그래서 강조 배경이 네모 블록이 아니라 안쪽의 둥근 알약으로 보인다 — 이게 인상의 차이였다.
+   높이는 고정이 아니라 min-height 라 내용이 길면 늘어난다. */
+.menu-item{display:flex;align-items:center;gap:var(--menu-item-gap);
+  min-height:var(--menu-item-height);
+  margin:0 var(--menu-gutter);
+  padding:var(--menu-item-pad-y) var(--menu-item-pad-x);
+  border-radius:var(--menu-item-radius);corner-shape:var(--corner);
+  border-bottom:1px solid transparent;background-clip:padding-box;  /* 위 .nav-item 주석 참조 */
+  font-size:var(--menu-item-text);color:var(--text-primary);cursor:pointer;user-select:none}
+/* 실측: 드롭다운 항목 호버 4%(.__menu-item 기본 정의). 누름 효과는 두지 않는다(위 .btn 원칙). */
+.menu-item[data-highlighted]{background-color:var(--menu-item-highlighted)}
+
+/* ── 사이드바 항목(LNB) ─────────────────────────────────────────────
+   실측: 사이드바 항목은 메뉴 항목과 **같은 부품**(.__menu-item)을 쓴다.
+   그래서 라운드가 10px 이고 **완전 원형(알약)이 아니다.** 좌우 마진 8px, 높이 36px.
+   왼쪽에 강조선이 붙는 항목은 끝쪽만 둥글다(rounded-e-[10px]). */
+.nav-item{display:flex;align-items:center;gap:var(--nav-item-gap);
+  min-height:var(--menu-item-height);margin:0 var(--nav-item-margin-x);
+  padding:var(--menu-item-pad-y) var(--menu-item-pad-x);
+  border-radius:var(--menu-item-radius);corner-shape:var(--corner);
+  background:none;color:var(--text-primary);font:inherit;font-size:var(--nav-item-text);
+  width:calc(100% - var(--nav-item-margin-x) * 2);text-align:start;cursor:pointer;
+  /* 배경이 붙지 않게 하는 장치(실측: border-b border-transparent bg-clip-padding).
+     **투명한 1px 아래 테두리 + 배경을 테두리 안쪽까지만 칠한다.**
+     레이아웃 여백은 0인데 배경끼리는 1px 떨어져서, 두 항목이 다 칠해져도
+     한 덩어리로 보이지 않는다. 항목 사이를 띄우지 않고 이 문제만 푸는 방법이다. */
+  border:0;border-bottom:1px solid transparent;background-clip:padding-box;
+  /* 주의: 아래 상태 규칙은 background 단축이 아니라 **background-color** 로 쓴다 —
+     단축을 쓰면 background-clip 이 초기값(border-box)으로 되돌아가 장치가 풀린다(실측). */
+  transition:background var(--transition-duration) var(--transition-ease)}
+/* 사이드바는 메뉴 항목 변수를 **덮어쓴다** — 호버·현재 둘 다 5%(--interactive-bg-secondary-*).
+   2026-09-28 화면 computed: 사이드바 항목 37개에서 highlighted·active·pressed 전부 #0000000d.
+   (드롭다운의 4%·6% 는 .__menu-item 기본값이고, 사이드바 스코프에서는 쓰이지 않는다.) 누름 효과 없음. */
+.nav-item:hover{background-color:var(--interactive-bg-secondary-hover)}
+.nav-item[aria-current="page"]{background-color:var(--interactive-bg-secondary-selected)}
+
+/* 선택 표시를 **배경이 아니라 체크**로 하는 자리.
+   실측: 드롭다운의 필터 항목은 role="menuitemcheckbox" 이고 표식 크기가
+   --menu-checkbox-indicator-size = text-lg(18px) 다.
+   배경으로 선택을 표시하면 여러 개가 켜졌을 때 화면이 덩어리진다 —
+   여러 개를 동시에 켜는 목록(필터 등)은 체크 쪽이 맞다. */
+.menu-item[aria-checked]{padding-left:var(--menu-check-pad-start)}
+.menu-check{width:var(--menu-check-size);height:var(--menu-check-size);flex:0 0 auto;stroke:currentColor;fill:none;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.menu-item[aria-checked="true"] .menu-check{opacity:1}
+
+/* 항목끼리는 붙인다(여백 0). 띄우는 것은 **묶음 단위**다 — 실측 20px.
+   첫 묶음만 덜 띄운다(8px). 항목마다 띄우면 목록이 아니라 단추 나열이 된다. */
+.nav-section{margin-top:var(--sidebar-section-margin-top)}
+.nav-section:first-child{margin-top:var(--sidebar-section-first-margin-top)}
+.nav-section-label{margin:0;padding:var(--menu-item-pad-y) var(--menu-item-pad-x);
+  margin-inline:var(--nav-item-margin-x);
+  font-size:var(--nav-label-text);color:var(--text-tertiary)}
+
+/* ── 다이얼로그 ────────────────────────────────────────────────────
+   실측: 폭 250~450px · 라운드 16px · 안쪽 여백 20px ·
+   들어오기 .6s / 나가기 .3s(나가는 게 두 배 빠르다) · 아래 20px 에서 올라온다.
+   뒤 가림막은 두 가지 — 어둡게 덮는 dim(검정 30%), 흐리게 비치는 fade(회색 50% + blur 1px). */
+.dialog-backdrop{position:fixed;inset:0;background:var(--backdrop-dim);
+  animation:backdrop-in var(--dialog-enter) cubic-bezier(.4,0,.2,1)}
+.dialog-backdrop[data-variant="fade"]{background:var(--backdrop-fade);
+  backdrop-filter:var(--backdrop-fade-blur)}
+.dialog-positioner{position:fixed;inset:0;display:grid;place-items:center;
+  padding:calc(var(--spacing)*4)}
+/* **`[hidden]` 은 display 를 주는 규칙에 밀린다.**
+   브라우저 기본 `[hidden]{display:none}` 은 특정도가 낮아서 `.dialog-positioner{display:grid}`
+   가 이긴다 — 닫아도 계속 보인다. 2026-09-22 실측으로 찾은 버그이고,
+   "안 닫힌다"의 진짜 원인이었다(실제로는 열린 적도 없이 늘 떠 있었다).
+   display 를 주는 부품에는 이 줄을 반드시 같이 둔다. 검사 G08 이 이것을 본다. */
+.dialog-positioner[hidden],
+.dialog-backdrop[hidden]{display:none}
+.dialog{min-width:var(--dialog-min-width);max-width:var(--dialog-max-width);width:100%;
+  padding:var(--dialog-pad);background:var(--bg-primary);
+  border-radius:var(--dialog-radius);corner-shape:var(--corner);
+  box-shadow:var(--dialog-shadow);
+  display:grid;gap:var(--dialog-gap);outline:none;
+  animation:dialog-in var(--dialog-enter) cubic-bezier(.4,0,.2,1)}
+.dialog-title{margin:0;font-size:var(--dialog-title-text);font-weight:var(--dialog-title-weight)}
+.dialog-body{margin:0;color:var(--text-secondary);font-size:var(--dialog-body-text)}
+.dialog-foot{display:flex;justify-content:flex-end;gap:calc(var(--spacing)*2)}
+/* 미리보기 무대 — 쇼룸처럼 **가둬 놓고 보여줄 때** 쓴다.
+   진짜 화면에서는 다이얼로그가 전체를 덮는 게 맞지만, 부품을 보여주는 자리에서
+   화면을 덮으면 나머지를 못 본다. 무대 안에서만 덮게 바꾼다 —
+   부품 코드는 그대로 두고 자리만 가둔다. */
+.dialog-stage{position:relative;overflow:hidden;
+  height:var(--dialog-stage-height);border-radius:var(--dialog-radius);corner-shape:var(--corner);
+  box-shadow:inset 0 0 0 1px var(--border-xlight);background:var(--bg-secondary-surface)}
+.dialog-stage .dialog-backdrop,
+.dialog-stage .dialog-positioner{position:absolute}
+
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes dialog-in{from{opacity:0;transform:translateY(var(--dialog-out-y))}
+                     to{opacity:1;transform:none}}
+
+/* ── 빈 상태 ─────────────────────────────────────────────────────────
+   실측(2026-09-23, 라이브러리 비었을 때): 세로 가운데 · 최소 높이 448 · 안쪽 48/24 ·
+   아이콘 상자 40×40 회색(--bg-tertiary) 라운드 10, 안에 24px 아이콘 · 글 묶음 최대 320 ·
+   제목 14/20 600 · 설명 13/18 흐림 · 그 아래 primary 단추(아이콘 16 + 글자). 묶음 사이 16, 제목·설명 사이 2. */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  width:100%;min-height:var(--empty-min-height);padding:var(--empty-pad-y) var(--empty-pad-x);gap:var(--empty-gap)}
+.empty[hidden]{display:none}                   /* display 를 주는 부품 — G08 */
+.empty-icon{display:flex;align-items:center;justify-content:center;
+  width:var(--empty-icon-box);height:var(--empty-icon-box);
+  background-color:var(--bg-tertiary);border-radius:var(--empty-icon-radius);corner-shape:var(--corner)}
+.empty-icon .ic{width:var(--empty-icon);height:var(--empty-icon);color:var(--text-primary)}
+.empty-text{display:flex;flex-direction:column;gap:var(--empty-text-gap);width:100%;max-width:var(--empty-text-max)}
+.empty-title{margin:0;font-size:var(--empty-title-text);line-height:var(--empty-title-line);font-weight:600;color:var(--text-primary)}
+.empty-desc{margin:0;font-size:var(--empty-desc-text);line-height:var(--empty-desc-line);color:var(--text-tertiary)}
+
+/* ── 툴팁 ──────────────────────────────────────────────────────────
+   실측(2026-09-22, 그려진 값): 알약 · 배경 #1b1b1b(라이트 화면에서도) · 테두리 흰 5% ·
+   안쪽 5px 12px · 높이 30px · 글자 14/18 600 · 단추 **아래** 8px, 가운데 정렬 · 그림자 0 8px 18px.
+   단축키가 있으면 오른쪽에 흰 25% 알약(18px 높이)이 붙고 상자 끝에서 6px 당겨진다.
+   뜨고 사라지는 시간은 CSS 로는 opacity .15s 만 확인했다. 지연(delay)은 Zag 기본값을 쓴다 — 실측 못 함.
+   동작(지연·포인터·Esc·aria-describedby)은 Zag tooltip, 모양은 여기. */
+/* 쌓는 순서 — Zag 는 떠 있는 상자(positioner)에 z-index:var(--z-index) 를 주고, 그 --z-index 를
+   **내용 요소의 z-index 를 읽어** 인라인으로 다시 쓴다. 그래서 z-index 는 **내용 요소**에 준다
+   (positioner 에 주면 덮인다 — 2026-09-28 선택 상자 위로 스위치가 올라왔다). 툴팁(.tooltip)은 원래 50 이었다. */
+.menu-content{z-index:50}
+.tooltip-positioner{--gutter:var(--tooltip-offset)}  /* 거리는 tooltip.js 가 이 토큰을 읽는다 */
+/* z-index 는 상자에 둔다 — Zag 가 첫 자식의 z-index 를 읽어 positioner 에 인라인으로 옮긴다(실측: positioner 에 주면 auto 로 덮인다) */
+.tooltip{z-index:50;display:flex;align-items:center;gap:var(--tooltip-gap);
+  padding:var(--tooltip-pad-y) var(--tooltip-pad-x);max-width:var(--tooltip-max-width);
+  background-color:var(--bg-tooltip);color:var(--tooltip-text);
+  border:1px solid var(--border-tooltip);border-radius:var(--tooltip-radius);corner-shape:var(--corner);
+  box-shadow:var(--tooltip-shadow);
+  font-size:var(--tooltip-text-size);line-height:var(--tooltip-line);font-weight:600;letter-spacing:var(--tooltip-tracking);
+  white-space:pre-wrap;text-align:center;
+  transition:opacity var(--tooltip-fade) cubic-bezier(.4,0,.2,1)}
+.tooltip[hidden]{display:none}                 /* display 를 주는 부품 — G08 */
+.tooltip[data-state="closed"]{opacity:0}
+.tooltip-sub{color:var(--tooltip-sub-text);font-size:var(--tooltip-sub-size);font-weight:500;display:inline-flex}
+.tooltip-kbd{display:inline-flex;align-items:center;height:var(--tooltip-line);
+  padding:0 var(--tooltip-kbd-pad-x);margin-inline-end:var(--tooltip-kbd-pull);
+  border-radius:var(--tooltip-radius);corner-shape:var(--corner);
+  background-color:var(--tooltip-kbd-bg);color:var(--tooltip-kbd-text);
+  font-size:var(--tooltip-text-size);line-height:var(--tooltip-line);font-weight:600;white-space:pre}
+.tooltip-kbd kbd{font:inherit}
+.tooltip-kbd kbd:not(:last-child)::after{content:"+";padding:0 calc(var(--spacing)*.5)}
+
+/* ── 아이콘 — 색은 currentColor 하나로만 받는다 ──────────────────── */
+.ic{width:var(--icon-size);height:var(--icon-size);stroke:currentColor;fill:none;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+/* 주인공이 아닌 자리(도구 줄)의 아이콘. 2026-09-23 까지 예시/라이브러리.html 안에만
+   있어서 다른 화면에서 쓰면 조용히 안 먹었다 — 부품 정본으로 옮겼다. */
+.ic-muted{color:var(--text-tertiary)}
+
+/* ── 스크롤바 — 한 타입 (2026-09-28 컨펌) ─────────────────────────────
+   가만히 5% · 칸 위에 마우스가 오면 .2s 에 걸쳐 15%. **손잡이 호버는 없다.**
+   페이지(html)는 아무것도 안 붙여도 받는다. 안쪽 구르는 칸에는 .scroll.
+
+   - 표준 scrollbar-color 를 Chrome 에 주면 ::-webkit-scrollbar 가 통째로 무시된다
+     (폭 10 → 15, 2026-09-23 실측) — 표준 속성은 파이어폭스에만 준다.
+   - 손잡이 자체의 transition 은 안 먹는다(2026-09-23). 그래서 @property 로 등록한
+     --scrollbar-thumb 를 칸 쪽에서 보간하고, 손잡이는 그 값을 읽는다(2026-09-28 눈 확인).
+   - 손잡이 호버를 두면 전환 도중에 끼어들어 번쩍인다(2026-09-28) — 그래서 없다.
+   - 비용: 칸 안쪽의 스타일 계산이 전환 동안(.2s)만 돈다. 레이아웃은 안 건드린다. */
+@property --scrollbar-thumb{syntax:'<color>';inherits:true;initial-value:transparent}
+html,.scroll{scrollbar-gutter:var(--scroll-gutter);
+  transition:--scrollbar-thumb var(--scrollbar-fade) ease}
+/* 안쪽 칸은 기본값을 **다시** 준다 — 안 그러면 페이지(html:hover)의 15% 를 물려받는다 */
+.scroll{overflow:auto;--scrollbar-thumb:var(--scrollbar-color)}
+/* 트랙 여백은 라운드에 따라 **알아서** 정해진다 — 여백 = --scroll-radius × --scrollbar-inset-ratio.
+   CSS 는 요소의 border-radius 를 읽을 수 없어서, 둥근 부품이 제 라운드를 --scroll-radius 로도 알린다.
+   --scroll-radius 는 물려주지 않게 등록한다 — 둥근 카드 안의 네모난 구르는 칸이 여백을 받지 않는다.
+   둥근 칸을 새로 만들면 border-radius 옆에 --scroll-radius 를 같이 적는다. */
+@property --scroll-radius{syntax:'<length>';inherits:false;initial-value:0px}
+html,.scroll,.card,.menu-content,.dialog{
+  --scrollbar-inset:calc(var(--scroll-radius) * var(--scrollbar-inset-ratio))}
+.card{--scroll-radius:var(--card-radius)}
+.menu-content{--scroll-radius:var(--menu-radius)}
+.dialog{--scroll-radius:var(--dialog-radius)}
+html:hover,.scroll:hover,.scroll:focus-within{--scrollbar-thumb:var(--scrollbar-color-active)}
+@supports (-moz-appearance:none){
+  html,.scroll{scrollbar-width:thin;scrollbar-color:var(--scrollbar-thumb) var(--scrollbar-track)}
+}
+::-webkit-scrollbar{width:var(--scrollbar-width);height:var(--scrollbar-width)}
+::-webkit-scrollbar-track{background:var(--scrollbar-track)}
+/* 둥근 칸 안에서 손잡이가 모서리 곡선까지 내려가면 삐져 보인다(2026-09-28 사용자) —
+   트랙 양 끝을 라운드 × .375 만큼 비운다(16 → 6). */
+::-webkit-scrollbar-track:vertical{margin-block:var(--scrollbar-inset)}
+::-webkit-scrollbar-track:horizontal{margin-inline:var(--scrollbar-inset)}
+::-webkit-scrollbar-thumb{background-color:var(--scrollbar-thumb);border-radius:var(--scrollbar-radius);
+  /* 투명 테두리로 안쪽만 칠한다 — .nav-item 에서 배경을 1px 떼는 것과 같은 수법 */
+  border:var(--scrollbar-pad) solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+
+/* ══ 스위치 — 2026-09-28 후보에서 옮김. 실측·결정 근거는 부품/ 카드 ══ */
+/* 트랙은 <button role="switch">. 손잡이는 ::after 로 그린다 — 요소를 하나만 쓴다. */
+.switch{position:relative;flex:0 0 auto;
+  width:var(--switch-track-width);height:var(--switch-track-height);
+  padding:0;border:0;border-radius:var(--switch-radius);corner-shape:var(--corner);
+  background-color:var(--switch-track-color);cursor:pointer;
+  transition:background-color var(--transition-duration) var(--transition-ease)}
+.switch:hover{background-color:var(--switch-track-color-hover)}
+.switch::after{content:"";position:absolute;top:var(--switch-thumb-offset);
+  inset-inline-start:var(--switch-thumb-offset);
+  width:var(--switch-thumb-size);height:var(--switch-thumb-size);
+  border-radius:var(--switch-radius);corner-shape:var(--corner);
+  background-color:var(--switch-thumb-color);box-shadow:var(--switch-thumb-shadow);
+  transition:translate .18s cubic-bezier(.4,0,.2,1)}
+.switch[aria-checked="true"]{background-color:var(--switch-track-color-checked)}
+.switch[aria-checked="true"]::after{background-color:var(--switch-thumb-color-checked)}
+.switch[aria-checked="true"]:hover{background-color:var(--switch-track-color-checked-hover)}
+/* 손잡이가 가는 거리 = 트랙 너비 - 손잡이 - 양쪽 여백 */
+.switch[aria-checked="true"]::after{
+  translate:calc(var(--switch-track-width) - var(--switch-thumb-size) - 2 * var(--switch-thumb-offset)) 0}
+.switch:disabled{cursor:default;opacity:var(--switch-disabled-opacity);background-color:var(--switch-track-color)}
+.switch:disabled[aria-checked="true"]{background-color:var(--switch-track-color-checked)}
+/* 켜고 끌 때 — 뒤 끝이 4px 늦게 쫓아오고 1px 얇아진다(랩 B-6, 2026-09-28 사용자 선택). 도착 뒤 출렁임 없음.
+   **토글한 순간에만** 돌아야 하므로 토글 코드가 data-toggled 를 붙인다 — 안 붙이면 그냥 미끄러지기만 한다.
+   켜짐/꺼짐마다 이름이 다른 애니메이션을 걸어 누를 때마다 다시 돈다. 4px·1px·.18s·.2s 는 우리 값(실측 아님). */
+@keyframes switch-go-off{   /* 왼쪽으로 — 오른쪽(뒤) 끝이 처진다 */
+  0%,100%{width:var(--switch-thumb-size);height:var(--switch-thumb-size);margin:0}
+  40%{width:calc(var(--switch-thumb-size) + var(--switch-stretch));height:calc(var(--switch-thumb-size) - 1px);margin:.5px 0 0 0}}
+@keyframes switch-go-on{    /* 오른쪽으로 — 왼쪽(뒤) 끝이 처진다 */
+  0%,100%{width:var(--switch-thumb-size);height:var(--switch-thumb-size);margin:0}
+  40%{width:calc(var(--switch-thumb-size) + var(--switch-stretch));height:calc(var(--switch-thumb-size) - 1px);margin:.5px 0 0 calc(var(--switch-stretch) * -1)}}
+.switch[data-toggled]::after{animation:switch-go-off .2s cubic-bezier(.4,0,.2,1)}
+.switch[data-toggled][aria-checked="true"]::after{animation-name:switch-go-on}
+:root[data-focus-mode="keyboard"] .switch:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* 글자와 한 줄로 놓는 자리. 실측 --switch-label-gap = 8px */
+/* ── 라벨 — **부품의 일부**다. 미리보기의 회색 주석(.cap)과 다르다 ──────────────────────
+   이름(.switch-name) 하나, 또는 이름 + 보조 설명(.switch-hint) 한 줄. 둘 다 <label> 안에 둔다 —
+   어디를 눌러도 켜진다. 보조 설명은 aria-describedby 로 스위치에 잇는다.
+   글자 크기·색은 기존 단에서만 고른다: 이름 --text-sm · primary / 설명 --text-xs · secondary. */
+.switch-row{display:flex;align-items:center;gap:var(--switch-label-gap);color:var(--text-primary)}
+.switch-text{display:grid;gap:var(--switch-text-gap);cursor:pointer;user-select:none}
+.switch-name{font-size:var(--switch-name-text);line-height:var(--switch-name-line);color:var(--text-primary)}
+.switch-hint{font-size:var(--switch-hint-text);line-height:var(--switch-hint-line);color:var(--text-secondary)}
+/* 설명이 두 줄이 되면 스위치는 **첫 줄(이름)** 에 맞춘다 — 가운데 맞춤이면 둘 사이에 떠 버린다 */
+.switch-row:has(.switch-hint){align-items:flex-start}
+.switch-row:has(.switch-hint) .switch{margin-top:calc((var(--switch-name-line) - var(--switch-track-height)) / 2)}
+/* 못 누름이면 글자도 같이 흐려진다 — 스위치만 흐리면 글자가 "눌러도 된다"고 말한다 */
+.switch-row:has(.switch:disabled) .switch-text{opacity:var(--switch-disabled-opacity);cursor:default}
+/* 글자 위치 — data-label 로 고른다. 마크업 순서(스위치 → 글자)는 그대로, 방향만 바꾼다.
+   end(기본): 오른쪽 · start: 왼쪽 · top: 위 · bottom: 아래. 위아래는 왼쪽 끝을 맞춘다.
+   설정 화면처럼 글자는 왼쪽, 스위치는 줄 끝에 두려면 start + 줄 너비를 채운다(style="width:100%"). */
+.switch-row[data-label="start"]{flex-direction:row-reverse;justify-content:space-between}
+.switch-row[data-label="top"]{flex-direction:column-reverse;align-items:flex-start}
+.switch-row[data-label="top"] .switch,.switch-row[data-label="bottom"] .switch{margin-top:0}
+.switch-row[data-label="bottom"]{flex-direction:column;align-items:flex-start}
+
+/* ══ 컴포저 — 2026-09-28 후보에서 옮김. 실측·결정 근거는 부품/ 카드 ══ */
+.composer{display:flex;align-items:flex-end;gap:calc(var(--spacing)*1);
+  max-width:var(--composer-max-width);min-height:var(--composer-min-height);
+  padding:calc(var(--spacing)*2) var(--composer-pad-x);
+  background:var(--composer-bg);border-radius:var(--composer-radius);corner-shape:var(--corner);
+  box-shadow:var(--composer-shadow);cursor:text}
+/* 글 쓰는 칸 — 테두리·배경 없음. 줄이 늘면 높이가 따라 는다(field-sizing). 너무 길면 안에서 구른다 */
+.composer-input{flex:1;min-width:0;align-self:center;margin:0;padding:calc(var(--spacing)*1) calc(var(--spacing)*1.5);
+  border:0;outline:0;background:none;resize:none;field-sizing:content;max-height:var(--composer-input-max);
+  font:inherit;font-size:var(--composer-text);line-height:var(--composer-line);color:var(--text-primary)}
+.composer-input::placeholder{color:var(--composer-placeholder)}
+/* 원형 아이콘 단추(붙이기·음성 등) — 호버는 단추와 같은 5% */
+.composer-btn{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;
+  width:var(--composer-btn);height:var(--composer-btn);padding:0;border:0;border-radius:var(--composer-btn-radius);
+  background:none;color:var(--text-primary);cursor:pointer;transition:background-color var(--transition-duration) var(--transition-ease)}
+.composer-btn:hover{background-color:var(--interactive-bg-secondary-hover)}
+/* 알약 단추(모드·도구 고르기) — 36px 높이 · 글자 16px 회색 · 왼 12 오 14 · 아이콘 간격 6. 실측 */
+.composer-pill{display:inline-flex;flex:0 0 auto;align-items:center;gap:calc(var(--spacing)*1.5);
+  height:var(--composer-btn);padding:0 var(--composer-pill-pad-end) 0 var(--composer-pill-pad-start);border:0;border-radius:var(--composer-btn-radius);
+  background:none;color:var(--composer-pill-text);font:inherit;font-size:var(--composer-pill-size);cursor:pointer;
+  transition:background-color var(--transition-duration) var(--transition-ease)}
+.composer-pill:hover{background-color:var(--interactive-bg-secondary-hover)}
+/* 보내기 — 36px 원 · 흰 화살표. 쓸 글이 없으면 흐리다 */
+.composer-submit{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;
+  width:var(--composer-btn);height:var(--composer-btn);padding:0;border:0;border-radius:var(--composer-btn-radius);
+  background:var(--composer-submit-bg);color:var(--composer-submit-fg);cursor:pointer;
+  transition:background-color var(--transition-duration) var(--transition-ease),opacity .15s}
+.composer-submit:hover{background:var(--interactive-bg-primary-hover)}   /* 검정 단추 호버와 같은 80% */
+.composer-submit:disabled{opacity:.3;cursor:default}   /* .3 은 우리 값 — 쓸 글이 없을 때의 실측은 못 했다 */
+
+/* ── ＋ 단추 메뉴 — 컴포저 **바로 아래 8px**, 컴포저와 **같은 너비** (2026-09-28 화면 실측) ──────────
+   면: 라운드 20 · 위아래 8 · 그림자는 컴포저와 같은 3겹. 항목: 36 높이 · 좌우 8 띄움 · 안쪽 6/8 · 라운드 12 ·
+   아이콘 20 · 간격 12 · 제목 14 진하게 + 설명 14 #8f8f8f · 강조 4%. 끝에 도움말 한 줄(14 #8f8f8f).
+   동작(열기·화살표·Esc·바깥 클릭)은 Zag menu — 드롭다운과 같은 장치, 붙이는 곳만 컴포저다. */
+.composer-btn[aria-expanded="true"]{background-color:var(--interactive-bg-secondary-hover)}  /* 열린 동안 5% — 실측 */
+.composer-menu{z-index:50}   /* Zag 가 내용의 z-index 를 읽어 positioner 로 옮긴다 */
+.composer-menu-positioner[hidden]{display:none}
+.composer-menu{padding:calc(var(--spacing)*2) 0;background:var(--composer-bg);
+  border-radius:var(--menu-radius);corner-shape:var(--corner);box-shadow:var(--composer-shadow);outline:none}
+.composer-menu-item{display:flex;align-items:center;gap:calc(var(--spacing)*3);
+  min-height:var(--composer-menu-item-height);margin:0 calc(var(--spacing)*2);padding:var(--menu-item-pad-y) calc(var(--spacing)*2);
+  border-radius:var(--composer-menu-item-radius);corner-shape:var(--corner);cursor:pointer;
+  font-size:var(--composer-menu-text);line-height:var(--composer-menu-line);color:var(--text-primary)}
+.composer-menu-item[data-highlighted]{background-color:var(--menu-item-highlighted)}
+.composer-menu-item .ic{width:var(--icon-size);height:var(--icon-size);flex:0 0 auto}
+.composer-menu-desc{color:var(--composer-pill-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.composer-menu-hint{margin:0;padding:calc(var(--spacing)*2) calc(var(--spacing)*4) 0;
+  font-size:var(--composer-menu-text);color:var(--composer-pill-text)}
+
+/* ── 알약 단추는 **켜고 끄는 단추**다(aria-pressed) — 메뉴가 아니다 ────────────────────────────
+   실측(2026-09-28, 눌렀다 되돌림): 꺼짐 = 글자·아이콘 #8f8f8f · 바탕 없음(호버 5%)
+                                  켜짐 = 글자·아이콘 **파랑 #3a83f7** · 바탕 **연파랑 #ebf4ff** · 폭 그대로
+   우리 기본은 검정(스위치 결정을 따름) — **꺼짐은 연하게, 켜짐은 진하게**(2026-09-28 사용자):
+     꺼짐 = 글자 #8f8f8f · 바탕 없음 (호버 5%)
+     켜짐 = 글자 --text-primary · 바탕 **검정 10%** — 호버 5% 보다 한 단 진해서 "켜졌다"가 바탕으로도 보인다
+   ChatGPT 처럼 파랑으로 쓰려면 두 변수를 덮어쓴다: --composer-pill-on-fg:#3a83f7; --composer-pill-on-bg:#ebf4ff */
+.composer-pill[aria-pressed="true"]{color:var(--composer-pill-on-fg);background-color:var(--composer-pill-on-bg)}
+
+/* 키보드로 들어왔을 때만 초점 링 — 마우스일 때 기본 링은 components.css 가 끈다 */
+:root[data-focus-mode="keyboard"] :is(.composer-btn,.composer-pill,.composer-submit):focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* ══ 세그먼트 토글 — 2026-09-28 후보에서 옮김. 실측·결정 근거는 부품/ 카드 ══ */
+/* 칸 수는 style="--segmented-count:3" 처럼, 고른 칸 번호는 스크립트가 --segmented-index 로 준다 */
+.segmented{position:relative;display:grid;grid-template-columns:repeat(var(--segmented-count),1fr);
+  height:var(--segmented-height);padding:0;border-radius:var(--segmented-radius);corner-shape:var(--corner);
+  background:var(--bg-primary);user-select:none;isolation:isolate}
+.segmented::before{content:"";position:absolute;inset:1px;border-radius:inherit;background:var(--segmented-track);z-index:-2}
+/* 흰 손잡이 — 고른 칸 아래로 미끄러진다 */
+.segmented::after{content:"";position:absolute;top:-.5px;bottom:-.5px;left:0;width:calc(100% / var(--segmented-count));
+  translate:calc(100% * var(--segmented-index)) 0;border-radius:inherit;background:var(--segmented-thumb);
+  border:.5px solid var(--segmented-thumb-border);box-shadow:var(--segmented-thumb-shadow);z-index:-1;
+  transition:translate var(--segmented-slide) cubic-bezier(.4,0,.2,1)}
+.segmented-item{display:flex;align-items:center;justify-content:center;gap:calc(var(--spacing)*1.5);
+  padding:0 calc(var(--spacing)*4);border:0;border-radius:inherit;background:none;cursor:pointer;
+  font:inherit;font-size:var(--segmented-text-size);font-weight:var(--segmented-weight);color:var(--segmented-text);
+  transition:color var(--transition-duration) var(--transition-ease)}
+.segmented-item[aria-checked="true"]{color:var(--segmented-text-active)}
+:root[data-focus-mode="keyboard"] .segmented-item:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+@media (prefers-reduced-motion:reduce){ .segmented::after{transition:none} }
+
+/* ══ 선택 상자 · 설정 줄 — 2026-09-28 후보에서 옮김. 실측·결정 근거는 부품/ 카드 ══ */
+.select-trigger{display:inline-flex;align-items:center;justify-content:center;gap:calc(var(--spacing)*1);
+  height:var(--select-height);padding:0 var(--select-pad-x);   /* 36px · 좌우 12 — 실측 */
+  border:1px solid transparent;border-radius:var(--select-radius);corner-shape:var(--corner);  /* 알약 — 실측은 8px 이지만 같은 높이(36)의 단추·입력칸에 맞췄다(2026-09-28 사용자, 랩 B) */
+  background:var(--bg-primary);color:var(--text-primary);font:inherit;font-size:var(--select-text);line-height:1;
+  cursor:pointer;transition:background-color var(--transition-duration) var(--transition-ease)}
+.select-trigger:hover,.select-trigger[data-state="open"]{background-color:var(--interactive-bg-secondary-hover)}
+.select-trigger .ic{width:var(--select-icon);height:var(--select-icon);color:var(--text-tertiary)}   /* 아래 화살표 */
+/* 설정 줄 — 이름은 왼쪽, 조작(선택 상자·스위치)은 줄 끝. 실측 flex justify-between gap-2 */
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--spacing)*2);
+  min-height:var(--setting-row-height);font-size:var(--setting-row-text);color:var(--text-primary)}
+:root[data-focus-mode="keyboard"] .select-trigger:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* ── 누르면 뜨는 목록 — 2026-09-28 설정 창 실측(테마 설정을 열어 봄) ─────────────────────────
+   단추 **아래 4px**, 단추 왼쪽에서 **4px 바깥**에서 시작(항목 글자가 단추 글자와 줄 맞도록) · 최소 폭 220 ·
+   라운드 16 · 위아래 6 · 그림자 = 아래 번짐 8% + 1px 윤곽 62%(테두리 대신).
+   항목: 36 높이 · 좌우 6 띄움 · 안쪽 6/10 · 라운드 10 · 글자 14/20 · 강조 4% · **고른 값 오른쪽에 체크 16**.
+   동작은 Zag menu(항목 type:'radio') — 드롭다운과 같은 장치. ChatGPT 는 role=listbox 다(우리는 menuitemradio). */
+.select-content{z-index:50}   /* Zag 가 내용의 z-index 를 읽어 positioner 의 --z-index 로 쓴다 — 여기 준다(2026-09-28) */
+.select-positioner[hidden]{display:none}
+.select-content{min-width:var(--select-content-min-width);padding:var(--select-content-pad-y) 0;background:var(--select-content-bg);
+  border-radius:var(--select-content-radius);corner-shape:var(--corner);outline:none;
+  box-shadow:var(--select-content-shadow)}
+.select-option{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--spacing)*6);
+  min-height:var(--select-option-height);margin:0 var(--select-option-gutter);padding:var(--menu-item-pad-y) var(--menu-item-pad-x);
+  border-radius:var(--menu-item-radius);corner-shape:var(--corner);cursor:pointer;
+  font-size:var(--select-text);line-height:var(--select-option-line);color:var(--text-primary)}
+.select-option[data-highlighted]{background-color:var(--menu-item-highlighted)}
+.select-check{width:var(--select-icon);height:var(--select-icon);flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2;visibility:hidden}
+.select-option[aria-checked="true"] .select-check{visibility:visible}
+/* 드롭다운 공통 — 목록이 화면을 넘지 않는다(2026-09-30, 규칙 부품/드롭다운.md '자리 규칙').
+   높이: 화면에 남은 높이까지 — 넘치면 목록 안에서 스크롤. Zag 가 positioner 에 남은 높이를 max-height 로 적고(fitViewport, dropdown.js)
+   목록이 그 값을 물려받는다(inherit — Zag 변수 이름을 CSS 에 쓰지 않으려고). 폭: 좁은 화면이면 화면 − 16.
+   항목 글자가 길면 줄을 바꾼다(항목 높이는 min-height — 드롭다운 실측 그대로). 줄임표(…)로 자르지 않는다 */
+:is(.menu-content,.select-content,.composer-menu){max-height:inherit;max-width:calc(100vw - var(--dropdown-edge) * 2);
+  overflow-y:auto;overscroll-behavior:contain}
+
+/* ══ 링크 — UI 안의 글자 링크 (2026-09-28 ChatGPT 화면 computed) ══
+   보조 글자색 + 같은 색 밑줄 · 올리면 본문 검정. 캡처의 --link(파랑 #2964aa)는 UI 링크에 안 쓰였다
+   (본문 글 안의 링크용으로 보인다 — 추정). 부모 글자 크기를 따른다. */
+.link{color:var(--text-secondary);text-decoration:underline;text-decoration-color:currentColor;
+  transition:color var(--transition-duration) var(--transition-ease)}
+.link:hover{color:var(--text-primary)}
+:root[data-focus-mode="keyboard"] .link:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset);border-radius:var(--link-focus-radius)}
+
+/* ── 손가락으로 만지는 기기 ───────────────────────────────────────────
+   실측: @media (pointer: coarse) 10곳 · (hover: hover) 198곳 · (hover: none) 10곳.
+   GPT 는 터치 기기에서 조작 부품을 한 단 키운다(touch:size-10 = 40px).
+   호버 효과는 손가락에 의미가 없으므로 마우스가 있을 때만 건다. */
+@media (pointer: coarse){
+  .btn,.input{min-height:var(--touch-height)}      /* 36 → 40px */
+  .btn[data-size="icon"]{width:var(--touch-height)}
+  .menu-item,.nav-item{min-height:var(--touch-height)}
+}
+@media (hover: none){
+  .btn:hover,.tab:hover,.card:hover,.nav-item:hover{background-color:inherit}
+  html,.scroll{--scrollbar-thumb:var(--scrollbar-color-active)}   /* 호버가 없으니 진한 쪽으로 */
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — Figma 같은 도구의 속성 패널 (2026-09-30 정본). 값은 tokens.css 의 '편집기 부품 변수'.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — 숫자 입력(편집기 속성 패널의 X · Y · 너비 · 패딩 · 불투명도 칸). 정본 2026-09-30(사용자 컨펌).
+   구조 참고: Figma 속성 패널(2026-09-29 저장 HTML) — 앞머리(글자·아이콘) + 숫자칸(role=spinbutton) + 뒤꼬리(% °).
+   **모양은 GPT 값**이다 — Figma 의 색·크기는 가져오지 않았다. 입력칸(.input)과 같은 윤곽·초점 규칙을 따른다.
+   부품 변수(--numfield-*)만 본다 — 다른 테마는 이 값만 바꾼다(검사 G17).
+   ══════════════════════════════════════════════════════════════════ */
+/* 칸 하나 — 윤곽·초점은 입력칸과 같다(평소 10% → 초점 20%, 마우스일 때 링 없음) */
+.numfield{display:flex;align-items:center;gap:var(--numfield-gap);min-width:0;
+  height:var(--numfield-height);padding:0 var(--numfield-pad-x);
+  border-radius:var(--numfield-radius);corner-shape:var(--corner);
+  box-shadow:inset 0 0 0 1px var(--border-default);background:var(--bg-primary);color:var(--text-primary);
+  transition:box-shadow var(--transition-duration) var(--transition-ease)}
+.numfield:focus-within{box-shadow:inset 0 0 0 1px var(--border-heavy)}
+:root[data-focus-mode="keyboard"] .numfield:focus-within{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* 앞머리 — 글자(X·W) 또는 아이콘. **좌우로 끌면 값이 바뀐다**(스크립트). 끌 수 있다는 걸 커서로 알린다 */
+.numfield-prefix{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  min-width:var(--numfield-affix-size);color:var(--numfield-affix-color);
+  font-size:var(--numfield-affix-text);font-variant-numeric:tabular-nums;cursor:ew-resize;user-select:none;touch-action:none}
+.numfield-prefix .ic{width:var(--numfield-affix-size);height:var(--numfield-affix-size)}
+.numfield[data-scrubbing] .numfield-prefix{color:var(--text-primary)}
+/* 숫자칸 — 테두리·배경 없음. 숫자 폭을 고정(tabular-nums)해 끌 때 글자가 흔들리지 않게 한다 */
+.numfield-input{flex:1;min-width:0;width:100%;margin:0;padding:0;border:0;outline:0;background:none;
+  font:inherit;font-size:var(--numfield-text);font-variant-numeric:tabular-nums;color:inherit}
+.numfield-suffix{flex:0 0 auto;color:var(--numfield-affix-color);font-size:var(--numfield-affix-text);user-select:none}
+/* 못 누름 — 스위치처럼 전체를 흐린다 */
+.numfield[data-disabled]{opacity:var(--numfield-disabled-opacity)}
+.numfield[data-disabled] .numfield-prefix{cursor:default}
+
+/* 촘촘한 패널 — 28 높이 · 글자 12 */
+.numfield[data-size="compact"]{height:var(--numfield-height-compact);padding:0 var(--numfield-pad-x-compact)}
+.numfield[data-size="compact"] .numfield-input{font-size:var(--numfield-text-compact)}
+
+/* 묶음 — 이름(legend) 아래 칸을 격자로. 칸 수는 style="--numfield-cols:3" */
+.numfield-group{display:grid;gap:var(--numfield-group-gap);margin:0;padding:0;border:0;min-width:0}
+.numfield-group > legend{padding:0;margin-bottom:var(--numfield-group-gap);
+  font-size:var(--numfield-group-label-text);color:var(--text-tertiary)}
+.numfield-row[hidden]{display:none}                   /* display 를 주는 부품 — G08 */
+.numfield-row{display:grid;grid-template-columns:repeat(var(--numfield-cols),minmax(0,1fr));gap:var(--numfield-group-gap)}
+
+/* 위아래 화살표 — 한 번 누르면 한 칸(step), 누르고 있으면 계속. 칸 위에 올리거나 초점이 있을 때만 보인다.
+   키보드는 ↑↓ 가 같은 일을 하므로 화살표 단추는 Tab 에서 건너뛴다(tabindex="-1"). */
+.numfield-stepper{display:flex;flex-direction:column;flex:0 0 auto;align-self:center;
+  height:calc(100% - var(--numfield-step-inset) * 2);           /* 위아래를 띄워 알약 모서리 곡선 안에 둔다 */
+  margin-inline-end:calc(var(--numfield-pad-x) * -.25);opacity:0;transition:opacity var(--transition-duration) var(--transition-ease)}
+.numfield:hover .numfield-stepper,.numfield:focus-within .numfield-stepper{opacity:1}
+.numfield[data-disabled] .numfield-stepper{visibility:hidden}
+.numfield-step{display:flex;align-items:center;justify-content:center;flex:1;min-height:0;
+  width:var(--numfield-step-width);padding:0;border:0;border-radius:var(--numfield-step-radius);corner-shape:var(--corner);
+  background:none;color:var(--numfield-affix-color);cursor:pointer;
+  transition:background-color var(--transition-duration) var(--transition-ease),color var(--transition-duration) var(--transition-ease)}
+.numfield-step:hover{background-color:var(--numfield-step-hover);color:var(--text-primary)}
+.numfield-step .ic{width:var(--numfield-step-icon);height:var(--numfield-step-icon)}
+@media (hover:none){ .numfield-stepper{opacity:1} }
+
+
+/* 칸 안 끝의 방식 고르기 — 정본 선택 상자(.select)를 작게. "W 289 [허그 ▾]" · "간격 6 [▾]"(Figma).
+   칸은 <label> 이 아니라 <div> — 목록 항목을 누를 때 label 이 입력칸으로 클릭을 넘기지 않게 */
+.numfield .select{flex:0 0 auto;margin-inline-end:calc(var(--numfield-pad-x-compact) * -.5);
+  --select-height:var(--numfield-menu-height);--select-pad-x:var(--numfield-menu-pad-x);--select-text:var(--numfield-affix-text);--select-icon:var(--numfield-step-icon);
+  /* 목록도 패널 크기로(2026-09-30) — 항목 28 · 글자 12 · 최소 폭 160. 목록(positioner)이 .select 안에 있어 이 값을 물려받는다 */
+  --select-content-min-width:var(--numfield-menu-min-width);--select-option-height:var(--numfield-menu-item);
+  --menu-item-pad-y:var(--numfield-menu-item-pad-y);--select-option-line:var(--numfield-menu-item-line)}
+.numfield .select-trigger{background-color:transparent;color:var(--text-secondary)}
+.numfield .select-trigger:hover,.numfield .select-trigger[data-state="open"]{background-color:var(--numfield-step-hover)}
+.numfield:has(.numfield-input:disabled) .numfield-input{color:var(--text-tertiary)}   /* 허그·자동이면 숫자는 흐리게(도구가 정한 값) */
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — 정렬 3×3 격자(오토레이아웃의 자식 정렬 고르기). 정본 2026-09-30(사용자 컨펌).
+   구조 참고: Figma 속성 패널(2026-09-29 저장 HTML) — 점 9개 위에 라디오 9개(radiogroup "정렬"), 칸마다 툴팁,
+   고른 칸은 점 대신 **막대 셋**(자식들)이 배치 방향에 맞게 그려진다.
+   **모양은 GPT 값** — 숫자 입력과 같은 윤곽(평소 10%), 호버 5%, 표시는 본문 검정. 부품 변수(--align-*)만 본다.
+   ══════════════════════════════════════════════════════════════════ */
+.align-grid{display:grid;grid-template-columns:repeat(3,var(--align-cell));grid-template-rows:repeat(3,var(--align-cell));
+  width:max-content;margin:0;padding:var(--align-pad);border:0;
+  border-radius:var(--align-radius);corner-shape:var(--corner);
+  box-shadow:inset 0 0 0 1px var(--border-default);background:var(--bg-primary)}
+.align-grid > legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}   /* 낭독기용 이름 "정렬" */
+
+/* 칸 — 라디오는 숨기고 칸 전체가 누르는 자리다 */
+.align-cell{position:relative;display:grid;place-items:center;border-radius:var(--align-cell-radius);corner-shape:var(--corner);
+  cursor:pointer;transition:background-color var(--transition-duration) var(--transition-ease)}
+.align-cell:hover{background-color:var(--align-hover)}
+.align-input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+/* 점 — 고르지 않은 칸 */
+.align-cell::before{content:"";width:var(--align-dot);height:var(--align-dot);border-radius:50%;background:var(--align-dot-color)}
+.align-cell:has(.align-input:checked)::before{display:none}
+/* 막대 셋 — 고른 칸에만. 가로 배치(row)면 세로 막대가 가로로 놓이고, 세로 배치(column)면 가로 막대가 세로로 놓인다 */
+.align-mark{display:none;gap:var(--align-bar-gap)}
+.align-cell:has(.align-input:checked) .align-mark{display:flex}
+.align-mark > i{display:block;border-radius:1px;background:var(--align-mark-color)}
+.align-grid[data-direction="row"] .align-mark{flex-direction:row}
+.align-grid[data-direction="row"] .align-mark > i{width:var(--align-bar)}
+.align-grid[data-direction="row"] .align-mark > i:nth-child(1){height:var(--align-bar-a)}
+.align-grid[data-direction="row"] .align-mark > i:nth-child(2){height:var(--align-bar-b)}
+.align-grid[data-direction="row"] .align-mark > i:nth-child(3){height:var(--align-bar-c)}
+.align-grid[data-direction="column"] .align-mark{flex-direction:column}
+.align-grid[data-direction="column"] .align-mark > i{height:var(--align-bar)}
+.align-grid[data-direction="column"] .align-mark > i:nth-child(1){width:var(--align-bar-a)}
+.align-grid[data-direction="column"] .align-mark > i:nth-child(2){width:var(--align-bar-b)}
+.align-grid[data-direction="column"] .align-mark > i:nth-child(3){width:var(--align-bar-c)}
+/* 막대끼리의 정렬 = 고른 칸의 정렬. 가로 배치에서는 위·가운데·아래, 세로 배치에서는 왼·가운데·오른 */
+.align-grid[data-direction="row"] .align-cell[data-v="start"] .align-mark{align-items:flex-start}
+.align-grid[data-direction="row"] .align-cell[data-v="center"] .align-mark{align-items:center}
+.align-grid[data-direction="row"] .align-cell[data-v="end"] .align-mark{align-items:flex-end}
+.align-grid[data-direction="column"] .align-cell[data-h="start"] .align-mark{align-items:flex-start}
+.align-grid[data-direction="column"] .align-cell[data-h="center"] .align-mark{align-items:center}
+.align-grid[data-direction="column"] .align-cell[data-h="end"] .align-mark{align-items:flex-end}
+
+/* 간격 자동(space-between) — 격자에 data-spread. 배치 방향으로는 양끝까지 퍼지니 **교차 축 한 줄만** 고른다(Figma 와 같다, 2026-09-30).
+   고른 줄의 세 칸에 막대 하나씩 — 가운데 칸 막대는 짧게(퍼져 있다는 표시). 어느 칸이 그 줄인지는 스크립트가 data-spread-on 으로 준다 */
+.align-cell[data-spread-on]::before{display:none}
+.align-cell[data-spread-on] .align-mark{display:flex}
+.align-grid[data-spread] .align-mark > i:not(:first-child){display:none}
+.align-grid[data-spread][data-direction="column"] .align-mark > i:first-child{width:var(--align-bar-b)}
+.align-grid[data-spread][data-direction="column"] .align-cell[data-v="center"] .align-mark > i:first-child{width:var(--align-bar-a)}
+.align-grid[data-spread][data-direction="row"] .align-mark > i:first-child{height:var(--align-bar-b)}
+.align-grid[data-spread][data-direction="row"] .align-cell[data-h="center"] .align-mark > i:first-child{height:var(--align-bar-a)}
+:root[data-focus-mode="keyboard"] .align-cell:has(.align-input:focus-visible){
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:calc(var(--focus-width) * -1)}
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — 체크박스. 정본 2026-09-30(사용자 컨펌).
+   구조 참고: Figma 속성 패널 "넘친 콘텐츠 숨기기"(2026-09-29) — 숨긴 기본 체크박스 위에 16 네모 + 체크 그림, 켜면 채워진다, 중간 상태 있음.
+   **모양은 GPT 값** — 켜짐은 검정 기준(스위치와 같다), 테두리는 입력칸 초점과 같은 20%, 호버 5%. 부품 변수(--checkbox-*)만 본다.
+   ══════════════════════════════════════════════════════════════════ */
+.checkbox{display:inline-flex;align-items:center;gap:var(--checkbox-gap);cursor:pointer;user-select:none;
+  font-size:var(--checkbox-text);color:var(--text-primary)}
+.checkbox-box{position:relative;display:grid;place-items:center;flex:0 0 auto;
+  width:var(--checkbox-size);height:var(--checkbox-size);border-radius:var(--checkbox-radius);corner-shape:var(--corner);
+  box-shadow:inset 0 0 0 var(--checkbox-border-width) var(--checkbox-border);color:transparent;
+  transition:background-color var(--transition-duration) var(--transition-ease),box-shadow var(--transition-duration) var(--transition-ease)}
+.checkbox-box .ic{width:100%;height:100%;stroke-width:2}
+.checkbox-box .checkbox-dash{display:none}
+/* 기본 체크박스는 네모 위에 투명하게 덮어 둔다 — 누르는 것도, 키보드도, 낭독기도 진짜가 받는다 */
+.checkbox-input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.checkbox:hover .checkbox-box{background-color:var(--checkbox-hover)}
+.checkbox:has(.checkbox-input:checked) .checkbox-box,
+.checkbox:has(.checkbox-input:indeterminate) .checkbox-box{background-color:var(--checkbox-on-bg);box-shadow:none;color:var(--checkbox-on-fg)}
+.checkbox:has(.checkbox-input:indeterminate) .checkbox-box .checkbox-check{display:none}
+.checkbox:has(.checkbox-input:indeterminate) .checkbox-box .checkbox-dash{display:block}
+.checkbox:has(.checkbox-input:disabled){opacity:var(--checkbox-disabled-opacity);cursor:default}
+.checkbox:has(.checkbox-input:disabled) .checkbox-input{cursor:default}
+:root[data-focus-mode="keyboard"] .checkbox:has(.checkbox-input:focus-visible) .checkbox-box{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — 색 칩 줄(채우기·외곽선의 한 줄). 정본 2026-09-30(사용자 컨펌).
+   구조 참고: Figma 속성 패널 "채우기"(2026-09-29) — [색 칩 단추 + hex 칸 + 불투명도 %] | [보이기 전환] | [제거].
+   **모양은 GPT 값** — 칸은 숫자 입력과 같은 윤곽 알약, 칩은 작은 네모, 뒤 두 단추는 아이콘 단추(툴팁).
+   부품 변수(--paint-*)만 본다.
+   ══════════════════════════════════════════════════════════════════ */
+.paint-row{display:flex;align-items:center;gap:var(--paint-row-gap);min-width:0;--btn-height:var(--paint-action)}
+.paint-field{display:flex;align-items:center;gap:var(--paint-gap);flex:1;min-width:0;
+  height:var(--paint-height);padding:0 var(--paint-pad-end) 0 var(--paint-pad-start);
+  border-radius:var(--paint-radius);corner-shape:var(--corner);
+  box-shadow:inset 0 0 0 1px var(--border-default);background:var(--bg-primary);
+  transition:box-shadow var(--transition-duration) var(--transition-ease)}
+.paint-field:focus-within{box-shadow:inset 0 0 0 1px var(--border-heavy)}
+/* 칩 — 누르면 색 고르기가 뜬다(스크립트). 투명도가 있으면 격자 무늬가 비친다 */
+.paint-chip{position:relative;flex:0 0 auto;width:var(--paint-chip);height:var(--paint-chip);padding:0;border:0;cursor:pointer;
+  border-radius:var(--paint-chip-radius);corner-shape:var(--corner);overflow:hidden;
+  background:conic-gradient(var(--bg-tertiary) 25%, var(--bg-primary) 0 50%, var(--bg-tertiary) 0 75%, var(--bg-primary) 0) 0 0/var(--paint-checker) var(--paint-checker)}
+.paint-chip::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--paint-color, transparent);
+  opacity:var(--paint-alpha, 1);box-shadow:inset 0 0 0 1px var(--paint-chip-edge)}
+.paint-picker{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}   /* 브라우저 색 고르기 — 칩이 대신 누른다 */
+.paint-hex,.paint-opacity{min-width:0;margin:0;padding:0;border:0;outline:0;background:none;color:var(--text-primary);
+  font:inherit;font-size:var(--paint-text);font-variant-numeric:tabular-nums}
+.paint-hex{flex:1;width:0;text-transform:uppercase}   /* width:0 — 입력칸 기본 폭(약 20자)이 줄을 밀어 패널 밖으로 삐져나갔다(2026-09-29) */
+.paint-opacity{flex:0 0 var(--paint-opacity-width);text-align:end;padding-inline-start:var(--paint-gap);
+  border-inline-start:1px solid var(--paint-sep)}
+/* 보이기를 끄면 칸이 흐려진다 — 값은 그대로 남는다 */
+.paint-row[data-hidden] .paint-field{opacity:var(--paint-hidden-opacity)}
+:root[data-focus-mode="keyboard"] .paint-field:focus-within{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+:root[data-focus-mode="keyboard"] .paint-chip:focus-visible{outline:var(--focus-width) solid var(--focus-color);outline-offset:1px}
+
+/* 보이기 전환 — 바탕이 아니라 **아이콘으로** 켜짐을 보인다(눈 / 가린 눈). 단추의 켜짐 바탕(aria-pressed)은 끈다 */
+.paint-row [data-paint="visible"][aria-pressed]{background:none}
+.paint-row [data-paint="visible"]:hover{background:var(--interactive-bg-secondary-hover)}
+.paint-row [data-paint="visible"] .paint-eye-off{display:none}
+.paint-row [data-paint="visible"][aria-pressed="false"] .paint-eye{display:none}
+.paint-row [data-paint="visible"][aria-pressed="false"] .paint-eye-off{display:block}
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — 접는 절(속성 패널의 "채우기 · 외곽선 · 효과" 같은 절). 정본 2026-09-30(사용자 컨펌).
+   구조 참고: Figma 속성 패널(2026-09-29) — 머리 줄 [접기 화살표 + 제목] · [절 단추들(스타일 적용 · ＋ 추가)] / 몸통.
+   **모양은 GPT 값** — 제목은 메뉴 제목처럼 본문 크기, 절 사이는 5% 선, 머리의 단추는 아이콘 단추(28, 툴팁).
+   부품 변수(--section-*)만 본다.
+   ══════════════════════════════════════════════════════════════════ */
+.panel-section{display:grid;grid-template-columns:minmax(0,1fr);min-width:0;gap:var(--section-gap);padding:var(--section-pad-y) 0;border-top:1px solid var(--section-line)}
+.panel-section:first-child{border-top:0}
+.panel-section-head{display:flex;align-items:center;justify-content:space-between;gap:var(--section-gap);
+  min-height:var(--section-head-height);--btn-height:var(--section-action)}
+/* 제목 단추 — 누르면 접고 편다. 화살표는 펼쳤을 때 아래를 본다 */
+.panel-section-toggle{display:inline-flex;align-items:center;gap:calc(var(--spacing)*1);min-width:0;padding:0;border:0;background:none;
+  font:inherit;font-size:var(--section-title-text);font-weight:var(--section-title-weight);color:var(--text-primary);cursor:pointer}
+.panel-section-toggle .ic{width:var(--section-caret);height:var(--section-caret);color:var(--text-tertiary);
+  rotate:0deg;transition:rotate var(--transition-duration) var(--transition-ease)}
+.panel-section-toggle[aria-expanded="false"] .ic{rotate:-90deg}
+.panel-section[data-empty] .panel-section-toggle{color:var(--section-title-empty)}
+.panel-section-actions{display:inline-flex;align-items:center;gap:var(--section-actions-gap)}
+.panel-section-body{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--section-gap);--segmented-height:var(--section-action);--btn-height:var(--section-action)}   /* 절 안 세그먼트·단추도 28 */   /* 줄이 패널보다 넓어지지 않게 */
+.panel-section-body[hidden]{display:none}                  /* display 를 주는 부품 — G08 */
+/* 칸 묶음 — 작은 이름 + 칸(Figma "흐름 · 크기 조정 · 정렬 · 간격 · 패딩"). 칸이 많은 절에서 무슨 칸인지 읽히게 */
+.panel-field{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--section-label-gap);min-width:0;align-content:start}
+.panel-label{margin:0;font-size:var(--section-label-text);color:var(--section-label-color)}
+.panel-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--section-gap);align-items:start}   /* 두 묶음 나란히(정렬 | 간격) */
+.panel-line{display:flex;align-items:center;gap:var(--section-gap);min-width:0}   /* [넓은 칸][아이콘 단추] 한 줄 */
+.panel-line > :first-child,
+.panel-line > [hidden] + *{flex:1;min-width:0}   /* 앞 칸이 숨으면 대신 들어온 칸이 넓어진다(변마다 패딩: 두 칸 → 네 칸) */
+.panel-line > .btn{flex:none}                    /* 옆 칸이 넓어져도 아이콘 단추는 줄지 않는다 */
+.panel-line[data-align="start"]{align-items:start}   /* 칸이 두 줄이 돼도 단추는 첫 줄에 */
+:is(.panel-field,.panel-split,.panel-line)[hidden]{display:none}
+:root[data-focus-mode="keyboard"] .panel-section-toggle:focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset);border-radius:var(--section-focus-radius)}
+@media (prefers-reduced-motion:reduce){ .panel-section-toggle .ic{transition:none} }
+
+/* ══════════════════════════════════════════════════════════════════
+   편집기 부품 — 색 고르기 창(단색). 정본 2026-09-30(사용자 컨펌).
+   구조 참고: Figma 색 선택창(2026-09-29 15:43 저장 HTML, paint-picker-v2-modal) —
+   채도·밝기 판(조준선) · 스포이드 · 색조 막대 · 불투명도 막대 · 색 형식(Hex/RGB/HSL) + 값 칸 + 불투명도 · 견본.
+   칠 종류(그라디언트·이미지 …)는 넣지 않았다 — 단색만(2026-09-29 사용자).
+   **모양은 GPT 값** — 떠 있는 면은 선택 목록과 같은 그림자·라운드, 칸은 숫자 입력 촘촘, 형식 전환은 세그먼트. 부품 변수(--picker-*)만 본다.
+   ══════════════════════════════════════════════════════════════════ */
+.color-picker{position:fixed;z-index:60;display:grid;gap:var(--picker-gap);width:var(--picker-width);
+  padding:var(--picker-pad);background:var(--picker-bg);border-radius:var(--picker-radius);corner-shape:var(--corner);
+  box-shadow:var(--picker-shadow);--btn-height:var(--picker-control);--segmented-height:var(--picker-control)}
+.color-picker[hidden]{display:none}                      /* display 를 주는 부품 — G08 */
+.color-picker-head{display:flex;align-items:center;justify-content:space-between;gap:var(--picker-gap);
+  font-size:var(--section-title-text);font-weight:var(--section-title-weight)}
+/* 채도·밝기 판 — 가로 = 채도(흰색 → 순색), 세로 = 밝기(위 밝음 → 아래 검정) */
+.picker-field{position:relative;height:var(--picker-field-height);border-radius:var(--picker-field-radius);corner-shape:var(--corner);
+  background:linear-gradient(to top, var(--picker-black), transparent), linear-gradient(to right, var(--picker-white), hsl(var(--picker-hue) 100% 50%));
+  cursor:crosshair;touch-action:none;outline:none}
+/* 손잡이 — 흰 테 + 바깥 20% 선. 판과 막대가 같은 손잡이를 쓴다 */
+.picker-thumb{position:absolute;width:var(--picker-thumb);height:var(--picker-thumb);border-radius:50%;
+  translate:-50% -50%;pointer-events:none;background:var(--picker-thumb-fill, transparent);
+  box-shadow:inset 0 0 0 var(--picker-ring-width) var(--picker-thumb-ring), 0 0 0 1px var(--picker-thumb-edge)}
+/* 막대 — 색조 · 불투명도. role="slider" 라 방향키로도 움직인다 */
+.picker-slider{position:relative;height:var(--picker-track);display:grid;align-items:center;cursor:pointer;touch-action:none;outline:none}
+.picker-slider::before{content:"";height:var(--picker-bar);border-radius:var(--picker-bar-radius);corner-shape:var(--corner);background:var(--picker-slider-bg)}
+.picker-slider .picker-thumb{top:50%}
+.picker-slider[data-kind="hue"]{--picker-slider-bg:linear-gradient(to right,hsl(0 100% 50%),hsl(60 100% 50%),hsl(120 100% 50%),hsl(180 100% 50%),hsl(240 100% 50%),hsl(300 100% 50%),hsl(360 100% 50%))}
+.picker-slider[data-kind="alpha"]{--picker-slider-bg:linear-gradient(to right, transparent, var(--picker-color)),
+  conic-gradient(var(--bg-tertiary) 25%, var(--bg-primary) 0 50%, var(--bg-tertiary) 0 75%, var(--bg-primary) 0) 0 0/var(--picker-checker) var(--picker-checker)}
+.picker-bars{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:var(--picker-gap)}
+.picker-sliders{display:grid;gap:calc(var(--spacing)*1)}
+/* 값 줄 — 형식 전환(세그먼트) 아래 값 칸들 */
+.picker-values{display:grid;grid-template-columns:repeat(var(--picker-value-cols,2),minmax(0,1fr));gap:calc(var(--spacing)*1.5)}
+.picker-values[data-format="hex"]{--picker-value-cols:2}
+/* RGB/HSL — 값 셋 + 불투명도(A)를 한 줄 4칸에(2026-09-29 사용자). 칸 52 에 "100%"(약 33)가 들어가게
+   앞글자를 작게(10) 칸 맨 왼쪽에 붙이고 여백을 줄인다 — R G B A / H S L A. 앞글자는 끌기 손잡이도 그대로다 */
+.picker-values[data-format="rgb"],.picker-values[data-format="hsl"]{--picker-value-cols:4;gap:var(--picker-value-gap-tight);
+  --numfield-gap:var(--picker-value-affix-gap);--numfield-affix-size:0px;--numfield-affix-text:var(--picker-value-affix-text)}
+.picker-values:is([data-format="rgb"],[data-format="hsl"]) .numfield{padding:0 var(--picker-value-pad-end) 0 var(--picker-value-pad-start)}
+.picker-values > [data-for]:not([data-for~="all"]){display:none}
+.picker-values[data-format="hex"] > [data-for~="hex"],
+.picker-values[data-format="rgb"] > [data-for~="rgb"],
+.picker-values[data-format="hsl"] > [data-for~="hsl"]{display:flex}
+/* 견본 — 문서에 쓰인 색 */
+.picker-swatch-label{margin:0;font-size:var(--picker-label-text);color:var(--text-tertiary)}
+.picker-swatches{display:grid;grid-template-columns:repeat(var(--picker-swatch-cols),var(--picker-swatch));gap:var(--picker-swatch-gap);justify-content:space-between}
+.picker-swatch{width:var(--picker-swatch);height:var(--picker-swatch);padding:0;border:0;border-radius:50%;cursor:pointer;
+  background:var(--picker-swatch-color);box-shadow:inset 0 0 0 1px var(--border-default)}
+:root[data-focus-mode="keyboard"] :is(.picker-field,.picker-slider,.picker-swatch):focus-visible{
+  outline:var(--focus-width) solid var(--focus-color);outline-offset:var(--focus-offset)}
+
+/* ── 움직임을 줄인 사용자 ─────────────────────────────────────────────
+   실측: @media (prefers-reduced-motion: reduce) 35곳. 끄는 것이 규칙이다. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
